@@ -1,34 +1,33 @@
 # Comandos Basicos Git
 
-- **git init**                      - inicializa a pasta para virar um repositorio
-- **git add .**                   - pega tudo oq foi modificado e adiciona no stage para dar o commit
-- **git commit -m**         - "descrição do commit aqui com aspas" - faz o commit e deixa uma mensagem.
-- **git status**                 - checa o status do repositorio se tem alguma alteração.
-- **git config --list**        - para listar as config (apertar Q para sair)
-- **git remote -v**          - mostra o link do repositorio remoto cadastrado
-- **git push origin master**     - envia para a branch master do repositorio remoto q esta usando o alias origin (obs: se o rep for criado no github vai ser *origin main*).
-- **git pull origin master**       - faz o download dos arquivos atualizados do repositorio remoto.
-- **git clone "link do repositorio sem aspas"**      - clona o repositorio para a tua maquina.
-
-#### Configuração para dizer o autor do projeto:
-
-git config --global user.email "seu email com aspas"
-git config --global user.name "nome do usuario sem aspas"
+- **git init** --- inicializa a pasta para virar um repositorio
+- **git add .** --- pega tudo oq foi modificado e adiciona no stage para dar o commit
+- **git commit -m** --- "descrição do commit aqui com aspas" - faz o commit e deixa uma mensagem.
+- **git status** --- checa o status do repositorio se tem alguma alteração.
+- **git config --list** --- para listar as config (apertar Q para sair)
+- **git remote -v** --- mostra o link do repositorio remoto cadastrado
+- **git push origin master** --- envia para a branch master do repositorio remoto q esta usando o alias origin (obs: se o rep for criado no github vai ser *origin main*).
+- **git pull origin master** --- faz o download dos arquivos atualizados do repositorio remoto.
+- **git clone "link do repositorio sem aspas"** --- clona o repositorio para a tua maquina.
 
 
+# Comandos Bash Úteis
 
-
-
-## Comandos Bash Úteis
-
-- **openssl sha1 nomedoarquivo**     - gera o hash sha1 do arquivo
-- **cat**       - exibe o conteudo de um arquivo no console
+- **openssl sha1 nomedoarquivo** --- gera o hash sha1 do arquivo
+- **cat** --- exibe o conteudo de um arquivo no console
 
 
 
-## Configurações Úteis/Importantes
+# Configurações Úteis/Importantes
 
-**Para não precisar ficar entrando no site do git para digitar senha toda vez que você der commit você vai precisar fazer o seguinte:**
+### Configurar o autor dos commits:
+
+- **git config --global user.email "seu email com aspas"**
+- **git config --global user.name "nome do usuario sem aspas"**
+
+
+
+### Para não precisar ficar entrando no site do git para digitar senha toda vez que você der commit você vai precisar fazer o seguinte:
 
 Primeiro gerar uma chave SSH publica e privada, que vão servir na tua autenticação.
 
@@ -58,3 +57,4 @@ Depois você clona seus repositorios usando o link SSH.
   - Então na primeira vez vai precisar dar yes para botar a key e o github nos conhecidos do teu git.
 
 Depois disso é só usar, e a cada commit vc só vai precisar digitar no bash a senha que você colocou na hora de criar a chave SSH.
+
