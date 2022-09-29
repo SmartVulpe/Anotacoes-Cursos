@@ -1,0 +1,128 @@
+GUI - Graphic User Interface.
+CLI - Command Line Interface.
+
+----------
+
+comandos basicos CLI
+
+Windows                                               
+
+cd                 "cd /" faz ir para a raiz                                  
+dir                lista os arquivos na pasta                                   
+mkdir              cria uma pasta                                  
+del/"rmdir /s /q"  del só deleta arquivo pasta nao.                                                                  cls                limpa a tela                                                 
+                                                      
+
+
+Unix
+
+cd                 "cd /" faz ir para a raiz
+ls                 "ls -a" mostra arquivos ocultos
+mkdir              cria pasta
+rm -rf             o -r é para apagar tudo oq tem dentro recursivamente, e o f é pra forçar senao fica perguntando pra cada exclusão.
+clear/ctrl+L       limpa a tela
+sudo su            permição de adm
+mv                 move o arquivo, exemp: "mv lasanha.md ./receitas/" moveu o arquivo lasanha para dentro da pasta receitas.
+
+
+
+
+ambos SO:
+echo é um comando q retorna oq vc escreveu na tela
+se vc digitar echo hello, vai aparecer hello.
+se vc digitar "echo hello > hello.txt" não vai aparecer nada, mas vai criar um arquivo chamado hello.txt com hello dentro.
+o simbolo > significa redirecionador de fluxo, ou seja, no caso do echo ele redireciona a apresentação do texto hello no terminal para dentro do arquivo especificado hello.txt.
+
+
+--------
+
+usa git SHA1 na encriptação.
+
+usando o git bash dá para testar sha1
+comando:
+openssl sha1 nomedoarquivo
+ai ele vai da o codigo de encriptação (q pode ser usado como comparador de alteração no arquivo)
+
+----------
+
+blobs - é um bloco basico de conteudo "Um blob (objeto binário grande) do Git é o tipo de objeto usado para armazenar o conteúdo de cada arquivo em um repositório. O hash SHA-1 do arquivo é calculado e armazenado no objeto do blob. Esses pontos de extremidade permitem que você leia e grave objetos de blob no banco de dados do Git no GitHub."
+basicamente dentro do arquivo vai ta escrito blob o numero de caracteres e um \0 antes de começar o conteudo, exemplo:
+blob 9\0conteudo
+
+é preciso ter cuidado pq se vc fizer o sha1 de um arquivo txt com a palavra conteudo, ele vai da um resultado (has), mas se vc fizer essa comparação usando um arquivo q vc gerou e mandou no git ele vai dar um hash diferente pois vai ter mais essas palavras ai ""blob 9\0"conteudo".
+
+trees - as trees armazenam blobs, elas possuem os nomes dos arquivos, os blobs não possuem os nomes, e podem apontar para arquivos e para outras trees (imagine como uma pasta que tem arquivos, e, outras pastas dentro).
+se mudar uma virgula num blob, quando passa o sha1 da tree, vai mudar o sha1 da tree tambem, pois ela engloba os blobs juntos na verificação de hash.
+
+
+commits - o commit ele aponta para uma arvore, aponta para o parente (ultimo commit feito com o hash anterior), aponta para um autor, e aponta para uma mensagem tambem (para explicar alteração e tal), e a data/tempo q foi feito. o commit tambem tem um sha1.
+
+O git é mt confiavel pois se vc alterar um caractere numa blob, ela vai gerar um sha1 novo, que por consequencia vai alterar o sha1 da tree que esta apontando para o blob q vc alterou, q por consequencia vai alterar o sha1 de outra possivel arvore q esteja apontando para essa arvore, que por fim vai alterar o sha1 do commit q que aponta pra arvore inicial.
+ou seja, não tem como fazer uma alteração e ela passar batido, e nem alguem alterar sem vc saber pq vai aparecer no historico do commit.
+tambem não tem como corromper o arquivo numa transferencia pois tem toda essa verificação até o servidor na nuvem e o computador/usuario que ta dando o commit.
+
+--------------------
+
+para gerar uma chave ssh, no bash, digite esse comando:
+ssh-keygen -t ed25519 -C "seu email sem aspas"
+o -C tem q ser maiusculo.
+caminho padrao: /c/Users/NomeUsuario/.ssh/
+da pra abrir usando o comando cat nomedoarquivo.pub
+
+vc copia o conteudo do arquivo .pub, e coloca no github.
+
+depois para colocar no git do pc, vc vai na pasta .ssh pelo git bash, e digita o comando
+eval $(ssh-agent -s)
+depois
+ssh-add id_ed25519
+esse id é o nome do arquivo q foi gerado, e é o sem .pub, pq é o privado q vc vai usa e nao o publico.
+ai vc vai digitar a senha q vc colocou no arquivo na hora de gerar, e é isso.
+
+ai para clonar um repositorio PARTICULAR (provavelmente seu), la no github, no botão Code, vc clica e vai em ssh e usa aquele link la, se for por outro ele nao va dexa.
+ai usa o comando:
+git clone "e dai o caminho ssh sem aspas"
+e dai provavelmente a primeira vez vai precisar dar yes para botar o fingerprint da tua key nas conhecidas.
+
+-------------------------
+
+
+comandos git:
+
+git init - inicializa a pasta para virar um repositorio
+
+git add - 
+
+git commit -
+
+git status - checa o status
+
+configuração para dizer o autor do projeto
+git config --global user.email "seu email com aspas"
+git config --global user.name "nome de usuario sem aspas"
+
+git config --list para listar as config (apertar Q para sair)
+
+git add . - pega tudo oq foi modificado e adiciona no stage para dar o commit
+
+git add * - pega tudo MENOS os arquivos que começam com . (ocultos)
+
+git commit -m "commit inicial" -
+
+git remote -v mostra o link do repositorio remoto cadastrado
+
+git push origin master  envia para a branch master do repositorio remoto q esta usando o alias origin.
+git pull origin master  faz o download dos arquivos atualizados do repositorio remoto.
+
+git clone "link do repositorio sem aspas" clona o repositorio para a tua maquina.
+
+------------
+quando vc cria um arquivo novo e ainda não deu commit, ele fica como Untracked, pq o git ainda não ta vendo ele, depois q vc da o commit ele vai direto para staged, ai na proxima vez q vc mexer nele ele é tracked e vai para modified e quando der add denovo ele vai para staged para aguardar o commit.
+
+
+git status pode dizer q vc removeu um arquivo quando vc move esse arquivo para uma pasta nova q não existia antes.
+apenas de um git add "nome do arquivo" "nome da pasta/"
+sem as aspas
+ou git add * que pega tudo.
+e de git status denovo q ele deve dizer certinho q ta movendo, confere bem, e dai da um commit.
+
+--------------
