@@ -24,3 +24,49 @@ q também funciona.
 Da para ter varias copias da mesma classe em namespaces diferentes, o namespace é um caminho até a pasta q a classe está, ex: 
 Using NomeDoProjeto.NomeDaPasta
 ai quando for instanciar a classe, vc pode colocar o nome da classe q ele ja sabe q ta vindo dessa pasta, se tiver mais de um lugar com a mesma classe e vc tiver dando Using nesses lugares, ai precisa ter um certo cuidado na hora de instanciar a classe e detalhar mais.
+
+
+convenções de nomes:
+camelCase = primeira palavra tudo minuscula e as seguintes com a primeira letra maiuscula. 
+PascalCase = cada palavra tem a primeira letra maiuscula.
+snake_case = tudo minusculo e separa as palavras com underline.
+spinal-case = tudo minusculo e separa as palavras com traço.
+
+os padrões usados no C#/.net são camelCase e o PascalCase.
+
+PascalCase nas situações: nomes de Classes, Assembly, Structs, Interfaces (sempre com o I antes dos nomes), Delegates, Enums, Métodos, Propriedades, Compos públicos, Eventos.
+
+camelCase nas situações: Variáveis locais, Parâmetetros de métodos, Campos privados e protegidos.
+
+Fonte adicional com recomendações de escritas e diversas informações interessantes de boas praticas (leitura extremamente recomendada): https://pt.stackoverflow.com/questions/31646/padr%C3%A3o-de-nomenclatura-no-c%C3%B3digo-para-o-c
+
+Evite abreviar nomes, pois nem sempre será você que irá dar manutenção no codigo e ele tem que ser o mais entendivel possivel.
+
+O nome do arquivo e o nome da classe deve ser o mesmo, pode ser diferente mas por convenção deve ser o mesmo para facilitar encontrar.
+
+boa pratica representar valores monetarios utilizando o tipo Decimal, pois na hora de mostrar não precisa fazer tratamento de dados pra mostrar duas casas apos a virgula e diz que na hora de fazer calculos evita redução de precisão com valores apos a virgula.
+
+Tipos de dados de variaveis:
+https://www.tutorialspoint.com/csharp/csharp_data_types.htm
+
+DateTime é um tipo de dado Struct que coleta a data e hora atual.
+
+exemplo de uso:
+DateTime dataAtual = DateTime.Now;
+Console.WriteLine(dataAtual);
+resultado vai ser o dia/mes/ano horario.
+
+esse tipo tambem possui varios metodos, como por exemplo adicionar dias ao resultado:
+
+DateTime dataAtual = DateTime.Now.AddDays(5); //adiciona 5 dias
+
+e se fizer assim:
+Console.WriteLine(dataAtual.ToString(dd/MM/yyyy));
+ele vai mostrar só a data sem o horario, e sim o M tem q ser maiúsculo.
+
+e se fizer assim:
+Console.WriteLine(dataAtual.ToString(HH:mm));
+vai mostrar só a hora e o minuto sem os segundos, e o H tem q ser maiusculo.
+
+Documentação do DateTime:
+https://learn.microsoft.com/pt-br/dotnet/api/system.datetime?view=net-6.0
