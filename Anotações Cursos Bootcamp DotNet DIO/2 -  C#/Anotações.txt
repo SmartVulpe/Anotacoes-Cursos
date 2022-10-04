@@ -1,0 +1,26 @@
+Se usar o vs code tem q instalar o .net separado e mais as seguintes extensões:
+-
+-
+-
+dai para criar um projeto usa os comandos:
+dotnet new console = cria um projeto de console na pasta q vc está
+dotnet run = executa o projeto da pasta q vc está.
+
+
+Convenção: Nomes de classes começam com letra maiuscula ex: MinhaClasse.cs
+
+escrever ctor e da tab tab = cria um construtor automaticamente
+escreve prop e da tab tab = cria uma propriedade automaticamentes
+
+-Normalmente não é possivel utilizar palavras reservadas pelo C# como um nome de atributo, classe ou parametro, porem se colocar um @ na frente de uma palavra reservada vc consegue usa-la, mas não é ideal, então evite.
+
+OPERADOR TERNARIO= ?
+
+forma diferente de concatenar da que eu aprendi:
+em vez de: ("Meu nome é " + nome + " e minha idade é " + idade + " anos");
+da pra fazer: ($"Meu nome é {nome} e minha idade é {idade} anos");
+q também funciona.
+
+Da para ter varias copias da mesma classe em namespaces diferentes, o namespace é um caminho até a pasta q a classe está, ex: 
+Using NomeDoProjeto.NomeDaPasta
+ai quando for instanciar a classe, vc pode colocar o nome da classe q ele ja sabe q ta vindo dessa pasta, se tiver mais de um lugar com a mesma classe e vc tiver dando Using nesses lugares, ai precisa ter um certo cuidado na hora de instanciar a classe e detalhar mais.
