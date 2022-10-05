@@ -1,30 +1,52 @@
+Estou usando o Visual Studio Community, mas, por precaução deixarei anotado as necessidades referentes ao VS Code caso seja necessario o uso por ser mais leve:
 Se usar o vs code tem q instalar o .net separado e mais as seguintes extensões:
--
--
--
+- C# (obrigatorio).
+- C# Extensions (do autor JosKreativ).
+- vscode-icons (extensão visual, não é necessaria, mas ajuda a distinguir + facil os arquivos).
+
 dai para criar um projeto usa os comandos:
 dotnet new console = cria um projeto de console na pasta q vc está
 dotnet run = executa o projeto da pasta q vc está.
 
+para abrir uma pasta no vscode via terminal/bash digitar o comando:
+code .
+
+para debugar no vscode tem que clicar do lado da linha para botar o ponto de break, e dai apertar F5 (ou no botão de play com um incetinho que fica na esquerda), ele vai gerar um json com as config pro debug parar, vc pode fechar esse arquivo json q vai abrir, e dai vai apertar F5 denovo, dai ele vai rodar o codigo e parar no breakpoint.
+se apertar F10 (ou no botão correspondente que aparece em cima) ele anda passo por passo.
+-------------------------------
 
 Convenção: Nomes de classes começam com letra maiuscula ex: MinhaClasse.cs
+
+-------------------
 
 escrever ctor e da tab tab = cria um construtor automaticamente
 escreve prop e da tab tab = cria uma propriedade automaticamentes
 
+----------------------
+
 -Normalmente não é possivel utilizar palavras reservadas pelo C# como um nome de atributo, classe ou parametro, porem se colocar um @ na frente de uma palavra reservada vc consegue usa-la, mas não é ideal, então evite.
 
+---------------------
+
 OPERADOR TERNARIO= ?
+
+------------------------
 
 forma diferente de concatenar da que eu aprendi:
 em vez de: ("Meu nome é " + nome + " e minha idade é " + idade + " anos");
 da pra fazer: ($"Meu nome é {nome} e minha idade é {idade} anos");
 q também funciona.
 
+se fizer ($"alguma coisa {valorA >= valorB} alguma coisa")
+ele vai aparecer um true ou false conforme o resultado da comparação desses valores, operadores aritmeticos tambem funcionam.
+
+------------------------------
+
 Da para ter varias copias da mesma classe em namespaces diferentes, o namespace é um caminho até a pasta q a classe está, ex: 
 Using NomeDoProjeto.NomeDaPasta
 ai quando for instanciar a classe, vc pode colocar o nome da classe q ele ja sabe q ta vindo dessa pasta, se tiver mais de um lugar com a mesma classe e vc tiver dando Using nesses lugares, ai precisa ter um certo cuidado na hora de instanciar a classe e detalhar mais.
 
+----------------------------
 
 convenções de nomes:
 camelCase = primeira palavra tudo minuscula e as seguintes com a primeira letra maiuscula. 
@@ -40,15 +62,22 @@ camelCase nas situações: Variáveis locais, Parâmetetros de métodos, Campos 
 
 Fonte adicional com recomendações de escritas e diversas informações interessantes de boas praticas (leitura extremamente recomendada): https://pt.stackoverflow.com/questions/31646/padr%C3%A3o-de-nomenclatura-no-c%C3%B3digo-para-o-c
 
+--------------------------------
+
 Evite abreviar nomes, pois nem sempre será você que irá dar manutenção no codigo e ele tem que ser o mais entendivel possivel.
 
 O nome do arquivo e o nome da classe deve ser o mesmo, pode ser diferente mas por convenção deve ser o mesmo para facilitar encontrar.
 
+-----------------------------------
+
 boa pratica representar valores monetarios utilizando o tipo Decimal, pois na hora de mostrar não precisa fazer tratamento de dados pra mostrar duas casas apos a virgula e diz que na hora de fazer calculos evita redução de precisão com valores apos a virgula.
+
+----------------------------
 
 Tipos de dados de variaveis:
 https://www.tutorialspoint.com/csharp/csharp_data_types.htm
 
+---------------
 DateTime é um tipo de dado Struct que coleta a data e hora atual.
 
 exemplo de uso:
@@ -70,3 +99,78 @@ vai mostrar só a hora e o minuto sem os segundos, e o H tem q ser maiusculo.
 
 Documentação do DateTime:
 https://learn.microsoft.com/pt-br/dotnet/api/system.datetime?view=net-6.0
+
+------------------
+esses operadores atribuem e:
++= = adiciona
+*= = multiplica
+-= = subtrai
+
+exemplo
+C = C + 5;
+é igual a
+C += 5;
+-------------------------
+
+para converter tipos de variaveis existe o Convert e o Parse, exemp:
+int a = Convert.ToInt32("5");
+int a = int.Parse("5");
+é preciso fazer tratamento de entrada pois se a entrada for algo q não é compativel vai dar erro e crashar o programa.
+
+a diferença entre os 2 é q o Convert permite valor de entrada nulo e o parse nao. No caso do int o Convert vai converter null para 0.
+
+se precisar converter algo para string, é só colocar .ToString(); depois da variavel. exemplo:
+string texto = a.ToString();
+
+nos tipos numericos, se vc passar um tipo compativel com outro tipo não é necessario converter.
+exemplo um double que recebe o valor de um int, ou um long (q é um int q cabe mais numeros) recebendo um int.
+MAS se um int for receber um long ele vai dar erro, se usar o convert ele aceita certinho SE o valor que tiver no long não for maior do q oq o int suporta, se for maior vai dar erro.
+
+
+uma forma de converter sem dar erros é usando o TryParse, que espera ja q de erro então se ele nao conseguir ele só não faz o processo.
+exemplo
+
+string a = "15-";
+int b = 0;
+
+int.TryParse(a, out b);
+
+aqui acontece o seguinte, como o valor de a é invalido pois tem um traço, ele vai dar erro, portanto ele não vai executar a operação e vai manter o valor de b como 0, se o valor de a não fosse invalido ele iria sobrescrever o valor de b com o valor convertido.
+
+também é possivel gerar a variavel durante o TryParse:
+int.TryParse(a, out int b);
+ai se der erro, ele vai retornar 0 para b.
+
+--------------------------
+
+se digitar o comando:
+long variavel = long.MaxValue;
+variavel será carregado com o valor maximo q o long suporta.
+os outros tipos tambem suportam esse .MaxValue; pode ser util para testes.
+
+--------------------------------
+
+o if não precisa ter comparador, se ele receber uma variavel booleana que seja true ou false ele ja determina o caminho, não precisa comparar a variavel boleana, exemp.: bool == true, apenas estar o bool que vai ta carregado com um true ou um false ja é o suficiente.
+
+-------------------------------------
+
+uso diferente do switch q eu não vi anteriormente na faculdade nem em cursos:
+
+switch(letra)
+{
+	case "a":
+	case "e":
+	case "i":
+	case "o":
+	case "u":
+		Console.WriteLine("Vogal");
+		break;
+
+	default:
+		Console.WriteLine("Não é uma vogal");
+		break;
+}
+
+logica: não é necessario ter um codigo em cada case, se ele não tiver o break ele vai continuar até chegar em um break, e se o resultado não bater com nenhum case ele vai pular todos e entrar no default como sempre.
+
+-----------------------------------------

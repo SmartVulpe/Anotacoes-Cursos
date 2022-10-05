@@ -11,6 +11,16 @@
 - **git clone "link do repositorio sem aspas"** --- clona o repositorio para a tua maquina.
 
 
+
+
+Se você criar um repositorio no PC e quiser upar pro github, tem que criar o rep no github, ai ele vai dar os comandos para usar ja com o link certinho só copiar e colar, todavia os comandos são os seguintes:
+
+- **git remote add origin "link sem aspas"**
+- **git branch -M main** --- o git cria a branch com o nome de master, se usar esse comando ele vai mudar o nome para main.
+- **git push -u origin main**
+
+
+
 # Comandos Bash Úteis
 
 - **openssl sha1 nomedoarquivo** --- gera o hash sha1 do arquivo
