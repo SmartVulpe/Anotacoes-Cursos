@@ -70,3 +70,54 @@ vai mostrar só a hora e o minuto sem os segundos, e o H tem q ser maiusculo.
 
 Documentação do DateTime:
 https://learn.microsoft.com/pt-br/dotnet/api/system.datetime?view=net-6.0
+
+------------------
+esses operadores atribuem e:
++= = adiciona
+*= = multiplica
+-= = subtrai
+
+exemplo
+C = C + 5;
+é igual a
+C += 5;
+-------------------------
+
+para converter tipos de variaveis existe o Convert e o Parse, exemp:
+int a = Convert.ToInt32("5");
+int a = int.Parse("5");
+é preciso fazer tratamento de entrada pois se a entrada for algo q não é compativel vai dar erro e crashar o programa.
+
+a diferença entre os 2 é q o Convert permite valor de entrada nulo e o parse nao. No caso do int o Convert vai converter null para 0.
+
+se precisar converter algo para string, é só colocar .ToString(); depois da variavel. exemplo:
+string texto = a.ToString();
+
+nos tipos numericos, se vc passar um tipo compativel com outro tipo não é necessario converter.
+exemplo um double que recebe o valor de um int, ou um long (q é um int q cabe mais numeros) recebendo um int.
+MAS se um int for receber um long ele vai dar erro, se usar o convert ele aceita certinho SE o valor que tiver no long não for maior do q oq o int suporta, se for maior vai dar erro.
+
+
+uma forma de converter sem dar erros é usando o TryParse, que espera ja q de erro então se ele nao conseguir ele só não faz o processo.
+exemplo
+
+string a = "15-";
+int b = 0;
+
+int.TryParse(a, out b);
+
+aqui acontece o seguinte, como o valor de a é invalido pois tem um traço, ele vai dar erro, portanto ele não vai executar a operação e vai manter o valor de b como 0, se o valor de a não fosse invalido ele iria sobrescrever o valor de b com o valor convertido.
+
+também é possivel gerar a variavel durante o TryParse:
+int.TryParse(a, out int b);
+ai se der erro, ele vai retornar 0 para b.
+
+--------------------------
+
+se digitar o comando:
+long variavel = long.MaxValue;
+variavel será carregado com o valor maximo q o long suporta.
+os outros tipos tambem suportam esse .MaxValue; pode ser util para testes.
+
+--------------
+
