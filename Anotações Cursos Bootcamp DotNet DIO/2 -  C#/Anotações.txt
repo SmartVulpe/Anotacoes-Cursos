@@ -174,3 +174,12 @@ switch(letra)
 logica: não é necessario ter um codigo em cada case, se ele não tiver o break ele vai continuar até chegar em um break, e se o resultado não bater com nenhum case ele vai pular todos e entrar no default como sempre.
 
 -----------------------------------------
+
+é possivel quebrar um laço de repetição antes do seu fim utilizando o comando: 
+break; (igual do switch case)
+a ideia é fazer um if com isso caso algo especifico seja alcançado antes do fim das repetições.
+
+--------------------------------------------
+
+Environment.Exit(0); encerra o programa.
+Console.Clear(); limpa o console.
