@@ -2,6 +2,7 @@ Estou usando o Visual Studio Community, mas, por precaução deixarei anotado as
 Se usar o vs code tem q instalar o .net separado e mais as seguintes extensões:
 - C# (obrigatorio).
 - C# Extensions (do autor JosKreativ).
+- vscode-solution-explorer (facilita criar e manipular solutions).
 - vscode-icons (extensão visual, não é necessaria, mas ajuda a distinguir + facil os arquivos).
 
 dai para criar um projeto usa os comandos:
@@ -13,6 +14,22 @@ code .
 
 para debugar no vscode tem que clicar do lado da linha para botar o ponto de break, e dai apertar F5 (ou no botão de play com um incetinho que fica na esquerda), ele vai gerar um json com as config pro debug parar, vc pode fechar esse arquivo json q vai abrir, e dai vai apertar F5 denovo, dai ele vai rodar o codigo e parar no breakpoint.
 se apertar F10 (ou no botão correspondente que aparece em cima) ele anda passo por passo.
+
+------------------------------------
+
+para criar uma solution usando a extensão, clica no icone novo que apareceu na esquerda (com a logo do visual studio), dai vai ter escrito No solution found, ai vc clica com o botão direito nessa frase e dai Create new empty solution, dai vc da um nome para a solution na caixa que apareceu.
+
+para adicionar um projeto na solution, vc clica com o botão direito na solution e Add existing project, ai vc vai na pasta do projeto e seleciona o arquivo csproj do projeto.
+
+para criar um projeto só de classes sem executavel, clica com o botão direito na solution e Add new project > Class Library, escolhe a linguagem (que no nosso caso é C#) e da um nome com a extensão .Common, exemplo: nomeDoProjeto.Common
+Inclusive pode ser o mesmo nome do projeto principal.
+
+----------------------------------------
+
+Quando vc vai organizar as pastas do projeto, exemplo da aula, o prof criou a solution e dai moveu o projeto para uma pasta, é necessario conferir e corrigir os caminhos que estão no arquivo da solution.
+
+também é necessario referenciar os outros projetos que você queira usar em outro projeto dentro da solution, para isso, vc vai na aba do vscode que mostra só a solution (aquele botão com a logo do visual studio) e clica com o botão direito no projeto principal, e, Add Reference, e ele vai fazer tudo automaticamente (é necessario a extensão vscode-solution-explorer).
+
 -------------------------------
 
 Convenção: Nomes de classes começam com letra maiuscula ex: MinhaClasse.cs
