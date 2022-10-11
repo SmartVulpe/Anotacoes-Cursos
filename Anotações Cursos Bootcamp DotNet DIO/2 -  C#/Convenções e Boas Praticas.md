@@ -55,7 +55,7 @@ MeuProjeto.NET5
 MeuProjeto.NET6
 ```
 
-## Boas Práticas de Códigos
+# Boas Práticas de Códigos
 
 
 - Deve-se representar valores monetários utilizando o tipo **Decimal**, ele é mais preciso para operações monetárias evitando qualquer falha critica causada por arredondamento, além de não necessitar formatação adicional na hora de mostrar o valor, pois já entrega mostrando 2 números após a vírgula.
