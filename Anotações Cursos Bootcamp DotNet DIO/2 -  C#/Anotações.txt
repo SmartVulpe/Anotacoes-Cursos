@@ -136,3 +136,25 @@ a ideia é fazer um if com isso caso algo especifico seja alcançado antes do fi
 
 Environment.Exit(0); encerra o programa.
 Console.Clear(); limpa o console.
+
+------------------------------------------------
+
+FOREACH é usado principalmente com arrays, onde ele faz um for para cada elemento do array e joga o valor para dentro da variavel sem usar um contador de loop.
+
+foreach(int valor in array)
+{
+	Console.WriteLine(valor);
+}
+em alguns casos pode ser uma desvantagem não ter um contador.
+----------------------------------------------------
+
+não é possivel alterar o tamanho de um array em tempo de execução, oque da para fazer é usar um codigo que vai pegar a referencia do array na memoria, copia-lo, apagar o array original e colocar no lugar na memoria um array novo com capacidade maior.
+esse comando é
+Array.Resize(ref nomeDoArray, 10);
+nesse exemplo você está usando o comando ref para pegar a referencia na memoria do array, e dizendo que agora vc quer que ele tenha 10 espaços.
+Também é possivel usar Array.Resize(ref nomeDoArray, nomeDoArray.Lenght * 2); por exemplo para dobrar o tamanho do array se assim for desejado.
+
+----------------------------------------------------
+para copiar um array para outro, usasse o comando:
+Array.Copy(arrayOriginal, arrayDestino, arrayOriginal.Lenght);
+no caso a ultima parte com o .Lenght é a quantidade de elementos que você quer copiar, se quer copiar tudo ou só os 2 primeiros por exemplo.
