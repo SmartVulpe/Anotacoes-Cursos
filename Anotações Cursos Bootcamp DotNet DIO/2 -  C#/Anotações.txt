@@ -170,6 +170,33 @@ listaString.Remove("nome");
 quando precisar verificar o tamanho da lista, utiliza-se listaString.Count, funciona da mesma forma do array.Lenght
 
 ------------------------------------------------------
+comentarios:
+// = comenta uma unica linha
+/* comentario */ = comenta multiplas linhas
+<summary> = documenta classes e metodos, quando vc passa o mouse sobre ela la no outro arquivo que esta instanciada/usando aparece o comentario no balãozinho.
+para usar o summary vc digita barra 3 vezes, no visual studio community ele ja auto completa o seguinte codigo:
+/// <summary>
+/// Texto que quer que apareça ao passar o mouse na classe/metodo.
+/// </summary>
+no VSCode para auto completar é necessario ativar
+engrenagem > configurações > editor de texto > marcar a opção: Format On Type.
+ou dentro de configurações usar a barra de busca digitanto format on type.
 
+obs: o summary tem q estar logo acima da classe ou metodo que voce quer documentar.
+obs2: se digitar as /// acima de uma classe com parametros, ele gera mais opções para voce documentar os parametros, a documentação desses parametros aparece no balão SOMENTE quando você está digitanto ela, ao colocar a virgula para ir para o proximo parametro ele muda a documentação para a do proximo parametro.
+obs3: se a classe tiver return tambem tem um campo para documentar o retorno.
+exemplo:
+        /// <summary>
+        /// Soma dois valores
+        /// </summary>
+        /// <param name="x">Primeiro valor a ser somado</param>
+        /// <param name="y">Segundo valor a ser somado</param>
+        /// <returns>Retorna a soma dos valores</returns>
+        public int SomaPasseOMouseSummary(int x, int y)
+        {
+            //Console.WriteLine($"Resultado soma {x} + {y} = {x + y}");
+            return x + y;
+        }
+-----------------------------------------------
 
 
