@@ -155,6 +155,21 @@ nesse exemplo você está usando o comando ref para pegar a referencia na memori
 Também é possivel usar Array.Resize(ref nomeDoArray, nomeDoArray.Lenght * 2); por exemplo para dobrar o tamanho do array se assim for desejado.
 
 ----------------------------------------------------
+
 para copiar um array para outro, usasse o comando:
 Array.Copy(arrayOriginal, arrayDestino, arrayOriginal.Lenght);
 no caso a ultima parte com o .Lenght é a quantidade de elementos que você quer copiar, se quer copiar tudo ou só os 2 primeiros por exemplo.
+
+----------------------------------------------------
+
+Listas são como arrays aprimorados, ela tem um array interno, você não precisa especificar seu tamanho (se quiser pode), você pode ir adicionando valores e ela vai crescendo sozinha (da resize no array interno sozinha), se remover um item ele reordena a lista e não deixa um espaço vago no meio como no array.
+Declaração e uso:
+List<string> listaString = new List<string>();
+listaString.Add("nome");
+listaString.Remove("nome");
+quando precisar verificar o tamanho da lista, utiliza-se listaString.Count, funciona da mesma forma do array.Lenght
+
+------------------------------------------------------
+
+
+
