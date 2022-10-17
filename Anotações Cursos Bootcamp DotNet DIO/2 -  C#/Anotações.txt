@@ -199,4 +199,21 @@ exemplo:
         }
 -----------------------------------------------
 
+quando o get ou o set tem apenas 1 linha de codigo de tratamento, pode se usar => (foi chamado de body expression na aula) ao inves de chaves.
+exemplo:
+get => _nome.ToUpper();
 
+se você usar esse simbolo direto na propriedade, exemplo:
+public string NomeCompleto => $"{Nome} {Sobrenome}";
+automaticamente a propriedade vai ser somente GET e ela vai setar automaticamente o as variaveis concatenadas. Ou seja, se em Nome tiver Daniel e sobrenome tiver Franco, em nome completo vai ser armazenado Daniel Franco.
+
+----------------------------------------------
+
+public = qualquer um pode instanciar
+private = somente a propria classe pode usar.
+
+---------------------------------------------
+se fizer isso aqui:
+Pessoa p1 = new Pessoa(nome: "Daniel", sobrenome: "Franco");
+funciona, no caso esses são os nomes dos parametros, fazer assim serve apenas para ficar mais legivel.
+-------------------------------------------
