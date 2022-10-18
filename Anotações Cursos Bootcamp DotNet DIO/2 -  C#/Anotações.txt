@@ -217,3 +217,35 @@ se fizer isso aqui:
 Pessoa p1 = new Pessoa(nome: "Daniel", sobrenome: "Franco");
 funciona, no caso esses são os nomes dos parametros, fazer assim serve apenas para ficar mais legivel.
 -------------------------------------------
+
+precisa botar um M no valor do decimal, exemplo:
+decimal valor = 10.12M;
+assim como o float é f e o double é d.
+
+-----------------------------------------------
+
+se adicionar :C na exibição de um valor, ele adiciona o estilo monetario da região que o windows está configurado, no nosso caso R$ e ponto na casa do milhar, por exemplo:
+decimal valorMonetario = 1522.55M;
+Console.WriteLine(${valorMonetario:C}";
+vai exibir:
+R$ 1.522,55
+
+se quiser forçar uma região da para fazer da seguinte forma:
+
+using System.Globalization;
+
+CultureInfo.DefaultThreadCurrentCulture = new CultureInfo("en-US");
+
+como foi colocado en-US a localização foi para o americano, ai o codigo acima vai exibir o seguinte:
+$ 1,522.55
+que é o padrão de formatação de valor americano.
+
+se quiser que apenas um valor seja no padrão americano por exemplo e o resto tudo no padrão brasileiro, da para fazer assim:
+
+Console.WriteLine(valorMonetario.ToString("C", CultureInfo.CreateSpecificCulture("en-US)));
+
+
+-----------------------------------------------
+
+
+
