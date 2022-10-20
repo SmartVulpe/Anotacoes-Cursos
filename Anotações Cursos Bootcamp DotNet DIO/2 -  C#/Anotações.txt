@@ -44,11 +44,18 @@ DateTime dataAtual = DateTime.Now.AddDays(5); //adiciona 5 dias
 
 e se fizer assim:
 Console.WriteLine(dataAtual.ToString(dd/MM/yyyy));
+ou
+Console.WriteLine(dataAtual.ToShortDateString());
 ele vai mostrar só a data sem o horario, e sim o M tem q ser maiúsculo.
 
 e se fizer assim:
 Console.WriteLine(dataAtual.ToString(HH:mm));
+ou
+Console.WriteLine(dataAtual.ToShortTimeString());
 vai mostrar só a hora e o minuto sem os segundos, e o H tem q ser maiusculo.
+
+DateTime.TryParseExact pode ser usado para converter uma data recebida em um padrão para outro, exemplo padrão americano para o padrão brasileiro.
+
 
 Documentação do DateTime:
 https://learn.microsoft.com/pt-br/dotnet/api/system.datetime?view=net-6.0
@@ -242,9 +249,21 @@ que é o padrão de formatação de valor americano.
 
 se quiser que apenas um valor seja no padrão americano por exemplo e o resto tudo no padrão brasileiro, da para fazer assim:
 
-Console.WriteLine(valorMonetario.ToString("C", CultureInfo.CreateSpecificCulture("en-US)));
+Console.WriteLine(valorMonetario.ToString("C", CultureInfo.CreateSpecificCulture("en-US")));
 
+É possivel determinar o numero de casas apos a virgula colocando um numero apos o C, exemplo: C1, C2, C5, C8...
 
+Se usar N no lugar do C, ele formata igual o C com a excessão do indicador monetario: R$, $...
+
+Se utilizar P a formatação fica como porcentagem.
+Porém, para o valor sair certo, tem que por ponto na frente do numero (porcentagem = .12; ), do contrario o numero 12 por exemplo vai ser mostrado como 1.200,00% ao invez de 12,00%
+isso independente se for int, float, double ou decimal.
+
+tambem é possivel fazer formatações manuais como por exemplo:
+int numero = 123456;
+Console.WriteLine(numero.ToString("##-##-##"));
+a saida vai ser: 12-34-56
+o # representa um digito.
 -----------------------------------------------
 
 
