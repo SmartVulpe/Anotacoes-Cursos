@@ -280,6 +280,11 @@ escolhe um pacote nuget, clica, ai na pagina do pacote vai ter uma aba escrito "
 
 Para fazer serialização em json no dotnet use o pacote nuget Newtonsoft.Json.
 
+Para conferir se um json é valido, use este site:
+https://codebeautify.org/jsonviewer
+
+o json representa as horas recebidas pelo datetime de forma independente, usando o padrão ISO 8601.
+
 ------------------------------------------------
 
 
