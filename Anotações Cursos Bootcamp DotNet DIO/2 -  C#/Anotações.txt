@@ -266,5 +266,20 @@ a saida vai ser: 12-34-56
 o # representa um digito.
 -----------------------------------------------
 
+tuplas
+
+ternario
+
+desconstrutor
+----------------------------------------------
+
+para instalar um nuget no vscode vc vai no site nuget.org
+escolhe um pacote nuget, clica, ai na pagina do pacote vai ter uma aba escrito ".NET CLI" e ai vai ter o comando de console certinho para copiar, colar e executar na pasta do projeto. E não precisa colocar a parte --version, para pegar sempre a ultima.
+
+---------------------------------------------
+
+Para fazer serialização em json no dotnet use o pacote nuget Newtonsoft.Json.
+
+------------------------------------------------
 
 
