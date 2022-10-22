@@ -285,6 +285,12 @@ https://codebeautify.org/jsonviewer
 
 o json representa as horas recebidas pelo datetime de forma independente, usando o padrão ISO 8601.
 
+A biblioteca json possui "Atributos" que são um codigo que fica acima das propriedades que permite alterar o comportamento de algumas coisas.
+Exemplo:
+[JsonProperty("Nome_Produto")]
+public string Produto { get; set; }
+esse atributo, ao receber no arquivo json uma propriedade com o nome "Nome_Produto" (que está fora da convenção de codigo do C# então você não vai querer fazer uma propriedade com o esse nome pois não está em PascalCase) ele vai dizer para o deserializador pegar essa propriedade e colocar na propriedade abaixo que é a Produto.
+
 ------------------------------------------------
 
 
