@@ -299,7 +299,60 @@ bool? = variavel nullable, no caso do bool aceita receber null ao inves de apena
 
 tipos anonimos
 
+tipo dinâmico
+
+classes genericas
+
+metodos de extensão
 
 
 ---------------------------------------------------
+
+(Teorico, bom saber para entrevista de emprego)
+
+- Alocação de Memória 
+
+Stack e Heap são tipos de memoria, dependendo do tipo da sua variavel ela vai para um ou outro tipo de memoria.
+
+o Stack é como uma pilha, ele armazena conforme a sequencia que a variavel entrou (primeira linha, segunda linha...), o ultimo a entrar é o primeiro a sair (LIFO - Last In, First Out).
+
+No Stack são armazanados tipos de variaveis mais simples (tipos primitivos), e quando a variavel é complexa como um objeto ele armazena o nome do objeto e a referencia desse objeto que vai estar na memoria Heap.
+
+Na memoria Heap são armazenados tipos complexos como objetos, já que objetos podem conter varios tipos diferentes dentro dele.
+
+Portanto ao armazenar um objeto, seu nome ficará na Stack e haverá uma referencia para o objeto de verdade que está na memoria Heap.
+
+- Limpeza de memória
+
+Ao terminar o metodo, a limpeza de memoria ocorrerá da seguinte forma:
+Na memória Stack é tipo uma pilha, ela vai remover da memoria a partir da ultima variavel que entrou na Stack.
+
+Na memória Heap o C# usa o Garbage Collector, que verifica se tem algum objeto que não tem mais referencia na memoria Stack, pois se não houver referencia não tem como ele ser usado, então todo objeto da memória Heap que não tem mais ligação nenhuma com a memória Stack o Garbage Collector apaga da memoria. Por isso ela não tem uma ordem de limpeza como a Stack, pois um objeto ainda pode estar sendo usado enquanto o proximo que entrou ja foi eliminado porque não teve mais uso.
+
+- Tipos de valor
+O tipo de valor armazena dados estáticos e não complexos.
+São tipos simples, como int, float, string, decimal, eles conseguem armazenar seus nomes e seus dados dentro da Stack pois são simples.
+E se por exemplo:
+int a = 5;
+int b = a;
+Ele vai salvar na memória stack da seguinte forma:
+a = 5;
+b = 5;
+Ele não vai criar uma referencia ao a, e sim vai copiar o valor para b.
+Portanto se vc alterar o valor de b, somente b será alterado.
+
+- Tipos de referência
+O tipo de referência armazena dados dinâmicos e complexos.
+São tipos mais complexos, pois podem possuir varios tipos simples e até outros tipos complexos, dentro deles, então na memoria Stack é armazenado só o nome e a REFERÊNCIA do verdadeiro tipo que está armazenado lá na memoria heap.
+E se por exemplo:
+Pessoa p1 = new Pessoa("Daniel", "Franco");
+Pessoa p2 = p1;
+ele vai salvar na memoria p1 e p2 apontando para o mesmo objeto, portanto se você fizer:
+p2.Nome = "Luis";
+tanto p1 quanto p2 irão mudar seus dados para "Luis" "Franco", pois ao criar um novo objeto sem instanciar você apenas está criando um novo nome apontando para o mesmo lugar na memoria Heap.
+Então você NÃO cria uma copia de um "tipo complexo" dessa forma como nos "tipos simples".
+E se ambos apontam para o mesmo lugar, quando altera um altera o outro TAMBÉM.
+Ou seja para criar um p2 tem que colocar new Pessoa, ai ele vai instanciar um novo objeto na memoria Heap, e para copiar os dados de p1 para p2 tem que ser feito de forma manual mesmo. Nem se instanciar ambos e depois fizer p2 = p1, isso vai fazer o p2 apontar para o p1 e quando vc for editar o p2 ele vai alterar o p1 do mesmo jeito.
+
+
 
