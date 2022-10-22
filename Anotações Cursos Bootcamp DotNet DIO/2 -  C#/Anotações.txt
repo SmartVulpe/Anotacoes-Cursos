@@ -265,11 +265,9 @@ Console.WriteLine(numero.ToString("##-##-##"));
 a saida vai ser: 12-34-56
 o # representa um digito.
 -----------------------------------------------
-
+verificar no projeto: TuplasTernarioEDesconstrucao
 tuplas
-
 ternario
-
 desconstrutor
 ----------------------------------------------
 
@@ -277,6 +275,7 @@ para instalar um nuget no vscode vc vai no site nuget.org
 escolhe um pacote nuget, clica, ai na pagina do pacote vai ter uma aba escrito ".NET CLI" e ai vai ter o comando de console certinho para copiar, colar e executar na pasta do projeto. E não precisa colocar a parte --version, para pegar sempre a ultima.
 
 ---------------------------------------------
+verificar no projeto: SerializacaoEAtributos
 
 Para fazer serialização em json no dotnet use o pacote nuget Newtonsoft.Json.
 
@@ -293,4 +292,14 @@ esse atributo, ao receber no arquivo json uma propriedade com o nome "Nome_Produ
 
 ------------------------------------------------
 
+Tipos Especiais, verificar no projeto: TiposEspeciais
+
+tipos anulaveis:
+bool? = variavel nullable, no caso do bool aceita receber null ao inves de apenas true e false, e altera seu funcionamento, onde antes em um if era só colocar o nome da variavel que ja pegava se era true ou false, e agora é nessessario colocar nomeDaVariavel.Value para simplesmente pegar se é true ou false. E é bom conferir com .HasValue para ver se não é null para evitar erros.
+
+tipos anonimos
+
+
+
+---------------------------------------------------
 
