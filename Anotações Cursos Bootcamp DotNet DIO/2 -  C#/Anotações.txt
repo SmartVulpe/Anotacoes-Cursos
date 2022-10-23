@@ -327,7 +327,7 @@ Portanto ao armazenar um objeto, seu nome ficará na Stack e haverá uma referen
 Ao terminar o metodo, a limpeza de memoria ocorrerá da seguinte forma:
 Na memória Stack é tipo uma pilha, ela vai remover da memoria a partir da ultima variavel que entrou na Stack.
 
-Na memória Heap o C# usa o Garbage Collector, que verifica se tem algum objeto que não tem mais referencia na memoria Stack, pois se não houver referencia não tem como ele ser usado, então todo objeto da memória Heap que não tem mais ligação nenhuma com a memória Stack o Garbage Collector apaga da memoria. Por isso ela não tem uma ordem de limpeza como a Stack, pois um objeto ainda pode estar sendo usado enquanto o proximo que entrou ja foi eliminado porque não teve mais uso.
+Na memória Heap o C# usa o Garbage Collector, que verifica se tem algum objeto que não tem mais referencia na memoria Stack, pois se não houver referencia não tem como ele ser usado, então todo objeto da memória Heap que não tem mais ligação nenhuma com a memória Stack o Garbage Collector apaga da memoria. Por isso ela não tem uma ordem de limpeza como a Stack, pois um objeto ainda pode estar sendo usado enquanto o proximo e o anterior que entraram ja foram eliminados porque não tiveram mais uso.
 
 - Tipos de valor
 O tipo de valor armazena dados estáticos e não complexos.
