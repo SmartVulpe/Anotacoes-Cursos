@@ -355,4 +355,22 @@ E se ambos apontam para o mesmo lugar, quando altera um altera o outro TAMBÉM.
 Ou seja para criar um p2 tem que colocar new Pessoa, ai ele vai instanciar um novo objeto na memoria Heap, e para copiar os dados de p1 para p2 tem que ser feito de forma manual mesmo. Nem se instanciar ambos e depois fizer p2 = p1, isso vai fazer o p2 apontar para o p1 e quando vc for editar o p2 ele vai alterar o p1 do mesmo jeito.
 
 
+--------------------------------------------------
+
+POO
+
+Abstração:
+Classe é uma abstração de algo que você quer representar, de preferencia só com o necessario que faça sentido com oque você precisa para o projeto.
+
+O objeto surge quando você instancia a classe.
+Pessoa p1 = new Pessoa();
+p1 é um objeto da classe Pessoa.
+----
+
+Encapsulamento
+Serve para proteger os dados de uma classe expondo somente o necessario.
+private
+Serve para proteger metodos e dados de alteração externa, somente a classe que está o metodo pode alterar. Para alterar tem que fazer um metodo publico que chame o metodo privado.
+
+
 
