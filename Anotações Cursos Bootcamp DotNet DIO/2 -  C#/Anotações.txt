@@ -375,3 +375,18 @@ Serve para proteger metodos e dados de alteração externa, somente a classe que
 Herança Dicas:
 Você pode herdar uma classe q herda outra classe que herda outra classe e assim por diante. MAS, a menos que você tenha um ganho mt bom em algo, procure evitar deixar o codigo muito complexo assim, pois se ouver muitas dependencias de heranças, a hora que vc editar um dos primeiros, por exemplo remover um metodo que não faz mais sentido naquela, mas acaba usando em outra la na frente, o codigo vai quebrar em cascata.
 
+Mais notas de Herança, polimorfismo, atributos e metodos ESTATICOS, Abstração e Interfaces em "colinha.txt" (é uma nota de um curso antigo).
+
+Classes e Métodos Selados:
+"public sealed class NomeDaClasse"
+"public sealed void NomeDoMetodo()"
+quando ta sealed, ou seja, selada, a classe inteira ou o metodo não pode ser herdado, ele pode herdar (ter uma classe pai) mas não pode ser herdado (ter uma classe filha).
+
+Classe object
+todas as classes e herdam da classe object, mesmo que você não faça NomeDaClasse : Object, é dai que vem aqueles metodos extras que aparecem quando vc digita por exemplo: p1. ai aparece uma janelinha com uma lista de metodos, e alguns não é da classe que você criou, por exemplo Equals e ToString.
+A classe Object faz parte da raiz do .Net
+
+Interface
+Pela nomenclatura de interface não se diz herdar, e sim implementar, pois a classe que receber uma interface vai ser obrigada a implementar aqueles metodos.
+PS: Pesquisar melhor a diferença entre interface e abstração pois nos cursos antigos que eu vi a explicação era um pouco diferente, nos antigos dizia que não era para dar corpo aos metodos (tipo botar algo dentro de chaves) era apenas para colocar ; para forçar ser implementado na classe que recebesse a interface, e que interface não tinha metodo opcional, mas ao dar corpo ele se torna de certa forma opcional.
+

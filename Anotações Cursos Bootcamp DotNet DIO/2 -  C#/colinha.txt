@@ -1,0 +1,334 @@
+Qual a diferença entre metodo, procedimento e função?
+
+**Procedimento**: Parte de um programa ou classe que não retorna um valor (da definição de Delphi/Pascal). No Visual Basic/VB.NET, também é conhecimento como Subroutine (Subrotina, ou simplesmente Sub);
+
+**Função**: Parte de um programa ou classe que retorna um valor (da definição de Delphi/Pascal/Visual Basic/Visual Basic .NET);
+
+**Método**: Procedimento ou função pertencente a uma classe (várias linguagens de programação definem desta forma, por exemplo, c++, c#, java, etc.).
+
+Há uma questão no Programmers em que isso é largamente debatido, mas o consensual é isso.
+
+
+-------------------
+o namespace indica qual o nome da pastinha que o program.cs pertence, da para ter varios desde q sejam de pastinhas diferentes.
+
+-----------------
+a boa pratica de formatação do C# diz para usar a chave em baixo da palavra, exemplo:
+class Pessoa
+{
+
+}
+
+--------------------
+
+Uma classe é um molde, que pode conter caracteristicas (as variaveis) de uma pessoa por exemplo, e metodos para executar uma ação referente a essa classe.
+
+--------------------
+metodos podem ser escritos da seguinte forma:
+public void mensagem()
+{}
+public double calculo()
+{}
+
+------------------------
+um objeto é como uma variavel contendo as classes (e suas variaveis e metodos) de um outro arquivo.
+
+para instanciar (chamar/carregar para outro arquivo exemplo o arquivo Pessoa.cs para dentro do Program.cs) tem que fazer dessa forma:
+
+Pessoa obj = new Pessoa();
+
+então a pessoa vai se chamar "obj" dentro do arquivo Program.cs e vc vai poder usar ela dessa forma:
+
+obj.idade = 27;
+obj.nome = Nayala;
+obj.mensagemBonita();
+
+ps: da pra instanciar varios objetos da mesma classe, literalmente igual variaveis, só muda no caso desse exemplo a palavra "obj" pra outra palavra.
+--------------------------------
+
+Toda classe começa com letra maiuscula (padrão universal de boas praticas de orientação a objetos);
+
+--------------------------------
+
+É possivel usar o MESMO METODO para mais de uma ação ao mesmo tempo DESDE QUE ELES TENHAM PARAMETROS DIFERENTES.
+Exemplo:
+
+public void apresentar()
+{}
+
+public void apresentar(string nome)
+{}
+
+public void apresentar(string nome, int idade)
+{}
+
+***ESSES 3 PODEM EXISTIR SIMULTANEAMENTE***
+o software vai saber qual vc ta usando conforme oq vc preencher nos parametros
+exemplo:
+se não preencher nada ele vai executar o primeiro
+**apresentar();**
+
+se colocar uma string, ele vai executar o segundo:
+**apresentar("Soul");**
+
+se colocar uma string E um int, ele vai executar o terceiro:
+**apresentar("Soul", 20);**
+
+e na hora q for chamar esses metodos (escrever para usar) ele vai mostrar na janelinha q aparece de auto-completar que tem 2 overloads (nesse caso do apresentar), q é a primeira opção e mais as 2 extras, totalizando 3 opções de uso do mesmo metodo.
+-----------------------------------
+
+lembrando q da pra declarar varias variaveis do mesmo tipo na mesma linha, exemplo:
+public double largura, altura, comprimento;
+
+-------------------------------------
+
+**Operadores ternarios** são como if, mas mais simples e limitados, muito uteis para comparações com resultados simples (apenas um true ou false, ou só retornar um texto ou um valor fixo q não exige ser calculado conforme comparação seja verdadeira ou falsa), exemplo
+situacao = media >= 7 ? "aprovado" : "reprovado";
+ou seja, a variavel string **situacao** recebe aprovado caso a media for **maior ou igual a 7**, ou reprovado caso não.
+
+---------------------------------------
+
+modificadores de acesso são a maneira q vc tem de visualizar um metodo ou variavel.
+
+public    -> Atributos e métodos visíveis em qualquer classe.
+private   -> Atributos e métodos visíveis apenas na classe onde são criados.
+protected -> Atributos e métodos visíveis em classes onde são criados ou herdados.
+
+------------------------------------------
+
+**Encapsulamento** é ter os metodos e variaveis, que só a classe vai utilizar internamente em seus metodos, **como privados**, assim eles não aparecerão no objeto. somente oque é para ser usado fora vai aparecer.
+isso aumenta a segurança do projeto alem de deixar mais limpo na hora de usar o objeto.
+
+-------------------------------------------
+
+**Construtor** é um **metodo** que é executado **no momento que o objeto é instanciado.**
+
+Toda vez q instanciar um objeto (Pessoa p = new Pessoa())
+o programa vai executar o construtor q é esse Public Pessoa(){} dentro do arquivo Pessoa.cs
+
+Assim como metodos da pra ter mais de um construtor usando parametros diferentes.
+
+---------------------------------------------
+
+**Get e Set** é uma tecnica para ler e escrever em um atributo/variavel privada (vide encapsulamento), vc pode permitir apenas leitura (Get) ou apenas escrita (Set), ou ambos, essa tecnica melhora a segurança do projeto.
+
+exemplo de uso:
+
+        private string nome;
+
+        public string Nome
+        {
+            get { return nome; }
+
+            set { nome = value; }
+        }
+
+as boas praticas dizem que o metodo get/set deve ter o mesmo nome que a variavel, mas com a primeira letra em maiuscula.
+
+------------------------------------------------
+
+**This** serve para forçar pegar o valor do atributo (variavel), ao inves de um valor que veio por um parametro de mesmo nome, exemplo:
+
+La no arquivo main o objeto que contem esse codigo está setando para nome: 
+	  
+	  Pessoa("Nayala");        
+
+        // Atributo
+        private string nome = "Soul";
+
+        public Pessoa(string nome)
+        {
+            //Detalhe: Ambos atributo e parametro tem o mesmo nome
+
+            //Sem o this ele pega o valor do parametro
+            Console.WriteLine(nome);
+
+            //Com o this ele pega o valor do atributo
+            Console.WriteLine(**this**.nome);
+        }
+
+No console vai aparecer:
+Nayala
+Soul
+
+ou seja, como o primeiro estava sem o **this** ele pegou o q foi setado para o atributo, e o segundo q tinha o **this** ele pegou oq tava na variavel nome.
+
+---------------------------------------
+
+**HERANÇA**
+
+É uma classe que herda o conteúdo de outra classe como se fosse dela.
+Todo conteúdo publico ou **protected** pode ser usado sem precisar instanciar objeto.
+Conteúdo **PRIVADO** não é herdado.
+
+**Forma de ativar a herança:**
+Basta por "2 pontos" após o nome da classe e inserir o nome da classe que vc quer "estender".
+Exemplo:
+
+class Colaborador : Pessoa
+{}
+
+desse modo a classe Colaborador vai herdar os conteúdos de Pessoa QUE NÃO SÃO PRIVADOS.
+
+Utilidade: em vez de ter uma classe só enorme, pode se dividir e ter um código mais intuitivo e fácil de ler e aprimorar.
+
+**Detalhe:**
+No C# não existe herança múltipla!
+exemplo: 
+class Colaborador : Pessoa : Passaro : Peixe
+
+Uma classe só pode estender uma classe! (diretamente)
+
+**MAS** (segundo meus testes)
+Se classe A estender uma classe B que já herda conteúdo de outra classe C, a classe A vai receber a herança da classe C por tabela.
+
+-------------------------------------------------------
+
+**Polimorfismo**
+
+Esse é o polimorfismo em tempo de execução:
+
+Basicamente, uma forma de criar um objeto aproveitando a maior parte de uma classe e sobreescrevendo somente o necessario
+
+Funciona da seguinte forma, ao instanciar um objeto, vc pode instanciar usando duas classes.
+exemplo:
+Imposto objetoG = new Gerente();
+
+dessa forma o objeto objetoG vai receber os metodos e variaveis da classe Imposto, E se ouver o mesmo metodo ou variavel na classe Gerente, o programa vai sobrescrever os metodos da classe Imposto por esses da classe Gerente.
+
+ai vc pode ter por exemplo um metodo chamado valeTransporte(), e esse metodo por padrão é de um jeito, mas para o gerente vc precisa que tenha 1 valor diferente, ai vc cria uma classe com o mesmo metodo e essa diferença que precisa, ai na hora que instanciar vc só precisa instanciar com mescla, não vai precisar ter um valeTransporteGerente() pra se diferenciar do valeTransporte padrão, simplifica e padroniza alguns locais do codigo exigindo menos alterações, e joga as alterações em outros locais deixando mais organizado e legivel.
+
+alem de instanciar usando duas classes diferentes, é necessario que o metodo tenha o seguinte:
+o metodo que **vai ser sobrescrito** tem que estar assim:
+public **virtual** void valeTransporte(){}
+
+e o metodo que **vai sobrescrever** tem que estar assim:
+public **override** valeTransporte(){}
+
+*as classes que vão sobrescrever, tem que herdar à que será sobrescrita, senão tambem não funciona.*
+
+Além de haver esse polimorfismo por mesclagem, também da para fazer de uma forma mais simples.
+Exemplo.
+Você tem a classe Professor que herdou a classe Pessoa, na classe pessoa tem Nome e Idade, e um metodo de se Apresentar(), ai na professor tem o Salario, mas quando você executar o metodo Apresentar herdado da pessoa você quer que ele se apresente diferente.
+Então la na Pessoa vc coloca virtual no metodo como explicado acima.
+e no metodo professor você faz um novo metodo apresentar com o override como explicado acima com as diferenças que você quer.
+A diferença é que na hora de instanciar voce instancia sem mescla, pois a classe professor ja está herdando de pessoa.
+Professor p1 = new Professor();
+
+Esse é o polimorfismo em tempo de compilação:
+
+Overloads de metodos também são um tipo de polimorfismo
+
+-------------------------------------------------------
+
+**Atributos e Métodos ESTATICOS**
+
+São atributos e metodos que podem ser acessados sem precisar instanciar um objeto, exemplo:
+
+No arquivo de classe Exemplo vai ta assim:
+public static string nome = "Nayala";
+public static void soma(int n1, int n2){}
+
+ai no arquivo Main da pra chamar eles só de fazer assim:
+Exemplo.soma(3, 7);
+Console.WriteLine("Olá "+Exemplo.nome);
+
+--------------------------------------------------------
+
+**Abstração**
+
+- É uma classe que pode conter métodos obrigatórios para todas as classes que a herdarem.
+
+- É possível criar métodos convencionais (não obrigatórios), para que as classes que herdem consigam utilizar.
+
+- Não é possiível instanciar uma classe abstrata, exemplo: Produto prod = new Produto();
+
+- Padrão utilizado em projetos com muitos desenvolvedores, pois gatante uma estrutura pré-moldada com ações que podem ser realizadas.
+
+- Como é utilizada a herança, cada classe pode herdar apenas uma classe abstrata:
+
+class Produto : PadraoProduto > Ok
+class Produtop : PadraoProduto, CalculoImpostos > Falha
+
+Exemplo:
+
+para usar precisa que a classe que vai ser o padrão esteja com abstract, e o metodo que for obrigatorio tambem:
+
+    abstract class Padrao
+    {
+
+        // Método Obrigatório
+        public abstract void taxaEmprestimo(double valor);
+
+        // Opcional
+
+        public void calculoPoupanca(double valor, double taxa)
+        {
+            Console.WriteLine("Ganhos obtidos pela pupança R$"+(valor * taxa));
+        }
+
+
+    }
+	
+Note que o metodo obrigatorio não abre chave, pois ele é obrigatorio a ser feito nas classes que herdarem a classe padrão.
+
+E nas classes que forem herdar o padrão vai estar assim:
+
+    class PessoaFisica : Padrao
+    {
+
+        // Método obrigatório
+        public override void taxaEmprestimo(double valor)
+        {
+            Console.WriteLine("Taxa de empréstimo para Pessoa Física R$" + (valor * 0.1));
+        }
+
+    }
+	
+Note que é necessario botar o override.
+Se nao fizer o metodo obrigatorio dá erro no programa, pois é OBRIGATORIO FAZE-LA.
+
+Por fim, na Main vc instancia o objeto classe PessoaFisica por exemplo, da mesma forma que uma normal:
+PessoaFisica pf = new PessoaFisica();
+
+a classe opcional pode ser puxada como uma herança pelo objeto pf não precisa ser refeita nem nada se nao for necessario.
+
+-----------------------------------------
+
+**Interface** (*não é interface gráfica*)
+
+- Utilizada para criar exclusivamente métodos obrigatórios (a abstrata tem opção de criar metodos opcionais, essa não, todos são obrigatorios);
+
+- Uma classe pode implementar várias Interfaces (enquanto vc só pode herdar 1 classe abstrata numa classe, a interface vc pode "implementar" varias (e é usado o termo implementar ao inves de herdar));
+
+- Os métodos da Interface não contêm cálculos, condicionais, laços, e demais ações (igual as obrigatorias da abstrata q **não abrem chave**;
+double calculo(double numero);
+string texto();
+void mensagem(string nome, int idade);
+
+
+- No C# por padrão um método criado na Interface é abstrato e público (direferente da classe abstrata a interface é SEMPRE abstract e public, portanto vc não precisa definir no inicio do metodo as palavras public abstract);
+
+- Nas boas práticas do C#, **toda interface tem a inicial I**, em seguida o nome da interface:
+IPadrao
+ICalculo
+IConsulta
+IAcoes
+
+exemplo:
+Na classe de interface fica assim:
+
+    interface IPadrao
+    {
+
+        void somar(int n1, int n2);
+
+        void subtrair(int n1, int n2);
+
+
+    }
+	
+de resto é similar a Abstração.
+
+---------------------------------------------------
+
