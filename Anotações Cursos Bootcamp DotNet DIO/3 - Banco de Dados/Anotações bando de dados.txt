@@ -1,0 +1,33 @@
+Baixar sql server express e instalar
+selecionar a opção basico e dai só dar next.
+
+baixar e instalar SSMS (software para visualizar e trabalhar as db do sql server), opção de download no final da instalação do sql server express ou no site da microsoft mesmo.
+
+você vai trabalhar com o Management Studio e o Configuration Manager.
+
+No configuration manager, vá em SQL Server Services, e clique 2 vezes com o botão esquerdo mesmo no serviço que estiver rodando "SQL Server (SQLEXPRESS)", vá em Serviço e no Modo Inicial mude de automatico para manual, para ele não ficar ligando junto com o PC.
+Toda vez que você for trabalhar com o banco de dados você vai no configuration manager clica com o botão direito e dá start, e quando parar stop.
+
+Para criar um novo banco de dados, apos conectar no banco de dados local, você clica com o botão direito na pastinha Databases e vai em Novo banco de dados.
+
+Para fazer uma consulta ao banco de dados, você clica no botão Nova Consulta (New Query), mas é preciso ter atenção em um campo no canto esquerdo da tela, se ele está com o nome da tua database, pois as vezes ele pode vir apontando para a "master" que é um banco de dados do sistema e a gente não mexe, qualquer comando inserido na query não vai funcionar se tiver na master.
+
+banco de dados são como tabelas do excell
+
+o ideal é manter o contexto de cada tabela, se for sobre Clientes ter só os dados diretamente relacionados ao cliente, inclusive, é bom separar coisas como o endereço, mesmo sendo referente ao cliente, nem sempre você vai puxar o endereço para ver algo do cliente, e quando precisar puxar vai ter uma referencia na tabela de endereços ligando ela ao cliente da outra tabela.
+
+banco de dados relacionais são bancos cheios de regras, onde deve se respeitar o tipo do dado definido em cada coluna da linha da tabela, se for booleano ele vai testar se a entrada é booleana mesmo pois não vai permitir outra coisa. Se você definiu que um campo não pode ser nulo, então ele nunca vai poder ser nulo para ninguem. Se você for escluir uma coluna de dado para um vai excluir para todas as linhas.
+Ou seja, se vc define um padrão, aquele padrão vai valer sempre, se você tentar mudar só para um, ele não vai permitir.
+
+banco de dados não relacionais podem ser semi estruturados ou não estruturados, semi ele tem algumas caracteristicas do relacional mas permite alguma flexibilidade, não é necessario todos os registros ter todas as colunas, onde tem um double em um pode ter em outro registro uma string.
+e o não estruturado não tem nada de tipos definidos, são mais flexiveis e rapidos.
+
+DBMS (Database Managment System) é um software que permite visualizar e manipular o banco de dados de forma visual.
+
+
+SQL é uma linguagem para banco de dados padronizada, ou seja, se ouver diferenças, haverão poucas diferenças entre um sistema de banco de dados e outro (exemplo: sql server e mysql).
+
+database: é uma coleção de dados estruturados e agrupados de forma concisa.
+
+é possivel ter um servidor de banco de dados contendo varias databases dentro, então na hora de conectar no servidor alem do caminho do servidor tem que dizer tambem em qual database está conectando.
+
