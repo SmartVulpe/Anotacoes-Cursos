@@ -1,0 +1,7 @@
+SELECT * FROM Clientes - seleciona tudo da tabela Clientes.
+
+ORDER BY Sobrenome - ordena as tabelas pela ordem crescente da coluna Sobrenome, que é string então vai ser ordem alfabetica.
+
+ORDER BY Nome DESC - ordena as tabelas pela ordem DEcrescente da coluna Nome, que é string então vai ser ordem alfabetica.
+
+ORDER BY Nome, Sobrenome - ordena a tabela pelo nome e pelo sobrenome, onde tiver um "aglomerado" de clientes com o mesmo nome, ele vai orderar pelo sobrenome também.

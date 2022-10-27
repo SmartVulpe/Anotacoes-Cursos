@@ -2,4 +2,4 @@ Se der um erro de conversão de data, provavelmente é algum problema com o idio
 se acontecer isso, leia isso:
 https://learn.microsoft.com/pt-br/sql/sql-server/install/local-language-versions-in-sql-server?view=sql-server-ver16
 
-se nao resolver, bote tudo em ingles o pc e reinstale o sql server.
+resumindo bote tudo em ingles o pc e reinstale o sql server.
