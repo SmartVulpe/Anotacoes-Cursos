@@ -12,6 +12,14 @@ Para criar um novo banco de dados, apos conectar no banco de dados local, você 
 
 Para fazer uma consulta ao banco de dados, você clica no botão Nova Consulta (New Query), mas é preciso ter atenção em um campo no canto esquerdo da tela, se ele está com o nome da tua database, pois as vezes ele pode vir apontando para a "master" que é um banco de dados do sistema e a gente não mexe, qualquer comando inserido na query não vai funcionar se tiver na master.
 
+para adicionar uma tabela usando um script .sql, você clica no script, abrir com Management Studio, dai no management studio vc aperta F5 ou clica em Executar.
+
+apos adicionar tabelas usando um script, vá em Editar > IntelliSense > Atualizar Cache Local. que é para a query reconhecer que agora temos uma nova tabela. Funcionaria sem fazer isso mas ficaria vermelhinho dizendo que tem um erro quando na verdade a tabela existe.
+
+
+
+--------------------------------------------------------
+
 banco de dados são como tabelas do excell
 
 o ideal é manter o contexto de cada tabela, se for sobre Clientes ter só os dados diretamente relacionados ao cliente, inclusive, é bom separar coisas como o endereço, mesmo sendo referente ao cliente, nem sempre você vai puxar o endereço para ver algo do cliente, e quando precisar puxar vai ter uma referencia na tabela de endereços ligando ela ao cliente da outra tabela.

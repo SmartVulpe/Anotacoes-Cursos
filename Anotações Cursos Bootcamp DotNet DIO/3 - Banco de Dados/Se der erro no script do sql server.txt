@@ -1,0 +1,5 @@
+Se der um erro de conversão de data, provavelmente é algum problema com o idioma do pc ou localização que não está batendo, tipo, o sql server instalou em portugues com a localização do brasil e espera receber datas no padrão br, e vc está tentando mandar no padrão americano e ai ele da erro.
+se acontecer isso, leia isso:
+https://learn.microsoft.com/pt-br/sql/sql-server/install/local-language-versions-in-sql-server?view=sql-server-ver16
+
+se nao resolver, bote tudo em ingles o pc e reinstale o sql server.
