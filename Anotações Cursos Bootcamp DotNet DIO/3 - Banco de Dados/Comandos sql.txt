@@ -55,7 +55,59 @@ CREATE TABLE Produtos (
 	Genero char(1) NULL --um caractere
 )
 
+Esse comando altera a linguagem durante a execução da query:
+SET LANGUAGE 'Português'
+Isso resolve o problema que eu tive com o script que não conseguia converter a data pois os meses estavam com as iniciais em ingles ao inves de Portugues, no meu caso teria que usar SET LANGUAGE 'INGLES'. E esse comando afeta só a query, se vc trocar de query ele volta a seguir o padrão original do servidor.
 
+
+DROP TABLE IF EXISTS dbo.Produtos - deleta a tabela Produtos se ela existir.
+
+SELECT COUNT(*) FROM Produtos - retorna a quantidade de linhas que tiver na tabela produtos, a coluna com o valor de linhas vai aparecer que a coluna está sem nome, você pode dar um nome para o retorno escrevendo o comando dessa forma "SELECT COUNT(*) QuantidadeProdutos FROM Produtos" ai ele vai nomear a coluna como QuantidadeProdutos.
+
+também da para combinar o COUNT(*) com o where:
+SELECT COUNT(*) QuantidadeProdutosTamanhoM FROM Produto WHERE Tamanho = 'M'
+ai ele vai retornar quantos produtos com tamanho M tem.
+
+SELECT SUM(Preco) PrecoTotal FROM Produtos - retorna a soma de todos os itens da coluna preço (obviamente só funciona com colunas de tipos numericos). também da para usar WHERE.
+
+SELECT MAX(Preco) FROM Produtos - retorna o valor mais alto da coluna Preco, também da para dar um retorno com nome, e usar WHERE.
+
+SELECT MIN(Preco) ProdutoMaisBarato FROM Produtos - retorna o valor mais baixo da coluna Preco, também da para usar WHERE.
+
+SELECT AVG(Preco) FROM Produtos - ele vai somar e tirar a media do valor dos itens da coluna Preco.
+
+SELECT
+	Nome + ', Cor: ' + Cor
+FROM Produtos
+Concatena colunas, isso ai vai retornal algo estilo: 
+NomeDoProduto, Cor: branco
+e se fizer assim:
+SELECT
+	Nome + ', Cor: ' + Cor NomeProduto
+FROM Produtos
+ele vai retornar como uma coluna de nome NomeProduto.
+e se fizer assim:
+SELECT
+	Nome + ', Cor: ' + Cor NomeProdutoCompleto,
+	Nome,
+	Cor
+FROM Produtos
+ele vai retornar uma coluna de nome NomeProdutoCompleto que é a nossa concatenação, uma coluna só com o Nome e uma coluna só com a Cor.
+
+
+UPPER(Nome) - função que deixa o tudo em maiusculo.
+LOWER(Cor) - função que deixa tudo em minusculo.
+essas funções são usadas junto com a select, e elas vão retornar colunas sem nomes, então é legar nomear elas.
+exemplo:
+SELECT UPPER(Nome) Nome FROM Produtos
+
+ALTER TABLE Produtos
+ADD DataCadastro DATETIME2
+altera a tabela produtos adicionando a coluna DataCadastro que é o tipo datetime2.
+
+ALTER TABLE Produtos
+DROP DataCadastro
+altera a tabela produtos removendo a coluna DataCadastro.
 
 
 CTRL + K + C - comenta oq tiver selecionado

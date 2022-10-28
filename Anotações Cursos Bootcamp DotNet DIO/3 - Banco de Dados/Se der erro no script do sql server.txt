@@ -3,3 +3,8 @@ se acontecer isso, leia isso:
 https://learn.microsoft.com/pt-br/sql/sql-server/install/local-language-versions-in-sql-server?view=sql-server-ver16
 
 resumindo bote tudo em ingles o pc e reinstale o sql server.
+
+------------SOLUÇÃO DECENTE-----------------
+Esse comando altera a linguagem durante a execução da query:
+SET LANGUAGE 'Português'
+Isso resolve o problema que eu tive com o script que não conseguia converter a data pois os meses estavam com as iniciais em ingles ao inves de Portugues, no meu caso teria que usar SET LANGUAGE 'INGLES'. E esse comando afeta só a query, se vc trocar de query ele volta a seguir o padrão original do servidor.
