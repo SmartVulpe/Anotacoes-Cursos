@@ -39,3 +39,8 @@ database: é uma coleção de dados estruturados e agrupados de forma concisa.
 
 é possivel ter um servidor de banco de dados contendo varias databases dentro, então na hora de conectar no servidor alem do caminho do servidor tem que dizer tambem em qual database está conectando.
 
+---------------------------------------
+
+é recomendado usar o tipo datetime2 para datas.
+
+

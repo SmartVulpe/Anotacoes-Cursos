@@ -1,7 +1,64 @@
-SELECT * FROM Clientes - seleciona tudo da tabela Clientes.
+Primeiramente, os comandos funcionam em minusculo, mas a boa pratica do sql é usar os comandos/palavras reservadas em maiusculo.
+
+Segundo, UPDATE e DELETE devem sempre ser usados com o comando WHERE e de preferencia com uma ID, pois são comandos destrutivos que geralmente não tem volta, se fizer sem o where ele vai atualizar a tabela toda ao inves de um cliente só ou deletar a tabela toda.
+
+Terceiro, no sql usa aspas simples.
+
+SELECT * FROM Clientes - seleciona tudo da tabela Clientes, o asterisco significa "todas as colunas da tabela".
+
+SELECT Nome, Sobrenome FROM Clientes - puxa somente as colunas nome e sobrenome. (ps: trazer só as colunas que você quer é uma boa pratica alem de conferir mais performance ao programa)
 
 ORDER BY Sobrenome - ordena as tabelas pela ordem crescente da coluna Sobrenome, que é string então vai ser ordem alfabetica.
 
 ORDER BY Nome DESC - ordena as tabelas pela ordem DEcrescente da coluna Nome, que é string então vai ser ordem alfabetica.
 
 ORDER BY Nome, Sobrenome - ordena a tabela pelo nome e pelo sobrenome, onde tiver um "aglomerado" de clientes com o mesmo nome, ele vai orderar pelo sobrenome também.
+
+WHERE Nome = 'Adam' - vai retornar todos os clientes com o nome de Adam. (precisa ter um SELECT FROM antes do WHERE)
+
+WHERE Nome = 'Adam' AND Sobrenome = 'Reynolds' - retorna o cliente que tiver o nome Adam E o sobrenome Reynolds.
+
+WHERE Nome = 'Adam' OR Sobrenome = 'Reynolds' - retorna os clientes que tiver o nome Adam OU o sobrenome Reynolds.
+
+WHERE Nome LIKE 'G%' - retorna todos os nomes que começam com G. o Like permite consultas com caracteres especiais, e o porcentagem significa que é para ignorar tudo oq vier depois, só é obrigatorio o G no inicio, e ser fizer %G% iria buscar todo mundo que tiver a letra G em qualquer lugar do nome.
+
+INSERT INTO Clientes (Nome, Sobrenome, Email, AceitaComunicados, DataCadastro)
+VALUES ('Daniel', 'Franco', 'email@email.com', 1, GETDATE())
+Esse comando insere um cliente na tabela, seguindo a ordem de colunas passada na primeira linha, se vc passar uma ordem diferente, desde que no VALUES vc respeite a ordem diferente que voce passou dá certo.
+
+INSERT INTO Clientes VALUES ('Daniel', 'Franco', 'email@email.com', 1, GETDATE())
+Se fizer dessa forma funciona tambem, mas dai é obrigatorio seguir a ordem de colunas que está na tabela, se inverter vai dar erro, na opção anterior vc pode definir a ordem que vc quer, nessa opção não dá.
+
+SEMPRE DE UPDATE USANDO O WHERE, SE VC ESQUECER DO WHERE VAI EDITAR TODOS OS CLIENTES E AI SÓ VOLTANDO BACKUP SE TIVER BACKUP.
+UPDATE Clientes
+SET Email = 'emailatualizado@email.com', 
+    AceitaComunicados = 0
+WHERE Id = 1003
+esse comando atualiza o email e o booleano AceitaComunicados do cliente com o Id 1003, é melhor usa o Id nesses casos pq o Id é unico e garante que não ta mudando no errado.
+
+BEGIN TRAN - esse comando cria tipo um checkpoint para dar rollback, se nao executar antes de uma ação critica, depois nao adianta tentar dar rollback.
+
+ROLLBACK - esse comando retorna ao checkpoint criado pelo begin tran.
+
+DELETE Clientes
+WHERE Id = 1006
+deleta o cliente 1006 da tabela Clientes. TAMBÉM NUNCA EXECUTE ISSO SEM O COMANDO WHERE.
+
+
+para criar uma tabela:
+CREATE TABLE Produtos (
+	Id int IDENTITY(1,1) PRIMARY KEY NOT NULL, --o banco de dados vai gerenciar uma id para nos. primary key significa que a ID vai ser unica e jamais vai se repetir, mesmo q vc delete uma ID ela jamais vai ser reutilizada.
+	Nome varchar(255) NOT NULL, --uma string de até 255 caracteres
+	Cor varchar(50) NULL, --uma string de até 50 caracteres
+	Preco decimal(13,2) NOT NULL, 
+	Tamanho varchar(5) NULL, --string de 5 caracteres
+	Genero char(1) NULL --um caractere
+)
+
+
+
+
+CTRL + K + C - comenta oq tiver selecionado
+
+Se vc executar e tiver algo selecionado ele vai executar só oq tiver selecionado, se nao tiver nada selecionado ele executa tudo oque tiver escrito na query.
+
