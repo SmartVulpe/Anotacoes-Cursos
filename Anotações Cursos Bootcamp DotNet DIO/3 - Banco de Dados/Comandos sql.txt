@@ -109,8 +109,123 @@ ALTER TABLE Produtos
 DROP DataCadastro
 altera a tabela produtos removendo a coluna DataCadastro.
 
+Para formatar a data, ao chamar pelo select usa o comando:
+FORMAT(DataCadastro, 'dd/MM/yyyy hh:mm')
+obs: se quiser a hora no formato de 24hrs coloque o h maiusculo HH:mm.
+
+para agrupar a lista por similares da mesma tabela e contar quantos que agrupou, exemplo agrupou todos os protudos tamanho G, ai aparece G - 11, pq eram 11 produtos desse tamanho.
+SELECT Tamanho, COUNT(*) Quantidade FROM Produtos --precisa do GROUP BY pra isso funciona
+WHERE Tamanho <> '' --o simbolo <> significa diferente, então seria lido como: ONDE Tamanho for diferente de nada.
+GROUP BY Tamanho --agrupa onde for igual dessa tabela.
+ORDER BY Quantidade DESC --ordena do maior para o menor da tabela Quantidade q é criada pelo resultado ali na primeira linha.
+obs: a ordem desses comandos é importante.
+
+para definir uma ID como primary key que foi gerada só como IDENTITY que faz ela ser unica:
+vá no seu DB > Tabelas, e clique na tabela em questão com o botão direito e em Designe, ai clica no Id com o botão direito e Adicionar Primary Key, e dá ctrl+S para salvar.
+
+ao criar uma tabela, dentro do parenteses com os dados de criação, se voce for colocar uma foreign key voce faz assim:
+CREATE TABLE Enderecos (
+	Id int PRIMARY KEY IDENTITY(1,1) NOT NULL,
+	IdCliente int NULL,
+	Rua varchar(255) NULL,
+	Bairro varchar(255) NULL,
+	Cidade varchar(255) NULL,
+	Estado char(2) NULL,
+
+	CONSTRAINT FK_Enderecos_Clientes FOREIGN KEY(IdCliente)
+	REFERENCES Clientes(Id)
+)
+explicando, toda foreign key é uma restrição (constraint) e você dá um nome para essa restrição, na boa pratica vc coloca FK pra dizer que é foreign key e o nome das duas tabelas que se relacionam, em seguida basicamente você especifica que o int IdCliente é a coluna vai mostrar/armazenar a referencia, e por fim você referencia para o Id da tabela de clientes.
+
+
+INNER JOIN - retorna a junção de duas tabelas relacionadas, como usar:
+SELECT * FROM Clientes --puxa tudo do Clientes
+INNER JOIN Enderecos ON Clientes.Id = Enderecos.IdCliente --Junta oque veio com a tabela endereços, mas só se o id de clientes bater com o idcliente da tabela endereços.
+WHERE Clientes.Id = 4 --
+
+ALTER TABLE Produtos
+ADD UNIQUE(Nome)
+altera a tabela produtos para que a coluna Nome se torne unica, ou seja, não pode repetir dados, se ja tiver um nome la e tentar botar outro nome IGUAL ele vai dar erro.
+
+
+ALTER TABLE Produtos
+ADD CONSTRAINT CHK_ColunaGenero CHECK(Genero = 'U' OR Genero = 'M' OR Genero = 'F')
+cria uma regra (restrição) de checagem chamada CHK_ColunaGenero (você pode dar o nome que quiser ou se nao quiser não precisa nomear pode deixar sem nome mas o nome facilita para verificar oque é nas propriedades da tabela) que checa se ao adicionar um produto ele está recebendo uma das 3 letras U (unisex) ou M (masculino) ou F (feminino), se for outra coisa ele vai retornar erro.
+
+
+ALTER TABLE Produtos
+ADD DEFAULT GETDATE() FOR DataCadastro
+faz uma regra (restrição) que por padrão na hora de adicionar um cliente se não for informado a data de cadastro ele puxa a data atual.
+
+para apagar uma constraint (regra):
+seleciona o nome da tabela na query, aperta alt+f1 para abrir as propriedades, ai você busca la qual é a constraint que você quer apagar, da um ctrl+c no nome para copiar ele certinho pq se não foi dado um nome vai ter monte de numero como no exemplo abaixo, ai na query vc escreve:
+ALTER TABLE Produtos
+DROP CONSTRAINT CK__Produtos__Genero__5165187F
+
+
+É possivel criar uma PROCEDURE que é como um metodo, para facilitar a inserção de dados quando você normalmente repete muito os comandos.
+E faz da seguinte forma
+CREATE PROCEDURE InserirNovoProduto
+@Nome varchar(255),
+@Cor varchar(50),
+@Preco decimal,
+@Tamanho varchar(5),
+@Genero char(1)
+
+AS
+
+INSERT INTO Produtos (Nome, Cor, Preco, Tamanho, Genero)
+VALUES(@Nome, @Cor, @Preco, @Tamanho, @Genero)
+dai voce executa e ta salva a procedure, para ver as procedures da db vá até a db em questão, Programmability, Stored Procedures, ai vai ta ai, no caso essa do exemplo vai ta aparecendo como dbo.InserirNovoProduto. (se nao aparecer clique no icone de refresh)
+
+para executar a procedure:
+EXEC InserirNovoProduto
+'NomeDoProduto',
+'CorDoProduto',
+50,
+'G',
+'U'
+e executa.
+
+mais um exemplo de criação de procedure:
+CREATE PROCEDURE ObterProdutoPorTamanho
+@TamanhoProduto VARCHAR(5)
+AS
+SELECT * FROM Produtos WHERE Tamanho = @TamanhoProduto
+e executa da forma:
+EXEC OobterProdutoPorTamanho 'M'
+
+mais um exemplo de criação de procedure:
+CREATE PROCEDURE ObterProdutoTamanhoM
+AS
+SELECT * FROM Produtos WHERE Tamanho = 'M'
+e executa da forma:
+EXEC ObterProdutoTamanhoM
+
+Functions são como procedures que são como metodos de programação
+A principal diferença é que funcitions sempre tem que ter um retorno.
+exemplo:
+CREATE FUNCTION CalcularDesconto(@Preco DECIMAL(13, 2), @Porcentagem INT)
+RETURNS DECIMAL(13, 2)
+
+BEGIN
+	RETURN @Preco - @Preco / 100 * @Porcentagem
+END
+explicando: o @ é o atributo, DECIMAL(13, 2) é o tipo decimal já formatado para mostrar 13 casas antes da virgula e 2 casas depois da virgula, RETURNS no plural é o tipo de retorno do metodo, o begin e end é tipo as chaves {}, e o RETURN é igual o return de programação.
+-exemplo de uso:
+SELECT
+	Nome,
+	Preco,
+	dbo.CalcularDesconto(Preco, 50) PrecoComDesconto
+FROM Produtos WHERE Tamanho = 'M'
+-resultado:
+ele vai pegar o valor da coluna preco dos produtos de Tamanho M e adicionar 50% de desconto, e mostrar o novo valor na coluna PrecoComDesconto.
+Então no resultado terá 3 colunas: Nome, Preco que está com o valor inalterado, e a PrecoComDesconto que está com o valor ja descontado.
+
+
 
 CTRL + K + C - comenta oq tiver selecionado
 
 Se vc executar e tiver algo selecionado ele vai executar só oq tiver selecionado, se nao tiver nada selecionado ele executa tudo oque tiver escrito na query.
 
+ALT+F1 estando com o nome da tabela selecionado na Query - Abre as propriedades da tabela, mostrando o tipo que é cada coluna e seus detalhes como por exemplo se pode ou não ser nula.
