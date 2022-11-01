@@ -1,0 +1,23 @@
+Uma API (Application Programming Interface) é uma forma de comunicação entre computadores ou programas de computadores.
+Em outras palavras, é um software que fornece informações para outro software.
+
+API é um software que faz a intermediação entre o software do cliente com o software do servidor. Exemplo: um garçon de um restaurante seria uma API.
+
+date.nager.at - site de api de feriados.
+dog.ceo/dog-api - side de api de imagens de cachorros.
+
+
+SEMPRE busque ler primeiro a documentação da API para ver como ela funciona e como usa-la.
+
+comando para criar um projeto de web api:
+dotnet new webapi
+
+comando para rodar e quando alterar o codigo ja recompilar em tempo de execução (similar ao hotreload do vs community):
+dotnet watch run
+
+swagger é um frontend para testar apis em ambiente de desenvolvimento, não é exatamente necessario mas é um recurso que facilita os testes.
+
+Classes Controller são classes que você vai colocar os metodos relacionados as ações de determinada api, exemplo, Get de produto, Set de produto, e elas devem ser separadas relacionadas ao contexto dela, pro exemplo uma controller de produtos deve ter os controladores relacionado a produtos apenas, não devem mexer em coisas do usuario por exemplo, se precisa mexer no usuario é necessario fazer uma controller para/relacionada ao usuario.
+
+Boa pratica é fazer o nome das controllers terminando com a palavra Controller, exemplo UsuarioController, ProdutoController...
+
