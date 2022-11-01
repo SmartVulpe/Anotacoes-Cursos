@@ -43,4 +43,13 @@ database: é uma coleção de dados estruturados e agrupados de forma concisa.
 
 é recomendado usar o tipo datetime2 para datas.
 
+---------------------------------------
+
+Primary Key - chave primaria, são chaves unicas que identificam cada registro na tabela, uma vez inserido um dado que teve sua key com o numero 100 por exemplo, se deletar e tentar gerar denovo ele vai ser outra chave, nunca mais ninguem vai poder ser do numero 100.
+
+Foreingn Key - chave estrangeira, são chaves que apontam para uma chave em outra tabela, por exemplo eu tenho um cliente em uma tabela e o seu endereço em outra tabela. e usa essa chave para apontar e dizer que esse endereço é de tal cliente na outra tabela. e por exemplo, a tabela de endereços pode ter uma primary key e uma foreingn key ao mesmo tempo, ai usa a PK para identifica o endereço especifico (o cliente poderia ter mais de um endereço e ai não iria bater esse ID com o ID la da tabela clientes) e a FK para dizer de qual cliente é esse endereço.
+
+---------------------------------------
+
+
 

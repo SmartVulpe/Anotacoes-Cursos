@@ -1,0 +1,35 @@
+TCP = CAMADA DE TRANSPORTES
+HTTP = CAMADA DE APLICAÇÃO
+HTTPS = HTTP + SSL
+
+O HTTP é um protocolo web que permite comunicação entre pontas na internet. Ele possui duas versões principais, o HTTP 1.1 e 2.0.
+
+Toda operação web faz um request e aguarda um response.
+get faz um request pedindo para retornar um conteudo atraves de um response.
+post faz um request pedindo para inserir um conteudo no servidor e aguarda um response dizendo se o servidor conseguiu ou não tratar e inserir certo o conteudo.
+
+servidor stateless - não salva informações do cliente.
+
+COOKIES:
+cookies servem para salvar dados do usuario referente a aquele servidor/sessao/site, exemplo: carrinho de compras, manter logins ativos...
+cookies de sessao duram só a sessao (ou tem uma validade curta)
+cookies persistente duram até serem deletados (por algum programa de limpeza ou formatação)
+
+obs: cookies são encriptados, mas, criptografias são quebraveis, então a segurança deles é tanto quanto a segurança do proprio computador, se seu computador vir a ser hackeado de alguma forma, seus cookies podem ser roubados e ter seus dados expostos. Se nunca for hackeado então ta seguro. Por isso teve uma norma LGPD que obriga os sites que usam cookies a perguntar se podem ou não usar cookies.
+
+
+CACHE:
+sempre que vai se comunicar com o servidor o sistema confere no cache ou proxy server se existe aquela informação, se nao tiver ou ela for muito antiga ela pede para o servidor, se tiver e for atualizada ela ja devolve para o usuario sem precisar ficar sobrecarregando o servidor.
+
+HTTP 2.0 permite setar pesos aos requests, mais importante ou menos importante a ser retornado antes ou depois.
+
+HTTPS serve para evitar fishing e manter a privacidade dos usuários através da criptografia.
+
+WebSocket é uma tecnologia que permite aprimorar uma comunicação entre aplicações e servidor usando o sistema HTTP. (é uma api?)
+Pois ao usar o um web app via conexão http padrão gera um alto overhead, conexões subjacentes e mapeamento das conexões por script no lado do cliente, oque não é bom.
+
+
+
+
+
+
