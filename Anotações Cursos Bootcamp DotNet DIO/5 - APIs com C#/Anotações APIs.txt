@@ -86,4 +86,10 @@ Segundo se a classe tiver uma propriedade Id ele vai automaticamente reconhecer 
 ai para adicionar essa tabela no banco de dados use o comando:
 dotnet-ef database update
 
+O basico para uma classe controller é:
+essas tags no cabeçalho da classe controller
+	[ApiController]
+    	[Route("[controller]")]
+e a classe herdar a ControllerBase, não é Controller, é ControllerBase.
+
 
