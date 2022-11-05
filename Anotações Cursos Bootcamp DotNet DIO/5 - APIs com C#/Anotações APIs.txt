@@ -21,7 +21,9 @@ swagger é um frontend para testar apis em ambiente de desenvolvimento, não é 
 
 Classes Controller são classes que você vai colocar os metodos relacionados as ações de determinada api, exemplo, Get de produto, Set de produto, e elas devem ser separadas relacionadas ao contexto dela, pro exemplo uma controller de produtos deve ter os controladores relacionado a produtos apenas, não devem mexer em coisas do usuario por exemplo, se precisa mexer no usuario é necessario fazer uma controller para/relacionada ao usuario.
 
-Boa pratica é fazer o nome das controllers terminando com a palavra Controller, exemplo UsuarioController, ProdutoController...
+"Uma controller nada mais é que o ponto de entrada que nos vamos disponibilizar os nossos metodos".
+
+É necessario fazer o nome das controllers terminando com a palavra Controller, exemplo UsuarioController, ProdutoController...
 
 -
 O endereço do metodo no link, é formado pelo localhost (ou o dominio que ele estiver) / nome do controlador sem a palavra controller exemplo UsuarioController, ele vai mostrar só Usuario, e dai no nome que você colocou em cima do metodo, exemplo:
@@ -55,13 +57,24 @@ pacote para instalar o modulo do entity framework para o SQL Server, o EF é mod
 -
 
 -Entidades (Entities) são classes no programa que também são tabelas no banco de dados.
--Classes Context fazem uma ligação do programa com o banco de dados, seja de conexão quanto de referenciamento de entidades
+Nelas precisa ter propriedades com os mesmos nomes que vai ter na tabela do banco de dados.
+
+-Classes Context fazem uma ligação do programa com o banco de dados, seja de conexão quanto de referenciamento de entidades.
+A classe context herda a classe DbContext, nela precisa ter um construtor que vai fazer a ligação da conexão, e vai ter uma propriedade do tipo
+public DbSet<NomeDaEntidade> NomeDaEntidade { get; set; }
+que vai servir para referenciar a entidade, senao ela só vai existir la nas entities mas nao vai funcionar.
 
 -
 
 Existe 2 arquivos json no projeto, um é o appsetings, e um é o appsettings.Development, o primeiro você configura com as coisas que você vai precisar na hora de implementar o programa em ambiente de produção, e o segundo você usa com as configurações para o ambiente de desenvolvimento, por exemplo configurar para usar um banco de dados que é só para desenvolvimento e configurar um comando para impedir de mandar um email aos usuarios.
 
 PS: o appsetting.Developtment.json no visual studio community fica escondido, ao lado do appsetting.json tem um triangulo para abrir como se fosse uma pasta, clique nele e vai aparecer o .Development abaixo.
+
+você vai colocar a connextion string logo depois de fechar a chave do Logging, a connection string do sql server express é assim:
+"ConnectionStrings": {
+    "ConexaoPadrao": "Server=localhost\\sqlexpress; Initial Catalog=Agenda; Integrated Security=True"
+  }
+o "ConnectionStrings": tem que ser sempre esse nome, mas o "ConexaoPadrao" pode ser o nome que você quiser.
 
 -
 builder.Services.AddDbContext<AgendaContext>(options =>
@@ -73,6 +86,8 @@ Daria para colocar a conection string direto aqui, mas se um dia precisar mudar 
 
 o Migrations é um mapeamento que o entity framework faz das nossas classes (entities) para transforma-las em tabelas.
 Ele vai executar nas classes que tiverem referenciadas na classe Context.
+"Migrations é um codigo que serve para espelhar as suas alterações no codigo no banco de dados"
+Ele tem um metodo Up para aplicar mudanças nas tabelas, e um metodo Down para reverte-las.
 
 para executar o migrations é preciso fazer o comando manualmente via terminal, o comando é:
 dotnet-ef migrations add CriacaoTabelaContato
@@ -91,5 +106,15 @@ essas tags no cabeçalho da classe controller
 	[ApiController]
     	[Route("[controller]")]
 e a classe herdar a ControllerBase, não é Controller, é ControllerBase.
+e fazer uma "injeção de dependencia" atravez do construtor.
+private readonly AgendaContext _context;
+public ContatoController(AgendaContext context)
+{
+	_context = context;
+}
 
+
+Para todos os metodos http com excessão do get, você tem que chamar o metodo:
+_context.SaveChanges();
+senão ele não salva no banco de dados.
 
