@@ -72,7 +72,7 @@ Na view Index.cshtml a primeira linha de codigo, ela cria uma propriedade de lis
 - `class="form-control"` --- css? para formar o input do campo de texto.
 - `class="btn btn-primary"` --- css? para formar um botão.
 - `type="submit"` --- quando em um botão de conjunto de formulario, significa que é para submeter o formulario.
-- `value="Criar"` --- quando em um bitão de conjunto de formulario, significa que é para retornar os dados do formulario para o metodo Criar.  
+- `value="Criar"` --- quando em um botão, é o Texto do botão.
 
 Exemplos:
 
@@ -101,7 +101,8 @@ Exemplos:
             </div>
             <br />
             <!--Grupo do formulario referente botão de submit que irá enviar
-            os dados do formulario para o metodo Criar que é um HttpPost-->
+            os dados do formulario para o metodo setado na asp-action localizada
+            na abertura da tag form-->
             <div class="form-group">
                 <input type="submit" value="Criar" class="btn btn-primary" />
             </div>
