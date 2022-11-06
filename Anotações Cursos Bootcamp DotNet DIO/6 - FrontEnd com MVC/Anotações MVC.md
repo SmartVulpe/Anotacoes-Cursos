@@ -16,7 +16,7 @@ Obs: no MVC é opcional colocar tag HttpGet, mas as outras como HttpPost é nece
 
 O Controller das paginas é influenciado pelo nome, HomeController vai automaticamente buscar as views dos seus metodos na pasta Home (pois antes do Controller está escrito Home, se tivesse OlaController ele iria buscar na pasta Ola) que está na pasta Views, assim como o return View(); vai retornar a pagina com o nome correspondente ao metodo em que ele está, exemplo Index() ou Privacy().
 
-![MarcacoesComoRotasFuncionam](imgs\MarcacoesComoRotasFuncionam.png)
+![MarcacoesComoRotasFuncionam](imgs/MarcacoesComoRotasFuncionam.png)
 
 Quando acessar o link da pagina referente a um controller, exemplo:  
 `https://localhost:7277/Home`  
@@ -52,11 +52,11 @@ Esta parte do codigo nomeia a aba da pagina.
 
 Esse metodo que fica na ContatoController, ele vai criar uma lista com todos os contatos que a context pegou do banco de dados, e retornar ela para a view Index.
 
-![IndexContato](../6%20-%20FrontEnd%20com%20MVC/imgs/IndexContato.png)
+![IndexContato](imgs/IndexContato.png)
 
 Na view Index.cshtml a primeira linha de codigo, ela cria uma propriedade de lista IEnumerable, do tipo Contato, seguindo o caminho do projeto até a model contato, ai você pode utilizar a propriedade model para exibir o conteudo recebido da context.
 
-![Pagina-CSHTML](../6%20-%20FrontEnd%20com%20MVC/imgs/Pagina-CSHTML.png)
+![Pagina-CSHTML](imgs/Pagina-CSHTML.png)
 
 ---
 
