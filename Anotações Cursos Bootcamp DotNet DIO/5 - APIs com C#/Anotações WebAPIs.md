@@ -8,7 +8,6 @@ Principal função de uma API é: Disponibilizar métodos (endpoints) e serviço
 date.nager.at - site de api de feriados.
 dog.ceo/dog-api - side de api de imagens de cachorros.
 
-
 SEMPRE busque ler primeiro a documentação da API para ver como ela funciona e como usa-la.
 
 comando para criar um projeto de web api:
@@ -27,13 +26,12 @@ Classes Controller são classes que você vai colocar os metodos relacionados as
 
 -
 O endereço do metodo no link, é formado pelo localhost (ou o dominio que ele estiver) / nome do controlador sem a palavra controller exemplo UsuarioController, ele vai mostrar só Usuario, e dai no nome que você colocou em cima do metodo, exemplo:
-	  [HttpGet("ObterDataHoraAtual")]
+      [HttpGet("ObterDataHoraAtual")]
         public IActionResult ObterDataHora()
 
 e no fim o link vai ficar assim:
 https://localhost:7275/Usuario/ObterDataHoraAtual
 -
-
 
 O Entity Framework é um framework ORM (Object-Relational Mapping) criado para facilitar a integração com o banco de dados, mapeando tabelas e gerando comandos SQL de forma automatica.
 Resumindo: ele gera os codigo que você colocaria na query automaticamente.
@@ -90,7 +88,7 @@ Ele vai executar nas classes que tiverem referenciadas na classe Context.
 Ele tem um metodo Up para aplicar mudanças nas tabelas, e um metodo Down para reverte-las.
 
 para executar o migrations é preciso fazer o comando manualmente via terminal, o comando é:
-dotnet-ef migrations add CriacaoTabelaContato
+`dotnet-ef migrations add CriacaoTabelaContato`
 no caso o CriacaoTabelaContato é apenas um nome para definir que você fez nessa migração, como era uma migração simples de apenas uma tabela, foi dado esse nome.
 
 Na pasta Migrations que o comando vai criar, tem alguns dados da tabela que ele criou.
@@ -99,22 +97,20 @@ Primeiro, ele vai alterar o nome da Entities que deve ser nomeada no singular, p
 Segundo se a classe tiver uma propriedade Id ele vai automaticamente reconhecer e usar ela como uma identity e adicionar a constraint de Primary Key.
 
 ai para adicionar essa tabela no banco de dados use o comando:
-dotnet-ef database update
+`dotnet-ef database update`
 
 O basico para uma classe controller é:
 essas tags no cabeçalho da classe controller
-	[ApiController]
-    	[Route("[controller]")]
+    [ApiController]
+        [Route("[controller]")]
 e a classe herdar a ControllerBase, não é Controller, é ControllerBase.
 e fazer uma "injeção de dependencia" atravez do construtor.
 private readonly AgendaContext _context;
 public ContatoController(AgendaContext context)
 {
-	_context = context;
+    _context = context;
 }
-
 
 Para todos os metodos http com excessão do get, você tem que chamar o metodo:
 _context.SaveChanges();
 senão ele não salva no banco de dados.
-
