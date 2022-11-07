@@ -46,6 +46,11 @@ Esta parte do codigo nomeia a aba da pagina.
 }
 ```
 
+## Layout das paginas e cabeçalho
+O MVC tem um arquivo que controla o layout padrão das paginas, ele fica em Views > Shared > _Layout.cshtml.
+Nele você pode adicionar mais botões ao cabeçalho, modificar o rodapé, e alterar o tema da pagina alterando o arquivo bootstrap que ele chama para um arquivo que possua outras cores para os botões e backgrounds padrões do mvc.
+
+
 <br>
 
 ## Enviando dados para as paginas
