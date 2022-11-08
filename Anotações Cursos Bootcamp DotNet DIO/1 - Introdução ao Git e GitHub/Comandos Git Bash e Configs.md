@@ -10,6 +10,7 @@
 - **git pull origin master** --- faz o download dos arquivos atualizados do repositorio remoto.
 - **git clone "link do repositorio sem aspas"** --- clona o repositorio para a tua maquina.
 - **git reset** ou **git reset nomeDoArquivo** --- desfaz o git add, se ainda não foi feito o commit. 
+- git commit --allow-empty -m "Empty-Commit" --- allow-empty é para fazer commits vazios, ou seja, sem ter dado add em nada.
 
 Se você criar um repositorio no PC e quiser upar pro github, tem que criar o rep no github, ai ele vai dar os comandos para usar ja com o link certinho só copiar e colar, todavia os comandos são os seguintes:
 
