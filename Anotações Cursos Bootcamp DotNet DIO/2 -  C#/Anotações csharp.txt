@@ -368,12 +368,10 @@ p1 é um objeto da classe Pessoa.
 ----
 
 Encapsulamento
-Serve para proteger os dados de uma classe expondo somente o necessario.
+
 private
 Serve para proteger metodos e dados de alteração externa, somente a classe que está o metodo pode alterar. Para alterar tem que fazer um metodo publico que chame o metodo privado.
 
-Herança Dicas:
-Você pode herdar uma classe q herda outra classe que herda outra classe e assim por diante. MAS, a menos que você tenha um ganho mt bom em algo, procure evitar deixar o codigo muito complexo assim, pois se ouver muitas dependencias de heranças, a hora que vc editar um dos primeiros, por exemplo remover um metodo que não faz mais sentido naquela, mas acaba usando em outra la na frente, o codigo vai quebrar em cascata.
 
 Mais notas de Herança, polimorfismo, atributos e metodos ESTATICOS, Abstração e Interfaces em "colinha.txt" (é uma nota de um curso antigo).
 
