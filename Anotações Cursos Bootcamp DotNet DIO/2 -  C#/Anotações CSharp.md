@@ -161,10 +161,10 @@ Fontes e leituras recomendadas:
 
 ## Campos e Propriedades
 
-**Campos** são as variáveis que serão utilizadas para trabalho dentro da própria classe, apesar de poderem ser definidas como publicas a boa pratica diz que o ideal é mantê-las privadas.
+**Campos** são as variáveis que serão utilizadas para trabalho dentro da própria classe, apesar de poderem ser definidas como publicas a boa pratica diz que o ideal é mantê-las privadas.  
 **São escritas em camelCase.**
 
-**Propriedades** são variáveis que serão utilizadas para entrada e saída de dados da classe, elas são acompanhadas de get e set, e normalmente utilizadas para carregar ou transmitir o dado de um **campo** sem que ele seja exposto.
+**Propriedades** são variáveis que serão utilizadas para entrada e saída de dados da classe, elas são acompanhadas de get e set, e normalmente utilizadas para carregar ou transmitir o dado de um **campo** sem que ele seja exposto.  
 **São escritas em PascalCase**
 
 Mais detalhes sobre get e set na sessão sobre [Get e Set](#get-e-set)
@@ -177,7 +177,7 @@ Fonte e leitura recomendada: [Diferença entre Campos(Fields) e Propriedades(Pro
 
 ## Argumentos e Parâmetros
 
-Um **Parâmetro** é aquela variável que fica dentro do parenteses () do método.  
+Um **Parâmetro** é aquela variável que fica dentro do parenteses () do método. **E é escrita em PascalCase.**    
 Um **Argumento** é o valor que o parâmetro vai receber.  
 
 ```c#
