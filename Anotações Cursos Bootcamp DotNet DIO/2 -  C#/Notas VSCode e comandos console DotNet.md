@@ -62,3 +62,9 @@ Também é necessário referenciar os outros projetos que você queira usar em o
 
 O VSCode vai fazer as referências dentro do arquivo da solution.sln tudo automaticamente (**é necessário a extensão vscode-solution-explorer**).
 
+---
+
+## Instalando Nugets
+
+Para instalar um nuget no vscode você vai no site nuget.org
+Escolhe um pacote nuget, clica, ai na pagina do pacote vai ter uma aba escrito ".NET CLI" e ai vai ter o comando de console certinho para copiar, colar e executar na pasta do projeto. E não precisa colocar a parte --version para pegar sempre a ultima, somente se quiser uma versão especifica.

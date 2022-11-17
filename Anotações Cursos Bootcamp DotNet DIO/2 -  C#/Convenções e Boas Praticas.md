@@ -62,3 +62,20 @@ MeuProjeto.NET6
 Mais detalhes em:   
 [.Net - Float(Single), Double e Decimal. Afinal qual devo usar ?](https://www.macoratti.net/12/12/c_num1.htm)
 
+# Boas Práticas de Formatação de Código
+
+## Chaves de classes e métodos
+A boa pratica de formatação do C# diz para usar a chave em baixo da palavra, exemplo:  
+```c#
+// Classe
+public class Pessoa
+{
+    // Código qualquer
+}
+
+//Método
+public void MetodoQualquer()
+{
+    // Código qualquer
+}
+```

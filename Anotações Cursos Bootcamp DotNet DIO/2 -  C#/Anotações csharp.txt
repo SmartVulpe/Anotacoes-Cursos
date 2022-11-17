@@ -21,44 +21,13 @@ ele vai aparecer um true ou false conforme o resultado da comparação desses va
 
 ------------------------------
 
-Da para ter varias copias da mesma classe em namespaces diferentes, o namespace é um caminho até a pasta q a classe está, ex: 
-Using NomeDoProjeto.NomeDaPasta
-ai quando for instanciar a classe, vc pode colocar o nome da classe q ele ja sabe q ta vindo dessa pasta, se tiver mais de um lugar com a mesma classe e vc tiver dando Using nesses lugares, ai precisa ter um certo cuidado na hora de instanciar a classe e detalhar mais.
-
 ----------------------------
 
 Tipos de dados de variaveis:
 https://www.tutorialspoint.com/csharp/csharp_data_types.htm
 
 ---------------
-DateTime é um tipo de dado Struct que coleta a data e hora atual.
 
-exemplo de uso:
-DateTime dataAtual = DateTime.Now;
-Console.WriteLine(dataAtual);
-resultado vai ser o dia/mes/ano horario.
-
-esse tipo tambem possui varios metodos, como por exemplo adicionar dias ao resultado:
-
-DateTime dataAtual = DateTime.Now.AddDays(5); //adiciona 5 dias
-
-e se fizer assim:
-Console.WriteLine(dataAtual.ToString(dd/MM/yyyy));
-ou
-Console.WriteLine(dataAtual.ToShortDateString());
-ele vai mostrar só a data sem o horario, e sim o M tem q ser maiúsculo.
-
-e se fizer assim:
-Console.WriteLine(dataAtual.ToString(HH:mm));
-ou
-Console.WriteLine(dataAtual.ToShortTimeString());
-vai mostrar só a hora e o minuto sem os segundos, e o H tem q ser maiusculo.
-
-DateTime.TryParseExact pode ser usado para converter uma data recebida em um padrão para outro, exemplo padrão americano para o padrão brasileiro.
-
-
-Documentação do DateTime:
-https://learn.microsoft.com/pt-br/dotnet/api/system.datetime?view=net-6.0
 
 ------------------
 esses operadores atribuem e:
@@ -271,8 +240,7 @@ ternario
 desconstrutor
 ----------------------------------------------
 
-para instalar um nuget no vscode vc vai no site nuget.org
-escolhe um pacote nuget, clica, ai na pagina do pacote vai ter uma aba escrito ".NET CLI" e ai vai ter o comando de console certinho para copiar, colar e executar na pasta do projeto. E não precisa colocar a parte --version, para pegar sempre a ultima.
+
 
 ---------------------------------------------
 verificar no projeto: SerializacaoEAtributos
@@ -308,83 +276,8 @@ metodos de extensão
 
 ---------------------------------------------------
 
-(Teorico, bom saber para entrevista de emprego)
-
-- Alocação de Memória 
-
-Stack e Heap são tipos de memoria, dependendo do tipo da sua variavel ela vai para um ou outro tipo de memoria.
-
-o Stack é como uma pilha, ele armazena conforme a sequencia que a variavel entrou (primeira linha, segunda linha...), o ultimo a entrar é o primeiro a sair (LIFO - Last In, First Out).
-
-No Stack são armazanados tipos de variaveis mais simples (tipos primitivos), e quando a variavel é complexa como um objeto ele armazena o nome do objeto e a referencia desse objeto que vai estar na memoria Heap.
-
-Na memoria Heap são armazenados tipos complexos como objetos, já que objetos podem conter varios tipos diferentes dentro dele.
-
-Portanto ao armazenar um objeto, seu nome ficará na Stack e haverá uma referencia para o objeto de verdade que está na memoria Heap.
-
-- Limpeza de memória
-
-Ao terminar o metodo, a limpeza de memoria ocorrerá da seguinte forma:
-Na memória Stack é tipo uma pilha, ela vai remover da memoria a partir da ultima variavel que entrou na Stack.
-
-Na memória Heap o C# usa o Garbage Collector, que verifica se tem algum objeto que não tem mais referencia na memoria Stack, pois se não houver referencia não tem como ele ser usado, então todo objeto da memória Heap que não tem mais ligação nenhuma com a memória Stack o Garbage Collector apaga da memoria. Por isso ela não tem uma ordem de limpeza como a Stack, pois um objeto ainda pode estar sendo usado enquanto o proximo e o anterior que entraram ja foram eliminados porque não tiveram mais uso.
-
-- Tipos de valor
-O tipo de valor armazena dados estáticos e não complexos.
-São tipos simples, como int, float, string, decimal, eles conseguem armazenar seus nomes e seus dados dentro da Stack pois são simples.
-E se por exemplo:
-int a = 5;
-int b = a;
-Ele vai salvar na memória stack da seguinte forma:
-a = 5;
-b = 5;
-Ele não vai criar uma referencia ao a, e sim vai copiar o valor para b.
-Portanto se vc alterar o valor de b, somente b será alterado.
-
-- Tipos de referência
-O tipo de referência armazena dados dinâmicos e complexos.
-São tipos mais complexos, pois podem possuir varios tipos simples e até outros tipos complexos, dentro deles, então na memoria Stack é armazenado só o nome e a REFERÊNCIA do verdadeiro tipo que está armazenado lá na memoria heap.
-E se por exemplo:
-Pessoa p1 = new Pessoa("Daniel", "Franco");
-Pessoa p2 = p1;
-ele vai salvar na memoria p1 e p2 apontando para o mesmo objeto, portanto se você fizer:
-p2.Nome = "Luis";
-tanto p1 quanto p2 irão mudar seus dados para "Luis" "Franco", pois ao criar um novo objeto sem instanciar você apenas está criando um novo nome apontando para o mesmo lugar na memoria Heap.
-Então você NÃO cria uma copia de um "tipo complexo" dessa forma como nos "tipos simples".
-E se ambos apontam para o mesmo lugar, quando altera um altera o outro TAMBÉM.
-Ou seja para criar um p2 tem que colocar new Pessoa, ai ele vai instanciar um novo objeto na memoria Heap, e para copiar os dados de p1 para p2 tem que ser feito de forma manual mesmo. Nem se instanciar ambos e depois fizer p2 = p1, isso vai fazer o p2 apontar para o p1 e quando vc for editar o p2 ele vai alterar o p1 do mesmo jeito.
 
 
 --------------------------------------------------
 
-POO
-
-Abstração:
-Classe é uma abstração de algo que você quer representar, de preferencia só com o necessario que faça sentido com oque você precisa para o projeto.
-
-O objeto surge quando você instancia a classe.
-Pessoa p1 = new Pessoa();
-p1 é um objeto da classe Pessoa.
-----
-
-Encapsulamento
-
-private
-Serve para proteger metodos e dados de alteração externa, somente a classe que está o metodo pode alterar. Para alterar tem que fazer um metodo publico que chame o metodo privado.
-
-
-Mais notas de Herança, polimorfismo, atributos e metodos ESTATICOS, Abstração e Interfaces em "colinha.txt" (é uma nota de um curso antigo).
-
-Classes e Métodos Selados:
-"public sealed class NomeDaClasse"
-"public sealed void NomeDoMetodo()"
-quando ta sealed, ou seja, selada, a classe inteira ou o metodo não pode ser herdado, ele pode herdar (ter uma classe pai) mas não pode ser herdado (ter uma classe filha).
-
-Classe object
-todas as classes e herdam da classe object, mesmo que você não faça NomeDaClasse : Object, é dai que vem aqueles metodos extras que aparecem quando vc digita por exemplo: p1. ai aparece uma janelinha com uma lista de metodos, e alguns não é da classe que você criou, por exemplo Equals e ToString.
-A classe Object faz parte da raiz do .Net
-
-Interface
-Pela nomenclatura de interface não se diz herdar, e sim implementar, pois a classe que receber uma interface vai ser obrigada a implementar aqueles metodos.
-PS: Pesquisar melhor a diferença entre interface e abstração pois nos cursos antigos que eu vi a explicação era um pouco diferente, nos antigos dizia que não era para dar corpo aos metodos (tipo botar algo dentro de chaves) era apenas para colocar ; para forçar ser implementado na classe que recebesse a interface, e que interface não tinha metodo opcional, mas ao dar corpo ele se torna de certa forma opcional.
 
