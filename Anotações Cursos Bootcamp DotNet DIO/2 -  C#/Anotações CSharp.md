@@ -6,6 +6,7 @@
 - [Base do CSharp](#base-do-csharp)
   - [Namespace](#namespace)
   - [Declaração de variáveis](#declaração-de-variáveis)
+  - [Concatenação e Interpolação](#concatenação-e-interpolação)
   - [Classes](#classes)
   - [Objetos](#objetos)
   - [Qual a diferença entre método, procedimento e função?](#qual-a-diferença-entre-método-procedimento-e-função)
@@ -31,6 +32,24 @@
   - [Limpeza de memória](#limpeza-de-memória)
   - [Tipos de valor](#tipos-de-valor)
   - [Tipos de referência](#tipos-de-referência)
+- [Outras informações](#outras-informações)
+  - [Conversão de tipos](#conversão-de-tipos)
+  - [Listas](#listas)
+  - [Summary](#summary)
+  - [Definindo uma região e formatando estilo monetário](#definindo-uma-região-e-formatando-estilo-monetário)
+    - [Formatações manuais](#formatações-manuais)
+  - [Serialização](#serialização)
+- [Dicas](#dicas)
+  - [Palavras Reservadas](#palavras-reservadas)
+  - [Carregando uma variável numérica com valor máximo](#carregando-uma-variável-numérica-com-valor-máximo)
+  - [IF sem comparador](#if-sem-comparador)
+  - [Uso diferenciado do switch-case](#uso-diferenciado-do-switch-case)
+  - [Quebrando laços de repetição antes do fim](#quebrando-laços-de-repetição-antes-do-fim)
+  - ["Alterando" o tamanho de um Array](#alterando-o-tamanho-de-um-array)
+  - [Copiando Arrays](#copiando-arrays)
+  - [Tratamento Get e Set simples usando =>](#tratamento-get-e-set-simples-usando-)
+  - [Usando o nome dos parâmetros ao passar os argumentos](#usando-o-nome-dos-parâmetros-ao-passar-os-argumentos)
+  - [Botou um valor decimal float ou double e não funcionou?](#botou-um-valor-decimal-float-ou-double-e-não-funcionou)
 
 </br>
 
@@ -40,7 +59,7 @@
 
 ## Namespace 
 
-O namespace indica qual o nome da pastinha que o Arquivo.cs pertence, da para ter vários repetidos desde q sejam de pastinhas diferentes.  
+O namespace indica qual o nome da pastinha que o Arquivo.cs pertence, da para ter vários repetidos desde que sejam de pastinhas diferentes.  
 Obviamente que se você der using em mais de uma pasta com um arquivo de mesmo nome você terá que detalhar mais na hora de instanciar botando o caminho da pasta junto, senão irá dar conflito.
 
 [Voltar ao Índice](#índice)
@@ -57,6 +76,29 @@ public double largura, altura, comprimento;
 [Voltar ao Índice](#índice)
 
 ---  
+
+## Concatenação e Interpolação
+
+A forma mais comum de concatenar textos com dados é essa:
+```c#
+Console.WriteLine("Meu nome é " + nome + " e minha idade é " + idade + " anos");
+```
+Mas a partir do C# 6 é possível **interpolar** textos, em outras palavras, é uma forma diferente de concatenar, utiliza um cifrão antes das aspas e chaves entre os dados de variáveis, exemplo:
+```c#
+Console.WriteLine($"Meu nome é {nome} e minha idade é {idade} anos");
+```
+
+Também é possível executar operações simples dentro das chaves, como um operador ternário.
+```c#
+Console.WriteLine($"Eu tenho {numeroCarros} {(numeroCarros > 1 ? "carros" : "carro")}");
+```
+Obs: o operador ternário tem que estar dentro de parenteses.
+
+Leitura adicional: [String Interpolation - Microsoft Learn](https://learn.microsoft.com/pt-br/dotnet/csharp/tutorials/string-interpolation)
+
+[Voltar ao Índice](#índice)
+
+---
 
 ## Classes 
 
@@ -78,7 +120,7 @@ Para instanciar (chamar/carregar para outro arquivo exemplo o arquivo Pessoa.cs 
 Pessoa obj = new Pessoa();
 ```
 
-Então a pessoa vai se chamar "obj" dentro do arquivo Program.cs e vc vai poder usar ela dessa forma:
+Então a pessoa vai se chamar "obj" dentro do arquivo Program.cs e você vai poder usar ela dessa forma:
 
 ```c#
 obj.idade = 27;
@@ -237,7 +279,7 @@ public void apresentar(string nome, int idade)
 {}
 
 ***ESSES 3 PODEM EXISTIR SIMULTANEAMENTE***  
-O software vai saber qual vc ta usando conforme oque você preencher nos parâmetros.  
+O software vai saber qual você está usando conforme oque você preencher nos parâmetros.  
 Exemplo:  
 Se não preencher nada ele vai executar o primeiro:  
 **apresentar();**    
@@ -248,7 +290,7 @@ Se colocar uma string, ele vai executar o segundo:
 Se colocar uma string E um int, ele vai executar o terceiro:    
 **apresentar("Soul", 20);**  
 
-E na hora q for escrever esse método ele vai mostrar na janelinha q aparece de auto-completar que tem 2 overloads (nesse caso do apresentar), q é a primeira opção e mais as 2 extras, totalizando 3 opções de uso do mesmo método.  
+E na hora que for escrever esse método ele vai mostrar na janelinha que aparece de auto-completar que tem 2 overloads (nesse caso do apresentar), que é a primeira opção e mais as 2 extras, totalizando 3 opções de uso do mesmo método.  
 
 [Voltar ao Índice](#índice)
 
@@ -256,7 +298,7 @@ E na hora q for escrever esse método ele vai mostrar na janelinha q aparece de 
 
 ## Operadores Ternários
 
-São como IFs, mas mais simples e limitados, muito úteis para comparações com resultados simples (apenas um true ou false, ou só retornar um texto ou um valor fixo q não exige ser calculado conforme comparação seja verdadeira ou falsa), exemplo:  
+São como IFs, mas mais simples e limitados, muito úteis para comparações com resultados simples (apenas um true ou false, ou só retornar um texto ou um valor fixo que não exige ser calculado conforme comparação seja verdadeira ou falsa), exemplo:  
 ```c#
 situacao = media >= 7 ? "aprovado" : "reprovado";  
 ```
@@ -280,7 +322,7 @@ Vide **Modificadores de Acesso** logo abaixo.
 
 ## Modificadores de acesso (public / private / protected)
 
-Modificadores de acesso são a maneira q vc tem de visualizar um método ou variável.  
+Modificadores de acesso são a maneira que você tem de visualizar um método ou variável.  
 
 public    -> Variáveis e métodos visíveis em qualquer classe.  
 private   -> Variáveis e métodos visíveis apenas na classe onde são criados.  
@@ -296,11 +338,11 @@ O **Construtor** é um **método** que é executado **no momento que o objeto é
 
 Ele tem que ter o mesmo nome da classe.  
 
-Toda vez q instanciar um objeto exemplo:  
+Toda vez que instanciar um objeto exemplo:  
 ```c#
 Pessoa p = new Pessoa() ; 
 ```
-O programa vai executar o construtor q nesse exemplo será:  
+O programa vai executar o construtor que nesse exemplo será:  
 ```c#
 Public Pessoa()
 {}   
@@ -344,7 +386,7 @@ Nayala
 Soul  
 ```
 
-ou seja, como o primeiro estava sem o **this** ele pegou o q foi setado para o atributo, e o segundo q tinha o **this** ele pegou oq tava na variável nome.
+ou seja, como o primeiro estava sem o **this** ele pegou o que foi setado para o atributo, e o segundo que tinha o **this** ele pegou o que tava na variável nome.
 
 [Voltar ao Índice](#índice)
 
@@ -379,7 +421,7 @@ Todo conteúdo publico ou **protected** pode ser usado sem precisar instanciar o
 Conteúdo **PRIVADO** não é herdado.  
 
 **Forma de ativar a herança:**  
-Basta por "2 pontos" após o nome da classe e inserir o nome da classe que vc quer "estender".  
+Basta por "2 pontos" após o nome da classe e inserir o nome da classe que você quer "estender".  
 Exemplo:  
 
 ```c#
@@ -397,7 +439,7 @@ class Colaborador : Pessoa : Passaro : Peixe
 ```
 Uma classe só pode estender uma classe! (diretamente)  
 
-**Dica:** Você pode herdar uma classe q herda outra classe que herda outra classe e assim por diante.  
+**Dica:** Você pode herdar uma classe que herda outra classe que herda outra classe e assim por diante.  
 **MAS**, a menos que você tenha um ganho mt bom em algo, procure evitar deixar o código muito complexo assim, pois se houver muitas dependências de heranças, a hora que você editar um dos primeiros, por exemplo remover um método que não faz mais sentido naquela, mas acaba usando em outra la na frente, o código vai quebrar em cascata.  
 
 [Voltar ao Índice](#índice)
@@ -421,7 +463,7 @@ Imposto objetoG = new Gerente();
 ```
 **Dessa forma o objeto objetoG vai receber os métodos e variáveis da classe Imposto, E se houver o mesmo método ou variável na classe Gerente, o programa vai sobrescrever os métodos da classe Imposto por esses da classe Gerente.**  
 
-Você pode ter, por exemplo, um método chamado valeTransporte(), e esse método por padrão é de um jeito, mas para o gerente vc precisa que tenha 1 valor diferente, ai vc cria uma classe com o mesmo método e essa diferença que precisa, ai na hora que instanciar vc só precisa instanciar com mescla, não vai precisar ter um valeTransporteGerente() pra se diferenciar do valeTransporte padrão, simplifica e padroniza alguns locais do código exigindo menos alterações, e joga as alterações em outros locais deixando mais organizado e legível.
+Você pode ter, por exemplo, um método chamado valeTransporte(), e esse método por padrão é de um jeito, mas para o gerente você precisa que tenha 1 valor diferente, ai você cria uma classe com o mesmo método e essa diferença que precisa, ai na hora que instanciar você só precisa instanciar com mescla, não vai precisar ter um valeTransporteGerente() pra se diferenciar do valeTransporte padrão, simplifica e padroniza alguns locais do código exigindo menos alterações, e joga as alterações em outros locais deixando mais organizado e legível.
 
 Além de instanciar usando duas classes diferentes, é necessário que o método tenha o seguinte:
 O método que **vai ser sobrescrito** tem que estar assim:  
@@ -429,7 +471,7 @@ O método que **vai ser sobrescrito** tem que estar assim:
 ```c#  
 public virtual void valeTransporte(){}  
 ```
-E o metodo que **vai sobrescrever** tem que estar assim: 
+E o método que **vai sobrescrever** tem que estar assim: 
 
 ```c#  
 public override valeTransporte(){}  
@@ -439,7 +481,7 @@ public override valeTransporte(){}
 **Além de haver esse polimorfismo por mesclagem, também da para fazer com simples herança.**  
 Exemplo:  
 Você tem a classe Professor que herdou a classe Pessoa, na classe pessoa tem Nome e Idade, e um método de se Apresentar(), ai na professor tem o Salario, mas quando você executar o método Apresentar herdado da pessoa você quer que ele se apresente diferente.  
-Então la na Pessoa vc coloca virtual no método como explicado acima.  
+Então la na Pessoa você coloca virtual no método como explicado acima.  
 e no método professor você faz um novo método apresentar com o override como explicado acima com as diferenças que você quer.  
 **A diferença é que na hora de instanciar voce instancia sem mescla, pois a classe professor ja está herdando de pessoa.**  
 
@@ -511,9 +553,9 @@ class PessoaFisica : Padrao
 	
 Note que é necessário botar o override.  
 
-**Se nao fizer o método obrigatório dá erro no programa, pois é OBRIGATÓRIO FAZE-LO.**
+**Se não fizer o método obrigatório dá erro no programa, pois é OBRIGATÓRIO FAZE-LO.**
 
-Por fim, na Main vc instancia o objeto classe PessoaFisica por exemplo, da mesma forma que uma normal:
+Por fim, na Main você instancia o objeto classe PessoaFisica por exemplo, da mesma forma que uma normal:
 ```c#
 PessoaFisica pf = new PessoaFisica();
 ```
@@ -532,7 +574,7 @@ public sealed class NomeDaClasse{}
 
 public sealed void NomeDoMetodo(){}
 ```
-Quando ta **sealed**, ou seja, selada, a classe inteira ou o método não pode ser herdado, ele pode herdar (ter uma classe pai) mas não pode ser herdado (ter uma classe filha).  
+Quando está **sealed**, ou seja, selada, a classe inteira ou o método não pode ser herdado, ele pode herdar (ter uma classe pai) mas não pode ser herdado (ter uma classe filha).  
 
 [Voltar ao Índice](#índice)
 
@@ -553,7 +595,7 @@ Interfaces são como um contrato de um projeto que deve ser seguido daquela form
 
 - São utilizadas para criar exclusivamente métodos, propriedades, eventos e indexadores, todos obrigatórios (a classe abstrata tem opção de criar métodos opcionais, essa não, todos são obrigatórios).
 
-- Uma classe pode implementar várias Interfaces (enquanto você só pode herdar 1 classe abstrata numa classe, a interface vc pode "implementar" varias (e é usado o termo implementar ao invés de herdar)).
+- Uma classe pode implementar várias Interfaces (enquanto você só pode herdar 1 classe abstrata numa classe, a interface você pode "implementar" varias (e é usado o termo implementar ao invés de herdar)).
 
 - Os métodos da Interface não contêm cálculos, condicionais, laços, e demais ações (igual as obrigatórias da abstrata que **não abrem chave**.  
 ```c#
@@ -562,7 +604,7 @@ string texto();
 void mensagem(string nome, int idade);  
 ```  
 
-- No C# por padrão um método criado na Interface é implicitamente abstrato e público (diferente da classe abstrata a interface é SEMPRE abstract e public, portanto vc não precisa definir no inicio do método as palavras public abstract);  
+- No C# por padrão um método criado na Interface é implicitamente abstrato e público (diferente da classe abstrata a interface é SEMPRE abstract e public, portanto você não precisa definir no inicio do método as palavras public abstract);  
 
 - Nas boas práticas do C#, **toda interface tem a inicial I**, em seguida o nome da interface:  
 
@@ -615,7 +657,7 @@ Ou
 ```c#
 Console.WriteLine(dataAtual.ToShortDateString());
 ```
-Ele vai mostrar só a data sem o horário, e sim o M tem q ser maiúsculo.  
+Ele vai mostrar só a data sem o horário, e sim o M tem que ser maiúsculo.  
 
 E se fizer assim:  
 ```c#
@@ -625,7 +667,7 @@ Ou
 ```c#
 Console.WriteLine(dataAtual.ToShortTimeString());
 ```
-Vai mostrar só a hora e o minuto sem os segundos, e o H tem q ser maiúsculo.  
+Vai mostrar só a hora e o minuto sem os segundos, e o H tem que ser maiúsculo.  
 
 DateTime.TryParseExact pode ser usado para converter uma data recebida em um padrão para outro, exemplo padrão americano para o padrão brasileiro.  
 
@@ -640,15 +682,15 @@ DateTime.TryParseExact pode ser usado para converter uma data recebida em um pad
 
 ## Alocação de Memória 
 
-Stack e Heap são tipos de memoria, dependendo do tipo da sua variável ela vai para um ou outro tipo de memoria.  
+**Stack** e **Heap** são tipos de memoria, dependendo do tipo da sua variável ela vai para um ou outro tipo de memoria.  
 
-o Stack é como uma pilha, ele armazena conforme a sequencia que a variável entrou (primeira linha, segunda linha...), o ultimo a entrar é o primeiro a sair (LIFO - Last In, First Out).  
+O **Stack** é como uma pilha, ele armazena conforme a sequencia que a variável entrou (primeira linha, segunda linha...), o ultimo a entrar é o primeiro a sair (LIFO - Last In, First Out).  
 
-No Stack são armazenados tipos de variáveis mais simples (tipos primitivos), e quando a variável é complexa como um objeto ele armazena o nome do objeto e a referencia desse objeto que vai estar na memoria Heap.  
+Na **Stack** são armazenados tipos de variáveis mais simples (tipos primitivos), e quando a variável é complexa como um objeto ele armazena o nome do objeto e a referencia desse objeto que vai estar na memoria **Heap**.  
 
-Na memoria Heap são armazenados tipos complexos como objetos, já que objetos podem conter vários tipos diferentes dentro dele.  
+Na memoria **Heap** são armazenados tipos complexos como objetos, já que objetos podem conter vários tipos diferentes dentro dele.  
 
-Portanto ao armazenar um objeto, seu nome ficará na Stack e haverá uma referencia para o objeto de verdade que está na memoria Heap.  
+Portanto ao armazenar um objeto, seu nome ficará na **Stack** e haverá uma referencia para o objeto de verdade que está na memoria **Heap**.  
 
 [Voltar ao Índice](#índice)  
 
@@ -657,9 +699,9 @@ Portanto ao armazenar um objeto, seu nome ficará na Stack e haverá uma referen
 ## Limpeza de memória
 
 Ao terminar o método, a limpeza de memoria ocorrerá da seguinte forma:
-Na memória Stack é tipo uma pilha, ela vai remover da memoria a partir da ultima variável que entrou na Stack.  
+Na memória **Stack** é tipo uma pilha, ela vai remover da memoria a partir da ultima variável que entrou na **Stack**.  
 
-Na memória Heap o C# usa o Garbage Collector, que verifica se tem algum objeto que não tem mais referencia na memoria Stack, pois se não houver referencia não tem como ele ser usado, então todo objeto da memória Heap que não tem mais ligação nenhuma com a memória Stack o Garbage Collector apaga da memoria. Por isso ela não tem uma ordem de limpeza como a Stack, pois um objeto ainda pode estar sendo usado enquanto o proximo e o anterior que entraram ja foram eliminados porque não tiveram mais uso.  
+Na memória **Heap** o C# usa o **Garbage Collector**, que verifica se tem algum objeto que não tem mais referencia na memoria **Stack**, pois se não houver referencia não tem como ele ser usado, então todo objeto da memória **Heap** que não tem mais ligação nenhuma com a memória **Stack** o **Garbage Collector** apaga da memoria. Por isso ela não tem uma ordem de limpeza como a **Stack**, pois um objeto ainda pode estar sendo usado enquanto o proximo e o anterior que entraram ja foram eliminados porque não tiveram mais uso.  
 
 [Voltar ao Índice](#índice)  
 
@@ -667,20 +709,20 @@ Na memória Heap o C# usa o Garbage Collector, que verifica se tem algum objeto 
 
 ## Tipos de valor
 
-O tipo de valor armazena dados estáticos e não complexos.  
-São tipos simples, como int, float, string, decimal, eles conseguem armazenar seus nomes e seus dados dentro da Stack pois são simples.  
+O tipo de valor armazena dados estáticos e não complexos (também conhecido por tipos primitivos**).  
+São tipos simples, como int, float, string, decimal, eles conseguem armazenar seus nomes e seus dados dentro da **Stack** pois são simples.  
 E se por exemplo:  
 ```c# 
 int a = 5;  
 int b = a;  
 ```
-Ele vai salvar na memória stack da seguinte forma:  
+Ele vai salvar na memória **Stack** da seguinte forma:  
 ```c# 
 a = 5;  
 b = 5;  
 ```
-Ele não vai criar uma referencia ao a, e sim vai copiar o valor para b.  
-Portanto se vc alterar o valor de b, somente b será alterado.  
+Ele não vai criar uma referencia ao `a`, e sim vai copiar o valor para `b`.  
+Portanto se você alterar o valor de `b`, somente `b` será alterado.  
 
 [Voltar ao Índice](#índice)  
 
@@ -688,21 +730,345 @@ Portanto se vc alterar o valor de b, somente b será alterado.
 
 ## Tipos de referência
 O tipo de referência armazena dados dinâmicos e complexos.  
-São tipos mais complexos, pois podem possuir vários tipos simples e até outros tipos complexos, dentro deles, então na memoria Stack é armazenado só o nome e a REFERÊNCIA do verdadeiro tipo que está armazenado lá na memoria heap.  
+São tipos mais complexos, pois podem possuir vários tipos simples e até outros tipos complexos, dentro deles, então na memoria **Stack** é armazenado só o nome e a REFERÊNCIA do verdadeiro tipo que está armazenado lá na memoria **heap**.  
 E se por exemplo:
 ```c#  
 Pessoa p1 = new Pessoa("Daniel", "Franco");  
 Pessoa p2 = p1;
 ```  
-Ele vai salvar na memoria p1 e p2 apontando para o mesmo objeto, portanto se você fizer:  
+Ele vai salvar na memoria `p1` e `p2` apontando para o mesmo objeto, portanto se você fizer:  
 ```c# 
 p2.Nome = "Luis"; 
 ``` 
-Tanto p1 quanto p2 irão mudar seus dados para "Luis" "Franco", pois ao criar um novo objeto sem instanciar você apenas está criando um novo nome apontando para o mesmo lugar na memoria Heap.
+Tanto `p1` quanto `p2` irão mudar seus dados para `"Luis" "Franco"`, pois ao criar um novo objeto sem instanciar você apenas está criando um novo nome apontando para o mesmo lugar na memoria Heap.
 Então você NÃO cria uma copia de um "tipo complexo" dessa forma como nos "tipos simples".  
 E se ambos apontam para o mesmo lugar, quando altera um altera o outro TAMBÉM.
-Ou seja para criar um p2 tem que colocar new Pessoa, ai ele vai instanciar um novo objeto na memoria Heap, e para copiar os dados de p1 para p2 tem que ser feito de forma manual mesmo. Nem se instanciar ambos e depois fizer p2 = p1, isso vai fazer o p2 apontar para o p1 e quando vc for editar o p2 ele vai alterar o p1 do mesmo jeito.  
+Ou seja para criar um `p2` tem que colocar `new Pessoa`, ai ele vai instanciar um novo objeto na memoria Heap, e para copiar os dados de `p1` para `p2` tem que ser feito de forma manual mesmo. Nem se instanciar ambos e depois fizer `p2 = p1` vai fazer o `p2` apontar para o `p1` e quando você for editar o `p2` ele vai alterar o `p1` do mesmo jeito.  
 
 [Voltar ao Índice](#índice)  
 
 ---
+
+# Outras informações
+
+## Conversão de tipos
+
+Para converter tipos de variáveis existe o Convert e o Parse, exemplo:
+```c#
+int a = Convert.ToInt32("5");
+int a = int.Parse("5");
+```
+
+- É preciso fazer tratamento de entrada pois se a entrada for algo que não é compatível vai dar erro e crashar o programa.  
+
+- A diferença entre os 2 é que o Convert permite valor de entrada nulo e o parse não. No caso do int o Convert vai converter null para 0.  
+
+Se precisar converter algo para string, é só colocar `.ToString();` depois da variável. Exemplo:  
+```c#
+string texto = a.ToString();
+```
+
+Nos tipos numéricos, se vc passar um tipo compatível com outro tipo não é necessário converter.  
+Exemplo um double que recebe o valor de um int, ou um long (q é um int que cabe mais números) recebendo um int.  
+MAS se um int for receber um long ele vai dar erro, se usar o convert ele aceita certinho SE o valor que tiver no long não for maior do que o int suporta, se for maior vai dar erro.  
+
+
+Uma forma de converter sem dar erros é usando o TryParse, que espera ja que de erro então se ele não conseguir ele só não faz o processo.  
+Exemplo:  
+```c#
+string a = "15-";
+int b = 0;
+
+int.TryParse(a, out b);
+```
+Aqui acontece o seguinte, como o valor de `a` é invalido pois tem um traço, ele vai dar erro, portanto ele não vai executar a operação e vai manter o valor de `b` como 0, se o valor de `a` não fosse invalido ele iria sobrescrever o valor de `b` com o valor convertido.  
+
+Também é possível gerar a variável durante o TryParse:  
+```c#
+int.TryParse(a, out int b);  
+```
+Ai se der erro, ele vai retornar 0 para `b`.  
+
+
+[Voltar ao Índice](#índice)
+
+---
+
+## Listas
+
+Listas são como arrays aprimorados, ela tem um array interno, você não precisa especificar seu tamanho (se quiser pode), você pode ir adicionando valores e ela vai crescendo sozinha (da resize no array interno sozinha), se remover um item ele reordena a lista e não deixa um espaço vago no meio como no array.  
+Declaração e uso:  
+```c#
+List<string> listaString = new List<string>();
+listaString.Add("nome");
+listaString.Remove("nome");
+``` 
+Quando precisar verificar o tamanho da lista, utiliza-se `listaString.Count`, funciona da mesma forma do `array.Lenght`.  
+
+[Voltar ao Índice](#índice)
+
+---
+
+## Summary
+
+`<summary>` = documenta classes e metodos, quando vc passa o mouse sobre ela la no outro arquivo que esta instanciada/usando aparece o comentario no balãozinho.
+para usar o summary vc digita barra 3 vezes, no visual studio community ele ja auto completa o seguinte código:
+```c#
+/// <summary>
+/// Texto que quer que apareça ao passar o mouse na classe/metodo.
+/// </summary>
+```
+No VSCode para auto completar é necessário ativar:  
+engrenagem > configurações > editor de texto > marcar a opção: Format On Type.  
+Ou dentro de configurações usar a barra de busca digitando format on type.
+
+Obs: O summary tem q estar logo acima da classe ou método que voce quer documentar.  
+
+Obs2: Se digitar as /// acima de uma classe com parâmetros, ele gera mais opções para voce documentar os parâmetros, a documentação desses parâmetros aparece no balão SOMENTE quando você está digitando ela, ao colocar a virgula para ir para o proximo parâmetro ele muda a documentação para a do proximo parâmetro.  
+
+Obs3: Se a classe tiver return também tem um campo para documentar o retorno.  
+Exemplo:    
+```c#
+/// <summary>
+/// Soma dois valores
+/// </summary>
+/// <param name="x">Primeiro valor a ser somado</param>
+/// <param name="y">Segundo valor a ser somado</param>
+/// <returns>Retorna a soma dos valores</returns>
+public int SomaPasseOMouseSummary(int x, int y)
+{
+    return x + y;
+}
+```
+
+[Voltar ao Índice](#índice)
+
+---
+
+## Definindo uma região e formatando estilo monetário
+
+Ao instalar um sistema operacional ou até mesmo depois de instalado, você define a região do sistema, essa região não é o idioma, e ela define coisas como sigla monetária (`$`, `R$`) e o uso de ponto no lugar de virgula ou vice versa.  
+
+Exemplo:
+
+Se adicionar `:C` na exibição de um valor, ele adiciona o **estilo monetário da região que o SO está configurado**, no nosso caso R$ e ponto na casa do milhar, por exemplo:  
+```c#
+decimal valorMonetario = 1522.55M;
+Console.WriteLine(${valorMonetario:C}";
+```
+Vai exibir: R$ 1.522,55  
+
+Caso queira garantir que os dados serão visíveis da forma planejada para uma região apenas, é possível definir uma região especifica para o software da seguinte forma:  
+```c#
+using System.Globalization;
+
+CultureInfo.DefaultThreadCurrentCulture = new CultureInfo("en-US");
+```
+
+Como foi colocado `en-US` a localização foi para o estilo americano, então o código acima vai exibir o seguinte:  
+$ 1,522.55  
+Que é o padrão de formatação de valor americano.  
+
+Se quiser que apenas um valor seja no padrão americano por exemplo e o resto tudo no padrão brasileiro, da para fazer assim:  
+```c#
+Console.WriteLine(valorMonetario.ToString("C", CultureInfo
+.CreateSpecificCulture("en-US")));
+```
+É possível determinar o numero de casas apos a virgula colocando um numero apos o C, exemplo: C1, C2, C5, C8...  
+
+Se usar N no lugar do C, ele formata como número, similar ao C mas com a exceção do indicador monetário: R$, $...   
+
+Se utilizar P a formatação fica como porcentagem.  
+Porém, para o valor sair certo, tem que por ponto na frente do numero (porcentagem = .12; ), do contrario o numero 12 por exemplo vai ser mostrado como 1.200,00% ao invés de 12,00%
+Isso independente se for int, float, double ou decimal.  
+
+### Formatações manuais
+
+Também é possível fazer formatações manuais como por exemplo:  
+```c#
+int numero = 123456;  
+Console.WriteLine(numero.ToString("##-##-##"));  
+```
+A saida vai ser: 12-34-56  
+o # representa um digito.  
+
+[Voltar ao Índice](#índice)
+
+---
+
+## Serialização 
+
+Verificar no projeto: [SerializacaoEAtributos](https://github.com/daniellfranco/treinos-basicos-cursos-CSharp/tree/main/Novos/4-SerializacaoEAtributos)  
+
+- Para fazer serialização em json no dotnet é recomendado o pacote nuget Newtonsoft.Json.    
+
+Para conferir se um json é valido, use este site:    
+https://codebeautify.org/jsonviewer   
+
+- O json representa as horas recebidas pelo datetime de forma independente, usando o padrão ISO 8601.  
+
+A biblioteca json possui ["Atributos"](#atributos) que são um código que fica acima das propriedades que permite alterar o comportamento de algumas coisas.  
+Exemplo:  
+```c#
+[JsonProperty("Nome_Produto")]
+public string Produto { get; set; }
+```
+Esse atributo, ao receber no arquivo json uma propriedade com o nome "Nome_Produto" (que está fora da convenção de código do C# então você não vai querer fazer uma propriedade com esse nome pois não está em PascalCase) ele Vai dizer para o desserializador pegar essa propriedade e colocar na propriedade abaixo que é a Produto.  
+
+[Voltar ao Índice](#índice)
+
+---
+
+# Dicas
+
+## Palavras Reservadas
+
+Normalmente não é possível utilizar palavras reservadas pelo C# como um nome de atributo, classe ou parâmetro, porem se colocar um `@` na frente de uma palavra reservada vc consegue usa-la, mas não é ideal, então evite.  
+
+[Voltar ao Índice](#índice)
+
+---
+
+## Carregando uma variável numérica com valor máximo
+
+Usando o comando:  
+```c#
+long variavel = long.MaxValue;
+```
+A variável será carregada com o valor máximo que o long suporta.  
+os outros tipos também suportam esse `.MaxValue` pode ser útil para testes.  
+
+[Voltar ao Índice](#índice)
+
+---
+
+## IF sem comparador
+
+O if não precisa ter comparador, se ele receber uma variavel booleana que seja true ou false ele ja determina o caminho, não precisa comparar a variavel boleana, exemp.:
+```c#
+if (varBool == true)
+{}
+```
+Apenas estar assim ja é o suficiente:
+```c#
+if (varBool)
+{}
+``` 
+Pois varBool vai estar carregado com um `true` ou um `false`, e o if ja compara se é true ou false, todos os operadores dentro de um if retornam um resultado true ou false para o if decidir o caminho, por isso o if trabalha direto também sem comparação.
+
+[Voltar ao Índice](#índice)
+
+---
+
+## Uso diferenciado do switch-case
+
+Algumas vezes a gente não percebe algumas formas de usar algo sem ter visto antes, esse é o caso dessa forma de usar do switch-case que eu não havia visto anteriormente na faculdade nem em cursos, e até o dia que eu vi isso eu não tinha pensado que poderia funcionar assim.
+
+```c#
+switch(letra)
+{
+	case "a":
+	case "e":
+	case "i":
+	case "o":
+	case "u":
+		Console.WriteLine("Vogal");
+		break;
+
+	default:
+		Console.WriteLine("Não é uma vogal");
+		break;
+}
+``` 
+
+Logica: Não é necessário ter um código em cada case, se ele não tiver o `break` ele vai continuar até chegar em um `break`, e se o resultado não bater com nenhum case ele vai pular todos e entrar no default como sempre.  
+Eu achava que assim não funcionaria pois por mais que ele entrasse ja no primeiro case, ao ir para o proximo case iria pular o código de dentro dos próximos.
+
+[Voltar ao Índice](#índice)
+
+---
+
+## Quebrando laços de repetição antes do fim
+
+É possível quebrar um laço de repetição antes do seu fim utilizando o comando: 
+`break;` (igual do switch case).  
+A ideia é fazer um if com isso caso algo especifico seja alcançado antes do fim das repetições.  
+
+[Voltar ao Índice](#índice)
+
+----
+
+## "Alterando" o tamanho de um Array
+
+Não é possível alterar o tamanho de um array em tempo de execução, oque da para fazer é usar um código que vai pegar a referencia do array na memoria, copia-lo, apagar o array original e colocar no lugar na memoria um array novo com capacidade maior.  
+Esse comando é:  
+```c#
+Array.Resize(ref nomeDoArray, 10);
+```  
+Nesse exemplo você está usando o comando ref para pegar a referencia na memoria do array, e dizendo que agora vc quer que ele tenha 10 espaços.  
+Também é possível usar:  
+```c#
+Array.Resize(ref nomeDoArray, nomeDoArray.Lenght * 2);
+```  
+Por exemplo para dobrar o tamanho do array se assim for desejado.  
+
+**Dica**: se precisar ficar alterando muito o tamanho de um array considere utilizar um `List<>`.
+
+[Voltar ao Índice](#índice)
+
+---
+
+## Copiando Arrays
+
+Para copiar um array para outro, usasse o comando:  
+```c#
+Array.Copy(arrayOriginal, arrayDestino, arrayOriginal.Lenght);
+``` 
+no caso a ultima parte com o `.Lenght` é a quantidade de elementos que você quer copiar, se quer copiar tudo ou só os 2 primeiros por exemplo.
+
+[Voltar ao Índice](#índice)
+
+---
+
+## Tratamento Get e Set simples usando =>
+
+Quando o get ou o set tem apenas 1 linha de código de tratamento, pode se usar `=>` (o nome desse simbolo é body expression) ao invés de chaves.
+exemplo:
+```c#
+get => _nome.ToUpper();
+```
+
+Se você usar esse simbolo direto na propriedade, exemplo:  
+```c#
+public string NomeCompleto => $"{Nome} {Sobrenome}";
+```
+Automaticamente a propriedade vai ser somente GET e ela vai setar automaticamente as variáveis concatenadas. Ou seja, se em Nome tiver Daniel e sobrenome tiver Franco, em nome completo vai ser armazenado Daniel Franco.
+
+[Voltar ao Índice](#índice)
+
+---
+
+## Usando o nome dos parâmetros ao passar os argumentos
+
+Você pode passar o nome dos parâmetros ao passar o [argumento](#argumentos-e-parâmetros)  
+```c#
+Pessoa p1 = new Pessoa(nome: "Daniel", sobrenome: "Franco");
+```
+Serve mais para deixar mais legível, mas também serve para inverter `(sobrenome: "Franco", nome: "Daniel")` se houver algum motivo para isso.
+
+[Voltar ao Índice](#índice)
+
+---
+
+## Botou um valor decimal float ou double e não funcionou?
+
+Precisa botar um M no valor do decimal, exemplo:
+```c#
+decimal valor = 10.12M;
+```
+Assim como para float é `f` e o double é `d`.
+
+[Voltar ao Índice](#índice)
+
+---
+----
