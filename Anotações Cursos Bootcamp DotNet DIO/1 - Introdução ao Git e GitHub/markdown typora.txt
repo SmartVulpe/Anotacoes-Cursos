@@ -1,3 +1,0 @@
-help > markdown reference
-
-para explicações de formatação de texto e tal...
