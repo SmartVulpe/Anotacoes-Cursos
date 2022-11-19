@@ -6,6 +6,9 @@
 - [Base do CSharp](#base-do-csharp)
   - [Namespace](#namespace)
   - [Declaração de variáveis](#declaração-de-variáveis)
+    - [Tipos de Valor](#tipos-de-valor)
+    - [Tipos de referencia](#tipos-de-referencia)
+    - [Declaração de variáveis na mesma linha](#declaração-de-variáveis-na-mesma-linha)
   - [Concatenação e Interpolação](#concatenação-e-interpolação)
   - [Classes](#classes)
   - [Objetos](#objetos)
@@ -20,7 +23,7 @@
   - [Modificadores de acesso (public / private / protected)](#modificadores-de-acesso-public--private--protected)
   - [Construtor](#construtor)
   - [This](#this)
-  - [Atributos e Métodos ESTÁTICOS](#atributos-e-métodos-estáticos)
+  - [Variáveis e Métodos ESTÁTICOS](#variáveis-e-métodos-estáticos)
   - [Herança](#herança)
   - [Polimorfismo](#polimorfismo)
   - [Classe Abstrata](#classe-abstrata)
@@ -30,8 +33,8 @@
 - [Teórico](#teórico)
   - [Alocação de Memória](#alocação-de-memória)
   - [Limpeza de memória](#limpeza-de-memória)
-  - [Tipos de valor](#tipos-de-valor)
-  - [Tipos de referência](#tipos-de-referência)
+  - [Tipos de valor (Teórico)](#tipos-de-valor-teórico)
+  - [Tipos de referência (Teórico)](#tipos-de-referência-teórico)
 - [Outras informações](#outras-informações)
   - [Conversão de tipos](#conversão-de-tipos)
   - [Listas](#listas)
@@ -39,6 +42,13 @@
   - [Definindo uma região e formatando estilo monetário](#definindo-uma-região-e-formatando-estilo-monetário)
     - [Formatações manuais](#formatações-manuais)
   - [Serialização](#serialização)
+  - [Tuplas](#tuplas)
+  - [Tipos Especiais](#tipos-especiais)
+    - [Tipos Anuláveis](#tipos-anuláveis)
+    - [Tipos Anônimos](#tipos-anônimos)
+    - [Tipo Dinâmico](#tipo-dinâmico)
+  - [Classes Genéricas](#classes-genéricas)
+  - [Métodos de Extensão](#métodos-de-extensão)
 - [Dicas](#dicas)
   - [Palavras Reservadas](#palavras-reservadas)
   - [Carregando uma variável numérica com valor máximo](#carregando-uma-variável-numérica-com-valor-máximo)
@@ -68,6 +78,33 @@ Obviamente que se você der using em mais de uma pasta com um arquivo de mesmo n
 
 ## Declaração de variáveis
 
+### Tipos de Valor
+
+São valores primitivos, que armazenam o valor diretamente, vide: [Tipos de Valor (Teórico)](#tipos-de-valor-teórico)  
+
+Tabela com os tipos de valor:
+![Tabela dos tipos de valor](imgs/Tabela-tipos-de-valor.png)  
+Nesta tabela tem muitos tipos raros de serem utilizados, dela normalmente você irá utilizar apenas: bool, decimal, double, e int.
+
+Note que nesta tabela não tem string! Pois ela é um tipo de referencia.
+
+--
+
+### Tipos de referencia
+
+São valores mais complexos que na area primitiva da memoria (memoria Stack) ele apenas tem o caminho de referencia para outro local da memoria (memoria heap) que ficam armazenados dados mais complexos que contem múltiplas variáveis primitivas dentre outras coisas, vide: [Tipos de Referencia (Teórico)](#tipos-de-referência-teórico)
+
+Destes temos:
+- Os objetos, vide: [Objetos](#objetos);
+- As **strings**;
+- E o DYNAMIC, vide: [Tipo Dinâmico](#tipo-dinâmico);
+
+Fonte, créditos da imagem e Leitura adicional recomendada: [CSharp data types - Tutorials Point](https://www.tutorialspoint.com/csharp/csharp_data_types.htm)
+
+--
+
+### Declaração de variáveis na mesma linha
+
 É possível declarar várias variáveis do mesmo tipo na mesma linha, exemplo:  
 ```c#
 public double largura, altura, comprimento;
@@ -83,7 +120,7 @@ A forma mais comum de concatenar textos com dados é essa:
 ```c#
 Console.WriteLine("Meu nome é " + nome + " e minha idade é " + idade + " anos");
 ```
-Mas a partir do C# 6 é possível **interpolar** textos, em outras palavras, é uma forma diferente de concatenar, utiliza um cifrão antes das aspas e chaves entre os dados de variáveis, exemplo:
+Mas a partir do C# 6 (para referencia o .NET6 usa o C# 10) é possível **interpolar** textos, em outras palavras, é uma forma diferente de concatenar, utiliza um cifrão antes das aspas e chaves entre os dados de variáveis, exemplo:
 ```c#
 Console.WriteLine($"Meu nome é {nome} e minha idade é {idade} anos");
 ```
@@ -154,7 +191,7 @@ Mas afinal o que é um atributo na linguagem C# ?
 
 Os Atributos são um mecanismo para a adição/associação de metadados, tais como instruções do compilador e outros dados sobre seus assemblies, tipos, métodos, propriedades, etc."  
 
-"Os atributos podem ser colocados em praticameante qualquer declaração, embora um atributo específico possa restringir os tipos de declarações nas quais ele é válido. Na linguagem C#, você especifica um atributo colocando o nome do atributo entre colchetes ([ ]) acima da declaração da entidade à qual ele se aplica."     
+"Os atributos podem ser colocados em praticamente qualquer declaração, embora um atributo específico possa restringir os tipos de declarações nas quais ele é válido. Na linguagem C#, você especifica um atributo colocando o nome do atributo entre colchetes ([ ]) acima da declaração da entidade à qual ele se aplica."     
 Explicação retirada de: [Apresentando Atributos - Macoratti](https://www.macoratti.net/18/04/c_atrib1.htm)  
 
 **Exemplos práticos de uso de atributos:**    
@@ -285,10 +322,10 @@ Se não preencher nada ele vai executar o primeiro:
 **apresentar();**    
 
 Se colocar uma string, ele vai executar o segundo:  
-**apresentar("Soul");**   
+**apresentar("Daniel");**   
 
 Se colocar uma string E um int, ele vai executar o terceiro:    
-**apresentar("Soul", 20);**  
+**apresentar("Daniel", 20);**  
 
 E na hora que for escrever esse método ele vai mostrar na janelinha que aparece de auto-completar que tem 2 overloads (nesse caso do apresentar), que é a primeira opção e mais as 2 extras, totalizando 3 opções de uso do mesmo método.  
 
@@ -359,23 +396,23 @@ Dentro do arquivo Pessoa.cs
 
 ## This
 
-**This** serve para forçar pegar o valor do atributo (variável), ao invés de um valor que veio por um **parâmetro** de mesmo nome, exemplo:
+**This** serve para forçar pegar o valor do campo (variável), ao invés de um valor que veio por um **parâmetro** de mesmo nome, exemplo:
 
 La no arquivo main o objeto que contem esse código está setando para nome: 
 ```c#
 Pessoa("Nayala");        
 
-    // Atributo
-private string nome = "Soul";
+// Campo / Variável
+private string nome = "Daniel";
 
 public Pessoa(string nome)
 {
-    //Detalhe: Ambos atributo e parâmetro tem o mesmo nome
+    //Detalhe: Ambos campo e parâmetro tem o mesmo nome
 
     //Sem o this ele pega o valor do parâmetro
     Console.WriteLine(nome);
 
-    //Com o this ele pega o valor do atributo
+    //Com o this ele pega o valor do campo
     Console.WriteLine(this.nome);
 }
 ```
@@ -383,18 +420,18 @@ public Pessoa(string nome)
 No console vai aparecer:  
 ```
 Nayala  
-Soul  
+Daniel  
 ```
 
-ou seja, como o primeiro estava sem o **this** ele pegou o que foi setado para o atributo, e o segundo que tinha o **this** ele pegou o que tava na variável nome.
+Ou seja, como o primeiro estava sem o **this** ele pegou o que foi setado para o campo, e o segundo que tinha o **this** ele pegou o que tava na variável nome.
 
 [Voltar ao Índice](#índice)
 
 ---
 
-## Atributos e Métodos ESTÁTICOS
+## Variáveis e Métodos ESTÁTICOS
 
-São atributos e métodos que podem ser acessados **sem precisar instanciar** um objeto.  
+São variáveis e métodos que podem ser acessados **sem precisar instanciar** um objeto.  
 Exemplo:  
 No arquivo de classe **Exemplo.cs** vai estar assim:
 
@@ -707,7 +744,7 @@ Na memória **Heap** o C# usa o **Garbage Collector**, que verifica se tem algum
 
 ---
 
-## Tipos de valor
+## Tipos de valor (Teórico)
 
 O tipo de valor armazena dados estáticos e não complexos (também conhecido por tipos primitivos**).  
 São tipos simples, como int, float, string, decimal, eles conseguem armazenar seus nomes e seus dados dentro da **Stack** pois são simples.  
@@ -728,7 +765,7 @@ Portanto se você alterar o valor de `b`, somente `b` será alterado.
 
 ---
 
-## Tipos de referência
+## Tipos de referência (Teórico)
 O tipo de referência armazena dados dinâmicos e complexos.  
 São tipos mais complexos, pois podem possuir vários tipos simples e até outros tipos complexos, dentro deles, então na memoria **Stack** é armazenado só o nome e a REFERÊNCIA do verdadeiro tipo que está armazenado lá na memoria **heap**.  
 E se por exemplo:
@@ -919,11 +956,164 @@ Esse atributo, ao receber no arquivo json uma propriedade com o nome "Nome_Produ
 
 ---
 
+## Tuplas
+
+Tuplas são usadas para retornar múltiplos valores de um método. Ao invés do método retornar um valor, ele pode retornar 5 valores por exemplo.  
+
+
+[ExemploTuplas](https://github.com/daniellfranco/treinos-basicos-cursos-CSharp/blob/main/Novos/3-TuplasTernarioEDesconstrucao/Models/ExemploTuplas.cs)
+
+
+Leituras adicionais:  
+[Apresentando Tuples - Macoratti](https://www.macoratti.net/13/07/c_tup1.htm)  
+[Tipos de tupla (Referência do C#) - Microsoft Learn](https://learn.microsoft.com/pt-br/dotnet/csharp/language-reference/builtin-types/value-tuples)  
+
+[Voltar ao Índice](#índice)
+
+---
+
+## Tipos Especiais
+
+**[Meu projeto com tipos especiais para mais referencias](https://github.com/daniellfranco/treinos-basicos-cursos-CSharp/tree/main/Novos/5-TiposEspeciais)**
+
+### Tipos Anuláveis
+
+Quando você coloca um ? no nome da variavel, exemplo `string?` ela se torna Nullable (anulável).  
+
+Algumas variáveis como o tipo booleano, bool, não suportam null, no caso do bool é somente true ou false, para aceitar um null, coloca-se um ? no tipo, ficando `bool?`.  
+Vale ressaltar que fazer isso sem um tratamento pode causar erros no sistema, pois por exemplo, um booleano pode ser inserido direto em um if sem comparador, pois o if trabalha com true e false (vide [If sem comparador](#if-sem-comparador)), mas se ele receber um null ele não vai saber oque fazer e dar erro.  
+
+Obs: Quando transforma um bool em nullable, ele para de funcionar do jeito "de sempre", no exemplo do if, após você ter certeza que ele não é nulo, você teria que usar um `nomeDaVariavel.Value` para que o if consiga ler se é true ou false.  
+
+**Sugestão de tratamento** - Usar `nomeDaVariavel.HasValue` para ver se não é null.  
+
+Exemplo de uso com tratamento:   
+```c#
+bool? desejaReceberEmail = null;
+
+if (desejaReceberEmail.HasValue && desejaReceberEmail.Value)
+{
+    Console.WriteLine("O usuário optou por receber e-mail.");
+}
+else
+{
+    Console.WriteLine("O usuário não respondeu ou não optou por receber e-mail.");
+}
+
+```
+
+--
+
+### Tipos Anônimos
+
+Tipos anônimos são parecidos com tuplas, mas com a desvantagem que não podem ser editados depois e nem ser usados para retornar métodos, mas ele serve para representar algum objeto novo somente com propriedades que você queira que ele retorne, como se você desconstruísse algum objeto e fazendo um tipo anonimo só com os dados que voce queira.  
+
+Exemplo de uso simples de tipo anonimo:  
+```c#
+var tipoAnonimo = new { Nome = "Daniel", Sobrenome = "Franco", Altura = 1.80 };
+
+Console.WriteLine("Nome: " + tipoAnonimo.Nome);
+Console.WriteLine("Sobrenome: " + tipoAnonimo.Sobrenome);
+Console.WriteLine("Altura: " + tipoAnonimo.Altura);
+```
+
+Leitura adicional recomendada para mais detalhes e usos: [Tipos Anônimos - Macoratti](https://www.macoratti.net/12/07/c_antip1.htm)
+
+--
+
+### Tipo Dinâmico
+
+Tipos dinâmicos permitem ter seu tipo alterado conforme oque recebem.  
+
+Exemplo:  
+```c#
+// Iniciou como um int pois recebeu um inteiro
+dynamic variavelDinamica = 4;
+
+// Agora virou uma string
+variavelDinamica = "Texto";
+
+// Agora virou booleano
+variavelDinamica = true;
+```
+
+É util em alguns casos dado seu dinamismo, mas pode ser perigoso, uma confusão ao trabalhar com oque ela recebe e vai gerar uma exceção.
+
+
+[Voltar ao Índice](#índice)
+
+---
+
+## Classes Genéricas
+
+Classes genéricas são uma forma interessante de reaproveitamento de código.
+Com elas você não define um tipo na sua criação e sim na hora de instanciar.
+
+Exemplo, você quer criar uma classe que irá manipular arrays de uma forma especifica, e precisa que isso sirva para qualquer tipo de variável que um array aceita. 
+Então você coloca esse T, esse T recebe o Tipo que você irá colocar na hora de instanciar:
+```c#
+class MeuArray<T>
+{}
+```
+
+A partir dai, todos os locais que você quiser usar o tipo que será definido na instanciação deverão receber T, exemplo:
+```c#
+// Cria um array do tipo recebido em T
+private T[] array = new T[capacidade];
+
+// Adiciona um elemento do tipo recebido no T
+public void AdicionarElementoArray(T elemento)
+{}
+```
+
+Classe de um projeto meu demonstrando o tipo genérico: [Meu Array.cs - Models - Tipos Especiais](https://github.com/daniellfranco/treinos-basicos-cursos-CSharp/blob/main/Novos/5-TiposEspeciais/Models/MeuArray.cs)  
+
+Leituras adicionais:  
+[Classes Genéricas - Microsoft Learn](https://learn.microsoft.com/pt-br/dotnet/csharp/programming-guide/generics/generic-classes)  
+[Criando e usando uma classe ou método Genérico - Macoratti](https://www.macoratti.net/17/09/c_cugmc1.htm)  
+
+
+[Voltar ao Índice](#índice)
+
+---
+
+## Métodos de Extensão
+
+Um método de extensão é um recurso para adicionar métodos direto ao tipo.  
+
+Ele é sempre estático, se for feito em uma classe só para métodos de extensão a classe tem que ser estática também, pois assim vai funcionar em qualquer lugar do projeto.  
+
+Exemplo:  
+```c#
+public static class MetodoDeExtensaoInt
+    {
+        public static bool EhPar(this int numero)
+        {
+            return numero % 2 == 0;
+        }
+    }
+```
+
+Esse método EhPar vai extender sua função para o tipo int.
+Resumindo de forma pratica:  
+Basicamente se você fizer isso, quando você escrever uma variável do tipo int, exemplo `int numero`, você vai poder digitar numero.EhPar(), e nesse caso ele faz uma comparação para conferir se o resto da divisão é 0, se for zero é par, senão é impar, e retorna um true ou false.  
+
+**OBS: Não funciona somente para tipos já existentes, você pode usar para Objetos/Entidades também**   
+
+Leituras adicionais:  
+
+[Métodos de extensão - Microsoft Learn](https://learn.microsoft.com/pt-br/dotnet/csharp/programming-guide/classes-and-structs/extension-methods)  
+[Métodos de Extensão (revisitado) - Macoratti](https://www.macoratti.net/18/04/c_extmet1.htm)  
+
+[Voltar ao Índice](#índice)
+
+---
+
 # Dicas
 
 ## Palavras Reservadas
 
-Normalmente não é possível utilizar palavras reservadas pelo C# como um nome de atributo, classe ou parâmetro, porem se colocar um `@` na frente de uma palavra reservada vc consegue usa-la, mas não é ideal, então evite.  
+Normalmente não é possível utilizar palavras reservadas pelo C# como um nome de variável, classe ou parâmetro, porem se colocar um `@` na frente de uma palavra reservada vc consegue usa-la, mas não é ideal, então evite.  
 
 [Voltar ao Índice](#índice)
 

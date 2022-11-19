@@ -15,9 +15,6 @@ OPERADOR TERNARIO= ?
 
 ----------------------------
 
-Tipos de dados de variaveis:
-https://www.tutorialspoint.com/csharp/csharp_data_types.htm
-
 ---------------
 
 
@@ -95,7 +92,7 @@ comentarios:
 
 -----------------------------------------------
 verificar no projeto: TuplasTernarioEDesconstrucao
-tuplas
+
 ternario
 desconstrutor
 ----------------------------------------------
@@ -109,16 +106,8 @@ desconstrutor
 
 Tipos Especiais, verificar no projeto: TiposEspeciais
 
-tipos anulaveis:
-bool? = variavel nullable, no caso do bool aceita receber null ao inves de apenas true e false, e altera seu funcionamento, onde antes em um if era só colocar o nome da variavel que ja pegava se era true ou false, e agora é nessessario colocar nomeDaVariavel.Value para simplesmente pegar se é true ou false. E é bom conferir com .HasValue para ver se não é null para evitar erros.
 
-tipos anonimos
 
-tipo dinâmico
-
-classes genericas
-
-metodos de extensão
 
 
 ---------------------------------------------------
