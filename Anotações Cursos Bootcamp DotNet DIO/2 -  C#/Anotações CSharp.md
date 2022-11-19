@@ -43,6 +43,7 @@
     - [Formatações manuais](#formatações-manuais)
   - [Serialização](#serialização)
   - [Tuplas](#tuplas)
+  - [Desconstrutor](#desconstrutor)
   - [Tipos Especiais](#tipos-especiais)
     - [Tipos Anuláveis](#tipos-anuláveis)
     - [Tipos Anônimos](#tipos-anônimos)
@@ -245,6 +246,8 @@ Fontes e leituras recomendadas:
 
 **Propriedades** são variáveis que serão utilizadas para entrada e saída de dados da classe, elas são acompanhadas de get e set, e normalmente utilizadas para carregar ou transmitir o dado de um **campo** sem que ele seja exposto.  
 **São escritas em PascalCase**
+
+**Dica:** se digitar **prop** (abreviação para propriedade) e apertar tab duas vezes ele vai criar automaticamente um modelo de propriedade para você.
 
 Mais detalhes sobre get e set na sessão sobre [Get e Set](#get-e-set)
 
@@ -958,15 +961,108 @@ Esse atributo, ao receber no arquivo json uma propriedade com o nome "Nome_Produ
 
 ## Tuplas
 
-Tuplas são usadas para retornar múltiplos valores de um método. Ao invés do método retornar um valor, ele pode retornar 5 valores por exemplo.  
+Tuplas são usadas para armazenar varios tipos de valores em uma variável só sem ser um objeto.
+Podem ser usadas para facilitar trabalhar com um conjunto de dados, ou para armazenar um conjunto de dados recebido de um banco de dados, ou para retornar/receber multiplos valores de um método, ao invés do método retornar um valor, ele pode retornar 5 valores por exemplo...
 
+Uma tupla pode ser declarada das seguintes formas:
+```c#
+// No primeiro parenteses você coloca todos os tipos que voce vai ocupar na tupla.
+// No segundo você declara eles, precisa ser na ordem dos tipos do primeiro parenteses.
+(int, string, string, decimal) tupla = (1, "Daniel", "Franco", 1.80M);
 
-[ExemploTuplas](https://github.com/daniellfranco/treinos-basicos-cursos-CSharp/blob/main/Novos/3-TuplasTernarioEDesconstrucao/Models/ExemploTuplas.cs)
+// Também é possivel declarar o nome de cada tipo da tupla
+(int ID, string Nome, string Sobrenome, decimal Altura) tupla2 = (2, "Nayala", "Forest", 1.69M);
+
+// Também pode ser declarado das seguintes formas, mas o recomendado é a forma acima
+// Pois na acima dá para nomear as variaveis da tupla deixando ela mais legivel.
+ValueTuple<int, string, string, decimal> outroExemploTupla = (3, "Daniel", "Franco", 1.80M);
+
+// Também pode ser criado desta forma
+var outroExemploTupla2 = Tuple.Create(4, "Nayala", "Forest", 1.69M);
+
+// E quando recebe de um return
+// O metodo envia uma tupla mas aqui ele separa em variáveis separadas.
+// bool, string, int
+var (sucesso, linhasArquivo, quantidadeLinhas) = exemploTuplas.LerArquivo("Arquivos/ArquivoTexto.txt");
+// Os nomes desejados tem que estar na ordem que o return mandou:
+return (true, linhas, linhas.Count());
+// E se por acaso algum dos retornos não for necessario em algum momento, pode-se
+// por um _ (underline) no lugar da variavel que vc não vai usar
+// exemplo:
+// var (sucesso, _, quantidadeLinhas) = exemploTuplas.LerArquivo("Arquivos/ArquivoTexto.txt");
+// Ai não cria variavel desnecessaria e melhora a legibilidade do codigo
+```
+
+E pode ser lida das seguintes formas:
+
+```c#
+// Quando não é dado nome às propriedades:
+Console.WriteLine($"ID: {tupla.Item1}");
+Console.WriteLine($"Nome: {tupla.Item2}");
+Console.WriteLine($"Sobrenome: {tupla.Item3}");
+Console.WriteLine($"Altura: {tupla.Item4}");
+
+// Quando é dado nome às propriedades:
+Console.WriteLine($"ID: {tupla2.ID}");
+// Mas também pode ser lido usando Item mesmo quando a propriedade tem nome.
+Console.WriteLine($"Nome: {tupla2.Item2}"); 
+Console.WriteLine($"Sobrenome: {tupla2.Sobrenome}");
+Console.WriteLine($"Altura: {tupla2.Altura}");
+```
+
+Meu projeto com esses codigos: [ExemploTuplas](https://github.com/daniellfranco/treinos-basicos-cursos-CSharp/blob/main/Novos/3-TuplasTernarioEDesconstrucao/Models/ExemploTuplas.cs)
 
 
 Leituras adicionais:  
 [Apresentando Tuples - Macoratti](https://www.macoratti.net/13/07/c_tup1.htm)  
 [Tipos de tupla (Referência do C#) - Microsoft Learn](https://learn.microsoft.com/pt-br/dotnet/csharp/language-reference/builtin-types/value-tuples)  
+
+[Voltar ao Índice](#índice)
+
+---
+
+## Desconstrutor
+
+O desconstrutor ele devolve os dados da classe.
+Digamos assim, você carregou os dados pelo construtor, tratou eles, e ai agora você precisa pegar eles devolta tratadinhos, quem vai fazer isso é o desconstrutor.
+
+Exemplo simples da classe:
+```c#
+    internal class ExemploDesconstrutor
+    {
+        public string Nome { get; set; }
+
+        public string Sobrenome { get; set; }
+
+        //Construtor adiciona os dados
+        public ExemploDesconstrutor(string nome, string sobrenome)
+        {
+            Nome = nome;
+            Sobrenome = sobrenome;
+        }
+
+        //Descontrutor devolve os dados
+        public void Deconstruct(out string nome, out string sobrenome)
+        {
+            nome = Nome;
+            sobrenome = Sobrenome;
+        } 
+    }
+```
+
+Exemplo simples do uso:
+```c#
+//construtor adicionando os dados
+ExemploDesconstrutor p1 = new ExemploDesconstrutor("Daniel", "Franco");
+
+//desconstrutor devolvendo os dados, similar a tupla
+(string nome, string sobrenome) = p1;
+```
+
+
+Leitura adicional: 
+[Apresentando o recurso Deconstruction - Macoratti](https://www.macoratti.net/20/06/c_deconstr1.htm)
+
 
 [Voltar ao Índice](#índice)
 
