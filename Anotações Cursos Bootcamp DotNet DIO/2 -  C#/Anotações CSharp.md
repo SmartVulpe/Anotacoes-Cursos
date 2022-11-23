@@ -50,6 +50,7 @@
     - [Tipo Dinâmico](#tipo-dinâmico)
   - [Classes Genéricas](#classes-genéricas)
   - [Métodos de Extensão](#métodos-de-extensão)
+  - [Instrução Using (Objeto descartável)](#instrução-using-objeto-descartável)
 - [Dicas](#dicas)
   - [Palavras Reservadas](#palavras-reservadas)
   - [Carregando uma variável numérica com valor máximo](#carregando-uma-variável-numérica-com-valor-máximo)
@@ -58,9 +59,10 @@
   - [Quebrando laços de repetição antes do fim](#quebrando-laços-de-repetição-antes-do-fim)
   - ["Alterando" o tamanho de um Array](#alterando-o-tamanho-de-um-array)
   - [Copiando Arrays](#copiando-arrays)
-  - [Tratamento Get e Set simples usando =>](#tratamento-get-e-set-simples-usando-)
+  - [Tratamento Get e Set simples usando =\>](#tratamento-get-e-set-simples-usando-)
   - [Usando o nome dos parâmetros ao passar os argumentos](#usando-o-nome-dos-parâmetros-ao-passar-os-argumentos)
   - [Botou um valor decimal float ou double e não funcionou?](#botou-um-valor-decimal-float-ou-double-e-não-funcionou)
+  - [Links para leitura sobre Design Patterns](#links-para-leitura-sobre-design-patterns)
 
 </br>
 
@@ -1205,6 +1207,16 @@ Leituras adicionais:
 
 ---
 
+## Instrução Using (Objeto descartável)
+
+É uma forma de declarar um objeto para que ele seja usado somente dentro do escopo e descartado assim que sair do escopo.
+
+[Instrução Using : Close e Dispose - Macoratti](https://www.macoratti.net/20/02/c_using1.htm)
+
+[Voltar ao Índice](#índice)
+
+---
+
 # Dicas
 
 ## Palavras Reservadas
@@ -1357,4 +1369,12 @@ Assim como para float é `f` e o double é `d`.
 [Voltar ao Índice](#índice)
 
 ---
+
+## Links para leitura sobre Design Patterns
+
+- [.NET - Design Patterns - Identificando e aplicando padrões - Macoratti](https://www.macoratti.net/13/09/net_dp1.htm)   
+Esse é uma sequencia, no final de cada artigo tem o link para o proximo.
+
+[Voltar ao Índice](#índice)
+
 ----
