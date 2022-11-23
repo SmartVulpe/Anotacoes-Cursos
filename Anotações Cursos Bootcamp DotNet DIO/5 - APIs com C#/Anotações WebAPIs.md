@@ -1,116 +1,185 @@
+
+## Oque é uma API
+
 Uma API (Application Programming Interface) é uma forma de comunicação entre computadores ou programas de computadores.
 Em outras palavras, é um software que fornece informações para outro software.
 
 API é um software que faz a intermediação entre o software do cliente com o software do servidor. Exemplo: um garçon de um restaurante seria uma API.
 
+---
+
+## Para que serve uma API
+
 Principal função de uma API é: Disponibilizar métodos (endpoints) e serviços, permitindo a comunicação e integração entre diferentes sistemas.
+
+---
+
+## Alguns sites de APIs
 
 date.nager.at - site de api de feriados.
 dog.ceo/dog-api - side de api de imagens de cachorros.
 
+---
+
+## Dica Importante
+
 SEMPRE busque ler primeiro a documentação da API para ver como ela funciona e como usa-la.
 
-comando para criar um projeto de web api:
-dotnet new webapi
+---
 
-comando para rodar e quando alterar o codigo ja recompilar em tempo de execução (similar ao hotreload do vs community):
-dotnet watch run
+## Comandos dotnet para criar e executar api
 
-swagger é um frontend para testar apis em ambiente de desenvolvimento, não é exatamente necessario mas é um recurso que facilita os testes.
+Comando para criar um projeto de web api:
+`dotnet new webapi`
 
-Classes Controller são classes que você vai colocar os metodos relacionados as ações de determinada api, exemplo, Get de produto, Set de produto, e elas devem ser separadas relacionadas ao contexto dela, pro exemplo uma controller de produtos deve ter os controladores relacionado a produtos apenas, não devem mexer em coisas do usuario por exemplo, se precisa mexer no usuario é necessario fazer uma controller para/relacionada ao usuario.
+Comando para rodar e quando alterar o código ja recompilar em tempo de execução (similar ao HotReload do vs community):
+`dotnet watch run`
 
-"Uma controller nada mais é que o ponto de entrada que nos vamos disponibilizar os nossos metodos".
+---
 
-É necessario fazer o nome das controllers terminando com a palavra Controller, exemplo UsuarioController, ProdutoController...
+## Oque é o Swagger
 
--
-O endereço do metodo no link, é formado pelo localhost (ou o dominio que ele estiver) / nome do controlador sem a palavra controller exemplo UsuarioController, ele vai mostrar só Usuario, e dai no nome que você colocou em cima do metodo, exemplo:
-      [HttpGet("ObterDataHoraAtual")]
-        public IActionResult ObterDataHora()
+Swagger é um frontend para testar apis em ambiente de desenvolvimento, não é exatamente necessário mas é um recurso que facilita os testes.
 
-e no fim o link vai ficar assim:
-https://localhost:7275/Usuario/ObterDataHoraAtual
--
+## Classes Controller
 
-O Entity Framework é um framework ORM (Object-Relational Mapping) criado para facilitar a integração com o banco de dados, mapeando tabelas e gerando comandos SQL de forma automatica.
-Resumindo: ele gera os codigo que você colocaria na query automaticamente.
--
+Classes Controller são classes que você vai colocar os métodos relacionados às ações de determinada api, exemplo, Get de produto, Set de produto, e elas devem ser separadas relacionadas ao contexto dela, pro exemplo uma controller de produtos deve ter os controladores relacionado a produtos apenas, não devem mexer em coisas do usuário por exemplo, se precisa mexer no usuário é necessário fazer uma controller para/relacionada ao usuário.  
 
-CRUD
-C - CREATE (Insert)
-R - READ (Select)
-U - UPDATE (Update)
-D - DELETE (Delete)
--
+"Uma controller nada mais é que o ponto de entrada que nos vamos disponibilizar os nossos métodos".
 
-dotnet tool install --global dotnet-ef
-ferramenta para inserir comandos no entity framework via terminal, só precisa instalar uma vez no computador.
+**É necessário fazer o nome das controllers terminando com a palavra Controller, exemplo UsuarioController, ProdutoController...**
 
-dotnet add package Microsoft.EntityFrameworkCore.Design
-pacote para instalar o entity framework no PROJETO, precisa instalar ele em todo projeto que for usar o entity framework.
-
-dotnet add package Microsoft.EntityFrameworkCore.SqlServer
-pacote para instalar o modulo do entity framework para o SQL Server, o EF é modular então precisa instalar o Design q é uma base, e o modulo referente ao banco de dados que você for usar, nesse caso o SQL Server. Também precisa instalar em todo projeto.
--
-
--Entidades (Entities) são classes no programa que também são tabelas no banco de dados.
-Nelas precisa ter propriedades com os mesmos nomes que vai ter na tabela do banco de dados.
-
--Classes Context fazem uma ligação do programa com o banco de dados, seja de conexão quanto de referenciamento de entidades.
-A classe context herda a classe DbContext, nela precisa ter um construtor que vai fazer a ligação da conexão, e vai ter uma propriedade do tipo
-public DbSet<NomeDaEntidade> NomeDaEntidade { get; set; }
-que vai servir para referenciar a entidade, senao ela só vai existir la nas entities mas nao vai funcionar.
-
--
-
-Existe 2 arquivos json no projeto, um é o appsetings, e um é o appsettings.Development, o primeiro você configura com as coisas que você vai precisar na hora de implementar o programa em ambiente de produção, e o segundo você usa com as configurações para o ambiente de desenvolvimento, por exemplo configurar para usar um banco de dados que é só para desenvolvimento e configurar um comando para impedir de mandar um email aos usuarios.
-
-PS: o appsetting.Developtment.json no visual studio community fica escondido, ao lado do appsetting.json tem um triangulo para abrir como se fosse uma pasta, clique nele e vai aparecer o .Development abaixo.
-
-você vai colocar a connextion string logo depois de fechar a chave do Logging, a connection string do sql server express é assim:
-"ConnectionStrings": {
-    "ConexaoPadrao": "Server=localhost\\sqlexpress; Initial Catalog=Agenda; Integrated Security=True"
-  }
-o "ConnectionStrings": tem que ser sempre esse nome, mas o "ConexaoPadrao" pode ser o nome que você quiser.
-
--
-builder.Services.AddDbContext<AgendaContext>(options =>
-    options.UseSqlServer(builder.Configuration.GetConnectionString("ConexaoPadrao")));
-Aqui nos estamos dizendo para o builder adicionar um DbContext do tipo AgendaContext, e passando algumas opções, dizendo para usar SqlServer, e passando a connextion string (caminho para acessar o banco de dados e como fazer login) que está no appsettings.json ou appsettings.Development.json.
-Daria para colocar a conection string direto aqui, mas se um dia precisar mudar teria que recompilar o codigo, e estando la no json ele vai estar junto com o programa compilado e ai é mais facil alterar.
-
--
-
-o Migrations é um mapeamento que o entity framework faz das nossas classes (entities) para transforma-las em tabelas.
-Ele vai executar nas classes que tiverem referenciadas na classe Context.
-"Migrations é um codigo que serve para espelhar as suas alterações no codigo no banco de dados"
-Ele tem um metodo Up para aplicar mudanças nas tabelas, e um metodo Down para reverte-las.
-
-para executar o migrations é preciso fazer o comando manualmente via terminal, o comando é:
-`dotnet-ef migrations add CriacaoTabelaContato`
-no caso o CriacaoTabelaContato é apenas um nome para definir que você fez nessa migração, como era uma migração simples de apenas uma tabela, foi dado esse nome.
-
-Na pasta Migrations que o comando vai criar, tem alguns dados da tabela que ele criou.
-Você pode notar duas coisas que ele faz automaticamente:
-Primeiro, ele vai alterar o nome da Entities que deve ser nomeada no singular, para o plural.
-Segundo se a classe tiver uma propriedade Id ele vai automaticamente reconhecer e usar ela como uma identity e adicionar a constraint de Primary Key.
-
-ai para adicionar essa tabela no banco de dados use o comando:
-`dotnet-ef database update`
-
-O basico para uma classe controller é:
-essas tags no cabeçalho da classe controller
+### O básico para uma classe controller é:  
+Esses [atributos](../2%20-%20%20C%23/Anota%C3%A7%C3%B5es%20CSharp.md/#Atributos) no cabeçalho da classe controller
+```c#
     [ApiController]
-        [Route("[controller]")]
-e a classe herdar a ControllerBase, não é Controller, é ControllerBase.
+    [Route("[controller]")]
+```
+E a classe herdar a ControllerBase, não é Controller, é ControllerBase.
 e fazer uma "injeção de dependencia" atravez do construtor.
+```c#
 private readonly AgendaContext _context;
 public ContatoController(AgendaContext context)
 {
     _context = context;
 }
+```
+Para todos os métodos http com exceção do get, você tem que chamar o método:
+`_context.SaveChanges();`  
+Senão ele não salva no banco de dados.
 
-Para todos os metodos http com excessão do get, você tem que chamar o metodo:
-_context.SaveChanges();
-senão ele não salva no banco de dados.
+---
+
+## Caminho URL API
+
+O endereço do método no link, é formado pelo localhost (ou o domínio que ele estiver) / nome do controlador sem a palavra controller exemplo UsuarioController, ele vai mostrar só Usuário, e dai no nome que você colocou em cima do método, exemplo:
+```c#
+[HttpGet("ObterDataHoraAtual")]
+public IActionResult ObterDataHora()
+```
+
+Exemplo de como o link vai ficar:  
+`https://localhost:7275/Usuario/ObterDataHoraAtual`  
+
+--- 
+
+## Oque é o Entity Framework?
+
+O Entity Framework é um framework ORM (Object-Relational Mapping) criado para facilitar a integração com o banco de dados, mapeando tabelas e gerando comandos SQL de forma automática.  
+Resumindo: ele gera os código que você colocaria na query automaticamente.  
+
+--- 
+
+## CRUD
+
+C - CREATE (Insert)  
+R - READ (Select)  
+U - UPDATE (Update)  
+D - DELETE (Delete)  
+
+---
+
+## Comandos dotnet para instalar pacotes
+
+`dotnet tool install --global dotnet-ef` - Ferramenta para inserir comandos no entity framework via terminal, só precisa instalar uma vez no computador.  
+
+`dotnet add package Microsoft.EntityFrameworkCore.Design` - Pacote para instalar o entity framework no PROJETO, precisa instalar ele em todo projeto que for usar o entity framework.  
+
+`dotnet add package Microsoft.EntityFrameworkCore.SqlServer` - Pacote para instalar o modulo do entity framework para o SQL Server, o EF é modular então precisa instalar o Design q é uma base, e o modulo referente ao banco de dados que você for usar, nesse caso o SQL Server. Também precisa instalar em todo projeto.  
+
+---
+
+## Entidades (Entities) 
+
+São classes no programa que também são tabelas no banco de dados.
+Nelas precisa ter propriedades com os mesmos nomes que vai ter na tabela do banco de dados.
+
+---
+## Classes Context
+
+Elas fazem uma ligação do programa com o banco de dados, seja de conexão quanto de referenciamento de entidades.
+A classe context herda a classe DbContext, nela precisa ter um construtor que vai fazer a ligação da conexão, e vai ter uma propriedade do tipo:  
+```c# 
+public DbSet<NomeDaEntidade> NomeDaEntidade { get; set; }
+```  
+Que vai servir para referenciar a entidade, senão ela só vai existir la nas entities mas nao vai funcionar.
+
+---
+
+## AppSettings
+
+Existe 2 arquivos json no projeto, um é o appsetings, e um é o appsettings.Development, o primeiro você configura com as coisas que você vai precisar na hora de implementar o programa em ambiente de produção, e o segundo você usa com as configurações para o ambiente de desenvolvimento, por exemplo configurar para usar um banco de dados que é só para desenvolvimento e configurar um comando para impedir de mandar um email aos usuários.
+
+PS: o appsetting.Developtment.json no visual studio community fica escondido, ao lado do appsetting.json tem um triangulo para abrir como se fosse uma pasta, clique nele e vai aparecer o .Development abaixo.
+
+---
+
+## Connection Strings
+
+Você vai colocar a connection string logo depois de fechar a chave do Logging, a connection string do sql server express é assim:
+```json
+"ConnectionStrings": {
+    "ConexaoPadrao": "Server=localhost\\sqlexpress; Initial Catalog=Agenda; Integrated Security=True"
+  }
+```
+O `"ConnectionStrings":` tem que ser sempre esse nome, mas o "ConexaoPadrao" pode ser o nome que você quiser.
+
+---
+
+## Configurando a conexão com a DB na Program.cs
+
+```c#
+builder.Services.AddDbContext<AgendaContext>(options =>
+        options.UseSqlServer(builder.Configuration
+        .GetConnectionString("ConexaoPadrao")));
+```
+Aqui nos estamos dizendo para o builder adicionar um DbContext do tipo AgendaContext, e passando algumas opções, dizendo para usar SqlServer, e passando a connection string (caminho para acessar o banco de dados e como fazer login) que está no appsettings.json ou appsettings.Development.json.  
+
+Daria para colocar a connection string direto aqui, mas se um dia precisar mudar teria que recompilar o código, e estando la no json ele vai estar junto com o programa compilado e ai é mais fácil alterar.  
+
+---
+
+## Oque é o Migrations?
+
+O Migrations é um mapeamento que o entity framework faz das nossas classes (entities) para transforma-las em tabelas.  
+Ele vai executar nas classes que tiverem referenciadas na classe Context.  
+"Migrations é um código que serve para espelhar as suas alterações no código no banco de dados".  
+Ele tem um método Up para aplicar mudanças nas tabelas, e um método Down para reverte-las.  
+
+## Executando o Migrations
+
+Para executar o migrations é preciso fazer o comando manualmente via terminal, o comando é:  
+`dotnet-ef migrations add CriacaoTabelaContato`  
+No caso o **CriacaoTabelaContato** é apenas um nome para definir que você fez nessa migração, como era uma migração simples de apenas uma tabela, foi dado esse nome.   
+
+Na pasta Migrations que o comando vai criar, tem alguns dados da tabela que ele criou.  
+Você pode notar duas coisas que ele faz automaticamente:  
+Primeiro, ele vai alterar o nome da Entities que deve ser nomeada no singular, para o plural.  
+Segundo se a classe tiver uma propriedade Id ele vai automaticamente reconhecer e usar ela como uma identity e adicionar a constraint de Primary Key.  
+
+Ai para adicionar essa tabela no banco de dados use o comando:  
+`dotnet-ef database update`  
+
+---
+
+
