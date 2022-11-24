@@ -21,9 +21,12 @@ dog.ceo/dog-api - side de api de imagens de cachorros.
 
 ---
 
-## Dica Importante
+## Dicas Importantes
 
-SEMPRE busque ler primeiro a documentação da API para ver como ela funciona e como usa-la.
+- SEMPRE busque ler primeiro a documentação da API para ver como ela funciona e como usa-la.
+
+
+- `dotnet --help` - use para buscar comandos.
 
 ---
 
@@ -40,6 +43,8 @@ Comando para rodar e quando alterar o código ja recompilar em tempo de execuç�
 ## Oque é o Swagger
 
 Swagger é um frontend para testar apis em ambiente de desenvolvimento, não é exatamente necessário mas é um recurso que facilita os testes.
+
+---
 
 ## Classes Controller
 
@@ -83,6 +88,12 @@ Exemplo de como o link vai ficar:
 
 --- 
 
+## ORM (Object Relational Mapper)
+
+ORM (Object Relational Mapper) é uma técnica de mapeamento objeto relacional que permite fazer uma relação dos objetos com os dados que os mesmos representam. É isso que o Entity Framework e o Dapper são, e existem varios outros ORM's disponiveis.
+
+---
+
 ## Oque é o Entity Framework?
 
 O Entity Framework é um framework ORM (Object-Relational Mapping) criado para facilitar a integração com o banco de dados, mapeando tabelas e gerando comandos SQL de forma automática.  
@@ -92,10 +103,19 @@ Resumindo: ele gera os código que você colocaria na query automaticamente.
 
 ## CRUD
 
-C - CREATE (Insert)  
-R - READ (Select)  
-U - UPDATE (Update)  
-D - DELETE (Delete)  
+- C - CREATE (Insert)  
+- R - READ (Select)  
+- U - UPDATE (Update)  
+- D - DELETE (Delete)  
+
+---
+
+## Verbos HTTP
+- Get - Selecionar/Buscar Dados.  
+- Post - Enviar dados.   
+- Put - Atualizar dados.    
+- Patch - Atualizar parcialmente dados.   
+- Delete - Deletar dados.   
 
 ---
 
