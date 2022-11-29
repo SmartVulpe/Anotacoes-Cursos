@@ -23,10 +23,15 @@ Se você criar um repositório no PC e quiser upar pro github, tem que criar o r
 Para criar uma nova branch use o comando:  
 `git checkout -b nomeDaBranch`  
 Esse comando cria e já muda o projeto para a branch criada.  
-Ele é uma versão reduzida destes dois comandos:  
+
+![Alternando Branch](imgs/AlternandoBranch.png)
+
+Ele é como uma versão reduzida destes dois comandos:  
 `git branch nomeDaBranch`  - Apenas cria a branch.  
 `git checkout nomeDaBranch` - Apenas alterna o projeto para a branch declarada.   
 
+
+[Git Basic Branching and Merging - Documentação oficial Git](https://git-scm.com/book/en/v2/Git-Branching-Basic-Branching-and-Merging)
 
 # Comandos Bash Úteis
 
