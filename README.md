@@ -1,7 +1,6 @@
-# Desafio de projeto Git/Github do curso da DIO
-Repositorio criado para o desafio de projeto do curso.
-
-**Objetivo:** Salvar anotações dos cursos do bootcamp da DIO para treinar o uso do git.
+# Anotações de Cursos
+Repositorio foi originalmente criado para o desafio de projeto do curso com o objetivo de salvar anotações dos cursos do bootcamp da DIO para treinar o uso do git.  
+Mas hoje ele serve para guardar as anotações de todos os cursos relacionados a programação que faço.
 
 
 
