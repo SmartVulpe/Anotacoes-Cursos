@@ -1,5 +1,7 @@
 # Anotações de Cursos
-Repositorio foi originalmente criado para o desafio de projeto do curso com o objetivo de salvar anotações dos cursos do bootcamp da DIO para treinar o uso do git.  
+
+Este repositorio foi originalmente criado a pedido do bootcamp de .Net da DIO para treinar o uso do git ao salvar as anotações referentes aqui. 
+
 Mas hoje ele serve para guardar as anotações de todos os cursos relacionados a programação que faço.
 
 
