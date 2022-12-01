@@ -202,4 +202,60 @@ Ai para adicionar essa tabela no banco de dados use o comando:
 
 ---
 
+## DataAnnotations
+
+DataAnnotation é um [Atributo](../2%20-%20%20C%23/Anota%C3%A7%C3%B5es%20CSharp.md/#Atributos), com ele podemos definir um comportamento diferente do padrão para uma propriedade ou método.
+
+**Alguns Atributos:**  
+
+
+- `[Key]` - Identifica uma propriedade como uma chave primaria na tabela, normalmente não é usado pois o EFCore automaticamente define uma propriedade como chave primaria se você colocar Id ou AlgumNomeId (Id no final do nome).  
+- `[Table("nome")]` - Define um nome para a tabela que a classe será mapeada.   Também não é muito usado pois o EFCore também faz isso automaticamente quando você define as classes no DbContext.  
+- `[Column]` - Define a coluna na tabela que a propriedade será mapeada, normalmente usado para especificar a propriedade na tabela (exemplos abaixo).  
+- `[DataType]` - Especifica um tipo de dados adicional a uma propriedade.  
+- `[ForeignKey]` - Especifica que a propriedade é usada como uma chave estrangeira, pouco usado pelo mesmo motivo do Key.  
+- `[NotMapped]` - Exclui a propriedade do mapeamento.  
+- `[StringLenght]` - Define o tamanho mínimo e máximo permitido para o tipo.  
+- `[Required]` - Especifica que o valor do campo é obrigatório.  
+**Fonte: Curso WebAPI AspNet Core do Macoratti.**
+
+Mais atributos: [DataAnnotations - Learn EF Core](https://www.learnentityframeworkcore.com/configuration/data-annotation-attributes)
+
+**Exemplos de uso:**  
+
+```c#
+// Propriedades do tipo string
+// Com mensagem de erro:
+[StringLength(80), ErrorMessage = "Texto muito longo"]
+// Ou sem mensagem de erro:
+[StringLength(80)]
+public string Nome { get; set; }
+
+// Propriedades do tipo decimal
+[Column(TypeName = "decimal(18,4)")]
+public decimal Valor { get; set; }
+
+// Tornando obrigatório
+// Com mensagem de erro:
+[Required(ErrorMessage = "Essa propriedade é obrigatória")]
+// Ou sem mensagem de erro:
+[Required]
+public string Nome { get; set; }
+
+
+// Também dá para combinar:
+[Required]
+[StringLength(80)]
+public string Nome { get; set; }
+
+// E combinar com mensagem de erro:
+[Required(ErrorMessage = "Essa propriedade é obrigatória")]
+[StringLength(80), ErrorMessage = "Texto muito longo"]
+public string Nome { get; set; }
+```
+**Fonte: Curso WebAPI AspNet Core do Macoratti.**
+
+OBS: No curso o Macoratti diz que usar DataAnnotations deixa o código "meio poluído" e que seria mais "elegante" usar a Fluent API para isso. Pelo que deu a entender é só uma questão estética não tendo muita diferença em qualidade.
+
+---
 
