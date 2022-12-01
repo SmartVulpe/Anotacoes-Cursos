@@ -51,5 +51,10 @@ Foreingn Key - chave estrangeira, são chaves que apontam para uma chave em outr
 
 ---------------------------------------
 
+OBSERVAÇÃO IMPORTANTE: Dependendo o db q vc usa tem recursos diferentes.
+No builder para o MySQL tem opção de conferir a versão do servidor, e no MS SQL Server aparentemente não tem ou não precisa disso.
+No migrations para o MySQL ele tem a opção de definir uma string como "longtext" q permite até 4gb de texto, no MS SQL Server já não tem isso.
+
+---------------------------------------
 
 
