@@ -61,7 +61,7 @@ Esses [atributos](../2%20-%20%20C%23/Anota%C3%A7%C3%B5es%20CSharp.md/#Atributos)
     [Route("[controller]")]
 ```
 E a classe herdar a ControllerBase, não é Controller, é ControllerBase.
-e fazer uma "injeção de dependencia" atravez do construtor.
+e fazer uma "injeção de dependência" através do construtor.
 ```c#
 private readonly AgendaContext _context;
 public ContatoController(AgendaContext context)
@@ -259,3 +259,51 @@ OBS: No curso o Macoratti diz que usar DataAnnotations deixa o código "meio pol
 
 ---
 
+## Rotas
+
+Quando você tem mais de um método do mesmo tipo que pega exatamente as mesmas propriedades, ele da erro, mesmo eles tendo nomes diferentes (e é necessário ter nomes diferentes a menos que seja um polimorfismo do tipo overload), para o mapeamento de controladores ambos são a mesma coisa.
+
+Para resolver isso há duas opções
+
+Uma é fazer o sistema reconhecer o nome do método na rota:
+
+No atributo de rota que fica no cabeçalho da classe da para fazer isso:
+```c#
+    [Route("[controller/{action}]")]
+```
+E então na URL voce vai digitar o `NomeDaControladora/NomeDoMetodo`.  
+
+A outra forma é adicionar rotas nos métodos em si:  
+
+```c#
+[HttpGet("produtos")]
+```
+Ai na hora de escrever na URL, usando o exemplo acima, vai ser o `NomeDaControladora/produtos`.
+
+---
+
+## Tipos de retorno de ação
+
+[Tipos de retorno de ação do controlador na API Web do ASP.NET Core - Microsoft Learn](https://learn.microsoft.com/pt-br/aspnet/core/web-api/action-return-types?view=aspnetcore-7.0)
+
+---
+
+## Informações interessantes  
+
+### Uso do FromBody  
+
+***Antes do dotnet core 2.2***, era necessário colocar `[FromBody]` e um if de validação nos métodos action.  
+Exemplo:  
+```c#
+[HttpPost]
+public ActionResult Post([FromBody] Produto produto)
+{
+    if(!ModelState.IsValid)
+    {
+        return BadRequest(ModelState);
+    }
+}
+```
+A partir da versão 2.2 com a introdução do atributo `[ApiController]` no cabeçalho da classe, essa validação se tornou automática, então não é mais necessário o FromBody e o if.  
+
+---

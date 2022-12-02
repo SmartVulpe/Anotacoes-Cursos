@@ -942,7 +942,9 @@ o # representa um digito.
 
 Verificar no projeto: [SerializacaoEAtributos](https://github.com/daniellfranco/treinos-basicos-cursos-CSharp/tree/main/Novos/4-SerializacaoEAtributos)  
 
-- Para fazer serialização em json no dotnet é recomendado o pacote nuget Newtonsoft.Json.    
+- <strike>Para fazer serialização em json no dotnet é recomendado o pacote nuget Newtonsoft.Json.</strike>  
+- A partir da versão AspNetCore 3.0, o recomendado a usar é a System.Text.Json que tem melhor otimização.
+ 
 
 Para conferir se um json é valido, use este site:    
 https://codebeautify.org/jsonviewer   
