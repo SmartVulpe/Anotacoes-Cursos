@@ -307,3 +307,63 @@ public ActionResult Post([FromBody] Produto produto)
 A partir da versão 2.2 com a introdução do atributo `[ApiController]` no cabeçalho da classe, essa validação se tornou automática, então não é mais necessário o FromBody e o if.  
 
 ---
+
+## Soluções de problemas
+
+### Problema de Serialização CÍCLICA  
+
+Acontece as vezes da entidade ter referencia a outra entidade (para fazer chave estrangeira por exemplo), e isso pode acarretar em um loop.
+Por exemplo, a classe Categorias referencia a classe Produtos que por sua vez referencia Categorias de volta. E quando você coloca no método Get um include() para pegar por exemplo os produtos daquela categoria, ele vai criar esse loop e dar um erro.
+
+Para resolver isso, na classe program, adicione esses métodos em AddControllers():
+```c#
+builder.Services.AddControllers()
+    .AddJsonOptions(options =>
+        options.JsonSerializerOptions
+            .ReferenceHandler = ReferenceHandler.IgnoreCycles);
+```
+Isso vai resolver o problema.
+
+Fonte: Curso WebAPI AspNet Core do Macoratti.
+
+---
+
+## Otimizando o código
+
+### HTTP GET
+
+Quando consultamos entidades usando o entity framework ele armazena as entidades no contexto (em cache) realizando um tracking ou rastreamento das entidades para acompanhar o estado das entidades.
+
+Este recurso **adiciona uma sobrecarga** que afeta o desempenho das consultas rastreadas.
+
+Para melhorar o desempenho podemos usar o método: `AsNoTracking()`
+
+```c#
+var produtos = _context.Produtos.AsNoTracking().ToList();
+```
+
+**OBS: Usar `AsNoTracking()` APENAS para consultas somente leitura SEM a necessidade de alterar os dados.**
+
+#### **Dicas:**
+
+- Nunca retorne todos os registros em uma consulta!  
+Exemplo de solução: Limite para pegar so alguns dados.  
+```c#
+_context.Produtos.Take(10).ToList();
+```
+*Obs: Em produção pode e deve ser aprimorado para paginação.*
+
+--
+
+- Nunca retorne objetos relacionados sem aplicar um filtro!  
+Exemplo de solução: Usar where para limitar por id.  
+```c#
+_context.Categorias.Include(p => p.Produtos)
+    .Where(c => c.CategoriaId <= 5).ToList();
+```
+*Obs: Em produção pode e deve ser aprimorado para paginação.*
+
+
+---
+
+
