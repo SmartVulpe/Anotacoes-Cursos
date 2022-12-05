@@ -323,20 +323,20 @@ Nesse exemplo essa action vai poder ser acessada por 3 exemplos de rotas diferen
 
 É possível restringir os parâmetros informados nas rotas. Definindo um tipo a ser recebido, valor mínimo, máximo, somente letras, etc.  
 
-Exemplo, limitando à int e mínimo:  
+**Apesar de servir, isso não deve ser usado como validação e sim como filtro** (vide o aviso abaixo retirado do site da Microsoft), a ideia aqui é criar um seletor de caminhos, um exemplo seria você ter dois gets que recebem um id, mas um realmente é um id de inteiro, e o outro é para buscar via nome, mas na URL o campo forma uma rota igual nos 2, exemplo:  
+Com int: `https://localhost:7275/produtos/1`  
+Com letras: `https://localhost:7275/produtos/abc`   
+O campo de ambos fica após produtos, mesmo que no endpoint um esteja escrito ID e um esteja escrito NOME, o sistema não diferencia diretamente, mas por tipo é possível, porém `1` pode ser visto como string, então se for usar tem que ser uma definição que aceite apenas letras, então o sistema vai ver e "opa isso aqui é um numero, e o único get que tem aqui que aceita números é esse; E esse aqui é uma letra, então essa solicitação vai para esse outro get aqui que aceita apenas letras".
+
+
+Exemplos:  
 ```c#
 // Limita a ser um inteiro
 [HttpGet("{id:int}")]
 
 // Limita que seja um inteiro e seu valor mínimo seja 1
 [HttpGet("{id:int:min(1)}")]
-```
-Dessa forma, reduz o consumo de recurso de carregar um método que não iria funcionar se não fosse um inteiro, e também evita que um valor que é invalido, como o 0, fosse informado, o que resultaria em um NotFound garantido, consumindo recursos desnecessários na api e no banco de dados.    
-:warning: :warning: :warning: **Verifique o aviso abaixo.** :warning: :warning: :warning:   
 
-
-Exemplo, limitando a somente letras e tamanho:
-```c#
 // Somente letras maiúsculas ou minusculas podem ser inseridos
 [HttpGet("{valor:alpha}")]
 
@@ -351,12 +351,13 @@ Exemplo, limitando a somente letras e tamanho:
 [HttpGet("{valor:alpha:maxlength(5)}")]
 ```
 
+
 ### Tabela de Referencia de Restrições
 
 
-| :warning: AVISO                                                                                                                                                                                                                                                                                                                                                                                                         |
+| :warning: AVISO :warning:                                                                                                                                                                                                                                                                                                                                                                                                          |
 | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Não use restrições para a validação de entrada. Se as restrições forem usadas para validação de entrada, a entrada inválida resultará em uma 404 resposta Não Encontrada. A entrada inválida deve produzir uma 400 Solicitação Inválida com uma mensagem de erro apropriada. As restrições de rota são usadas para desfazer a ambiguidade entre rotas semelhantes, não para validar as entradas de uma rota específica. |
+| Não use restrições para a validação de entrada. Se as restrições forem usadas para validação de entrada, a entrada inválida resultará em uma resposta `404 NotFound`. A entrada inválida deve produzir um `400 Bad Request` com uma mensagem de erro apropriada. ***As restrições de rota são usadas para desfazer a ambiguidade entre rotas semelhantes***, não para validar as entradas de uma rota específica. |
 |                                                                                                                                                                                                                                                                                                                                                                                                                         |
 
 **Na minha opinião com base no meu conhecimento atual, em casos como o min(1) onde digitar 0 iria resultar em um 404 NotFound seria válido usar isso.**  
