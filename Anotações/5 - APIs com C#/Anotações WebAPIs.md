@@ -259,7 +259,7 @@ OBS: No curso o Macoratti diz que usar DataAnnotations deixa o código "meio pol
 
 ---
 
-## Rotas
+## Rotas / Endpoints
 
 Quando você tem mais de um método do mesmo tipo que pega exatamente as mesmas propriedades, ele da erro, mesmo eles tendo nomes diferentes (e é necessário ter nomes diferentes a menos que seja um polimorfismo do tipo overload), para o mapeamento de controladores ambos são a mesma coisa.
 
@@ -269,7 +269,7 @@ Uma é fazer o sistema reconhecer o nome do método na rota:
 
 No atributo de rota que fica no cabeçalho da classe da para fazer isso:
 ```c#
-    [Route("[controller/{action}]")]
+[Route("[controller/{action}]")]
 ```
 E então na URL voce vai digitar o `NomeDaControladora/NomeDoMetodo`.  
 
@@ -279,6 +279,110 @@ A outra forma é adicionar rotas nos métodos em si:
 [HttpGet("produtos")]
 ```
 Ai na hora de escrever na URL, usando o exemplo acima, vai ser o `NomeDaControladora/produtos`.
+
+### Informar mais de um parâmetro na action 
+
+Para mais de um parâmetro tem que colocar uma barra entre as chaves
+```c#
+[HttpGet("{id}/{produto}")]
+```
+Exemplo de como fica a url `https://localhost:7275/Produtos/1/Refri`
+Ou seja, NomeDoControlador/id/produto
+
+Também é possível definir um valor padrão, quando o valor não for informado ele usa esse valor padrão, exemplo:
+```c#
+[HttpGet("{id}/{produto=Pastel}")]
+```
+
+### Oque acontece se colocar uma barra no inicio do endpoint da action?
+
+Se colocar uma barra no endpoint da action, ele ignora a rota que está no atributo Route que está no cabeçalho da classe do controlador.
+```c#
+[HttpGet("/primeiro")]
+```
+A URL fica assim: `https://localhost:7275/primeiro`  
+Mesmo que na rota da classe tenha mais coisas, exemplo: `Route("[sistema/v2/api/Controller]")` ele vai ignorar toda essa rota e fazer como no exemplo acima.  
+
+### Múltiplos endpoints na mesma action
+
+Uma action também pode ter mais de um EndPoint.  
+Exemplo:  
+```c#
+[HttpGet("primeiro")]
+[HttpGet("teste")]
+[HttpGet("/primeiro")]
+public ActionResult<Produto> Get()
+{}
+```
+Nesse exemplo essa action vai poder ser acessada por 3 exemplos de rotas diferentes:  
+`https://localhost:7275/produtos/primeiro`
+`https://localhost:7275/produtos/teste`
+`https://localhost:7275/primeiro`
+
+## Restrição de Rotas
+
+É possível restringir os parâmetros informados nas rotas. Definindo um tipo a ser recebido, valor mínimo, máximo, somente letras, etc.  
+
+Exemplo, limitando à int e mínimo:  
+```c#
+// Limita a ser um inteiro
+[HttpGet("{id:int}")]
+
+// Limita que seja um inteiro e seu valor mínimo seja 1
+[HttpGet("{id:int:min(1)}")]
+```
+Dessa forma, reduz o consumo de recurso de carregar um método que não iria funcionar se não fosse um inteiro, e também evita que um valor que é invalido, como o 0, fosse informado, o que resultaria em um NotFound garantido, consumindo recursos desnecessários na api e no banco de dados.    
+:warning: :warning: :warning: **Verifique o aviso abaixo.** :warning: :warning: :warning:   
+
+
+Exemplo, limitando a somente letras e tamanho:
+```c#
+// Somente letras maiúsculas ou minusculas podem ser inseridos
+[HttpGet("{valor:alpha}")]
+
+// Somente letras maiúsculas ou minusculas podem ser inseridos
+// e com exatamente 5 dígitos, se for menos de 5 ou
+// mais de 5 não funciona
+[HttpGet("{valor:alpha:length(5)}")]
+
+// No mínimo 5 dígitos
+[HttpGet("{valor:alpha:minlength(5)}")]
+// No máximo 5 dígitos
+[HttpGet("{valor:alpha:maxlength(5)}")]
+```
+
+### Tabela de Referencia de Restrições
+
+
+| :warning: AVISO                                                                                                                                                                                                                                                                                                                                                                                                         |
+| ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Não use restrições para a validação de entrada. Se as restrições forem usadas para validação de entrada, a entrada inválida resultará em uma 404 resposta Não Encontrada. A entrada inválida deve produzir uma 400 Solicitação Inválida com uma mensagem de erro apropriada. As restrições de rota são usadas para desfazer a ambiguidade entre rotas semelhantes, não para validar as entradas de uma rota específica. |
+|                                                                                                                                                                                                                                                                                                                                                                                                                         |
+
+**Na minha opinião com base no meu conhecimento atual, em casos como o min(1) onde digitar 0 iria resultar em um 404 NotFound seria válido usar isso.**  
+
+| restrição         | Exemplo                                     | Correspondências de exemplo          | Observações                                                                                                               |
+| ----------------- | ------------------------------------------- | ------------------------------------ | ------------------------------------------------------------------------------------------------------------------------- |
+| int               | `{id:int}`                                  | 123456789, -123456789                | Corresponde a qualquer inteiro                                                                                            |
+| bool              | `{active:bool}`                             | true, FALSE                          | Correspondências true ou false.                                                                                           | Não diferenciam maiúsculas de minúsculas. |
+| datetime          | `{dob:datetime}`                            | 2016-12-31, 2016-12-31 7:32pm        | Corresponde a um valor válido DateTime na cultura invariável. Consulte o aviso anterior.                                  |
+| decimal           | `{price:decimal}`                           | 49.99, -1,000.01                     | Corresponde a um valor válido decimal na cultura invariável. Consulte o aviso anterior.                                   |
+| double            | `{weight:double}`                           | 1.234, -1,001.01e8                   | Corresponde a um valor válido double na cultura invariável. Consulte o aviso anterior.                                    |
+| float             | `{weight:float}`                            | 1.234, -1,001.01e8                   | Corresponde a um valor válido float na cultura invariável. Consulte o aviso anterior.                                     |
+| guid              | `{id:guid}`                                 | CD2C1638-1638-72D5-1638-DEADBEEF1638 | Corresponde a um valor Guid válido.                                                                                       |
+| long              | `{ticks:long}`                              | 123456789, -123456789                | Corresponde a um valor long válido.                                                                                       |
+| minlength(value)  | `{username:minlength(4)}`                   | Rick                                 | A cadeia de caracteres deve ter, no mínimo, 4 caracteres.                                                                 |
+| maxlength(value)  | `{filename:maxlength(8)}`                   | MyFile                               | A cadeia de caracteres não pode ser maior que 8 caracteres.                                                               |
+| length(length)    | `{filename:length(12)}`                     | somefile.txt                         | A cadeia de caracteres deve ter exatamente 12 caracteres.                                                                 |
+| length(min,max)   | `{filename:length(8,16)}`                   | somefile.txt                         | A cadeia de caracteres deve ter, pelo menos, 8 e não mais de 16 caracteres.                                               |
+| min(value)        | `{age:min(18)}`                             | 19                                   | O valor inteiro deve ser, pelo menos, 18.                                                                                 |
+| max(value)        | `{age:max(120)}`                            | 91                                   | O valor inteiro não deve ser maior que 120.                                                                               |
+| range(min,max)    | `{age:range(18,120)}`                       | 91                                   | O valor inteiro deve ser, pelo menos, 18, mas não maior que 120.                                                          |
+| alpha             | `{name:alpha}`                              | Rick                                 | A cadeia de caracteres deve consistir em um ou mais caracteres a-z alfabéticos e não diferencia maiúsculas de minúsculas. |
+| regex(expression) | `{ssn:regex(^\\d{{3}}-\\d{{2}}-\\d{{4}}$)}` | 123-45-6789                          | A cadeia de caracteres deve corresponder à expressão regular. Confira dicas sobre como definir uma expressão regular.     |
+| required          | `{name:required}`                           | Rick                                 | Usado para impor que um valor não parâmetro está presente durante a geração de URL.                                       |
+
+Fonte da tabela: [Roteamento no ASP.NET Core - Microsoft Learn](https://learn.microsoft.com/pt-br/aspnet/core/fundamentals/routing?view=aspnetcore-7.0). (Leitura recomendada, documentação rica em informações interessantes sobre roteamento.)
 
 ---
 
