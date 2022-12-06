@@ -355,10 +355,10 @@ Exemplos:
 ### Tabela de Referencia de Restrições
 
 
-| :warning: AVISO :warning:                                                                                                                                                                                                                                                                                                                                                                                                          |
-| ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| :warning: AVISO :warning:                                                                                                                                                                                                                                                                                                                                                                                         |
+| ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | Não use restrições para a validação de entrada. Se as restrições forem usadas para validação de entrada, a entrada inválida resultará em uma resposta `404 NotFound`. A entrada inválida deve produzir um `400 Bad Request` com uma mensagem de erro apropriada. ***As restrições de rota são usadas para desfazer a ambiguidade entre rotas semelhantes***, não para validar as entradas de uma rota específica. |
-|                                                                                                                                                                                                                                                                                                                                                                                                                         |
+|                                                                                                                                                                                                                                                                                                                                                                                                                   |
 
 **Na minha opinião com base no meu conhecimento atual, em casos como o min(1) onde digitar 0 iria resultar em um 404 NotFound seria válido usar isso.**  
 
@@ -389,13 +389,102 @@ Fonte da tabela: [Roteamento no ASP.NET Core - Microsoft Learn](https://learn.mi
 
 ## Tipos de retorno de ação
 
-[Tipos de retorno de ação do controlador na API Web do ASP.NET Core - Microsoft Learn](https://learn.microsoft.com/pt-br/aspnet/core/web-api/action-return-types?view=aspnetcore-7.0)
+Existem alguns tipos de retornos para os métodos actions, como por exemplo:
+
+### Tipo Especifico
+
+Esse tipo de retorno pode ser complexo ou primitivo (int, string, decimal...).
+Usando um tipo especifico você perde um pouco de versatilidade, pois ele só retorna o tipo, não permite retornar um Status Code por exemplo.
+
+### IActionResult
+
+IActionResult é um tipo de retorno que permite retornar vários tipos diferentes, desde que estejam dentro de algum Status Code, exemplo:
+
+```c#
+[HttpGet]
+public IActionResult Get()
+{
+    var produto = _context.Produtos.FirstOrDefault();
+    if(produto == null)
+    {
+        return NotFound();
+    }
+    return Ok(produto);
+}
+```
+
+
+### `ActionResult<T>`
+
+A classe abstrata ActionResult implementa a interface IActionResult, como resultado, tudo oque a IActionResult faz a ActionResult também faz e com alguns adicionais.  
+Se for usar ActionResult sem o tipo, creio ser melhor usar a IActionResult, é para ser mais otimizado.  
+Se for retornar o tipo, a `ActionResult<Tipo>` é o ideal, pois com ela você pode retornar assim:  
+```c#
+[HttpGet]
+public ActionResult<Produto> Get()
+{
+    var produto = _context.Produtos.FirstOrDefault();
+    if(produto == null)
+    {
+        return NotFound();
+    }
+    return produto;
+}
+```
+
+A titulo de comparação, antes da ASP.Net Core 2.1 não tinha o ActionResult, então para retornar só o objeto usando o IActionResult, era retornado da seguinte forma: 
+```c#
+return new ObjectResult(produto);
+```
+
+
+Mais informações em: [Tipos de retorno de ação do controlador na API Web do ASP.NET Core - Microsoft Learn](https://learn.microsoft.com/pt-br/aspnet/core/web-api/action-return-types?view=aspnetcore-7.0)
+
+---
+
+## Métodos Assíncronos
+
+Nos métodos **SÍNCRONOS** quando uma solicitação chega ao servidor, ele consome uma "task" é processado, e devolvido, e só então libera esse slot de task.  
+Nos métodos **ASSÍNCRONOS** a solicitação chega, entra em uma task, começa a ser processado, o sistema devolve o slot de task para poder receber outras solicitações, e quando a primeira solicitação for concluída o sistema revisa e devolve a solicitação.  
+Em resumo, métodos síncronos são sequenciais, que só libera a action para outra solicitação após concluir a primeira, e os assíncronos não são sequenciais, o servidor vai recebendo e processando tudo e conforme for terminando ele devolve.
+
+Para um método ser assíncrono, é necessário utilizar as palavras `Task`, `async` e `await`, exemplo:
+```c#
+[HttpGet]
+public async Task<ActionResult<IEnumerable<Categoria>>> GetCategoriasAsync()
+{
+    return await _context.Categorias.ToListAsync();
+}
+```
+Não é necessário terminar o nome do método com Async, mas é uma boa pratica para informar que é assíncrono.  
+ToList também precisa ser Async para funcionar corretamente.  
+Todo método usado dentro de uma action async é bom conferir se tem versão async, por exemplo o `FirstOrDefault`, ele tem a versão `FirstOrDefaultAsync` e ela deve ser usada.
+
+- A instrução `async` faz com que um método possa ser executado de forma assíncrona.
+- A palavra reservada `await` indica que um treco de código deve esperar por outro trecho de código para o controle retornar ao chamador do método.
+- A classe `Task<TResult>` representa uma **única operação** que **retorna** um valor, e essa **operação** pode ser executada de forma **assíncrona**.
+
+### **Vale a pena usar Actions Assíncronas?**
+"O assincronismo é útil para melhorar a experiência do usuário quando há alguma operação que demanda muito tempo para ser executada."  
+
+**Pontos a serem avaliados:**
+- O assincronismo não é grátis.
+- Sempre que usá-lo terá uma perda de desempenho, especialmente se usar thread.
+- O ganho que ele dá é a execução em paralelo, assim você pode atender mais requisições.
+- A requisição especifica não ficará mais rápida em hipótese alguma.
+- Então tenha certeza que haverá algum ganho antes de usar este recurso.
+
+**Se justifica usar métodos async quando é uma solicitação que não depende somente da nossa aplicação, como por exemplo acessar um banco de dados.**
+
+Fonte: [Curso Web API ASP.NET Core Essencial (.NET6) - Macoratti](https://www.udemy.com/course/curso-web-api-asp-net-core-essencial/)
+
+Leitura recomendada: [Programação assíncrona com async e await (C#) - Microsoft Learn](https://learn.microsoft.com/pt-br/dotnet/csharp/programming-guide/concepts/async/)
 
 ---
 
 ## Informações interessantes  
 
-### Uso do FromBody  
+### Uso do **FromBody**  
 
 ***Antes do dotnet core 2.2***, era necessário colocar `[FromBody]` e um if de validação nos métodos action.  
 Exemplo:  
