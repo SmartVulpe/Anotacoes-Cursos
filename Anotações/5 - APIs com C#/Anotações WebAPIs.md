@@ -1,4 +1,63 @@
 
+***Essa anotação ainda está em construção, ainda há algumas coisas desorganizadas, e outras que precisam ser revisadas.***
+
+
+# Índice
+
+- [Índice](#índice)
+- [Anotações](#anotações)
+  - [Oque é uma API](#oque-é-uma-api)
+  - [Para que serve uma API](#para-que-serve-uma-api)
+  - [**PRECISA ADICIONAR** Oque é Rest/RestFull](#precisa-adicionar-oque-é-restrestfull)
+  - [**PRECISA ADICIONAR** Oque Torna uma API Rest/RestFull](#precisa-adicionar-oque-torna-uma-api-restrestfull)
+  - [Alguns sites de APIs](#alguns-sites-de-apis)
+  - [Dicas Importantes](#dicas-importantes)
+  - [Comandos dotnet para criar e executar api](#comandos-dotnet-para-criar-e-executar-api)
+  - [Oque é o Swagger](#oque-é-o-swagger)
+  - [Classes Controller](#classes-controller)
+    - [O básico para uma classe controller é:](#o-básico-para-uma-classe-controller-é)
+  - [Caminho URL API](#caminho-url-api)
+  - [ORM (Object Relational Mapper)](#orm-object-relational-mapper)
+  - [Oque é o Entity Framework?](#oque-é-o-entity-framework)
+  - [CRUD](#crud)
+  - [Verbos HTTP](#verbos-http)
+  - [Comandos DotNet para instalar pacotes](#comandos-dotnet-para-instalar-pacotes)
+  - [Entidades (Entities)](#entidades-entities)
+  - [Classes Context](#classes-context)
+  - [AppSettings](#appsettings)
+  - [Connection Strings](#connection-strings)
+  - [Configurando a conexão com a DB na Program.cs](#configurando-a-conexão-com-a-db-na-programcs)
+  - [Oque é o Migrations?](#oque-é-o-migrations)
+    - [Executando o Migrations](#executando-o-migrations)
+  - [DataAnnotations](#dataannotations)
+  - [Rotas / Endpoints](#rotas--endpoints)
+    - [Informar mais de um parâmetro na action](#informar-mais-de-um-parâmetro-na-action)
+    - [Oque acontece se colocar uma barra no inicio do endpoint da action?](#oque-acontece-se-colocar-uma-barra-no-inicio-do-endpoint-da-action)
+    - [Múltiplos endpoints na mesma action](#múltiplos-endpoints-na-mesma-action)
+  - [Restrição de Rotas](#restrição-de-rotas)
+    - [Tabela de Referencia de Restrições](#tabela-de-referencia-de-restrições)
+  - [Tipos de retorno de ação](#tipos-de-retorno-de-ação)
+    - [Tipo Especifico](#tipo-especifico)
+    - [IActionResult](#iactionresult)
+    - [`ActionResult<T>`](#actionresultt)
+  - [Model Binding](#model-binding)
+    - [QueryStrings](#querystrings)
+    - [Valores de Formulários](#valores-de-formulários)
+    - [Atributos para definir de onde é a fonte dos dados](#atributos-para-definir-de-onde-é-a-fonte-dos-dados)
+  - [Métodos Assíncronos](#métodos-assíncronos)
+    - [Vale a pena usar Actions Assíncronas?](#vale-a-pena-usar-actions-assíncronas)
+  - [Informações interessantes](#informações-interessantes)
+    - [Validação do ModelState](#validação-do-modelstate)
+  - [Soluções de problemas](#soluções-de-problemas)
+    - [Problema de Serialização CÍCLICA](#problema-de-serialização-cíclica)
+  - [Otimizando o código](#otimizando-o-código)
+    - [HTTP GET](#http-get)
+      - [Dicas:](#dicas)
+
+
+
+# Anotações
+
 ## Oque é uma API
 
 Uma API (Application Programming Interface) é uma forma de comunicação entre computadores ou programas de computadores.
@@ -6,11 +65,31 @@ Em outras palavras, é um software que fornece informações para outro software
 
 API é um software que faz a intermediação entre o software do cliente com o software do servidor. Exemplo: um garçon de um restaurante seria uma API.
 
+[Voltar ao Índice](#índice)
+
 ---
 
 ## Para que serve uma API
 
 Principal função de uma API é: Disponibilizar métodos (endpoints) e serviços, permitindo a comunicação e integração entre diferentes sistemas.
+
+[Voltar ao Índice](#índice)
+
+---
+
+## **PRECISA ADICIONAR** Oque é Rest/RestFull
+
+
+
+[Voltar ao Índice](#índice)
+
+---
+
+## **PRECISA ADICIONAR** Oque Torna uma API Rest/RestFull
+
+
+
+[Voltar ao Índice](#índice)
 
 ---
 
@@ -18,6 +97,8 @@ Principal função de uma API é: Disponibilizar métodos (endpoints) e serviço
 
 date.nager.at - site de api de feriados.
 dog.ceo/dog-api - side de api de imagens de cachorros.
+
+[Voltar ao Índice](#índice)
 
 ---
 
@@ -27,6 +108,8 @@ dog.ceo/dog-api - side de api de imagens de cachorros.
 
 
 - `dotnet --help` - use para buscar comandos.
+
+[Voltar ao Índice](#índice)
 
 ---
 
@@ -38,11 +121,15 @@ Comando para criar um projeto de web api:
 Comando para rodar e quando alterar o código ja recompilar em tempo de execução (similar ao HotReload do vs community):
 `dotnet watch run`
 
+[Voltar ao Índice](#índice)
+
 ---
 
 ## Oque é o Swagger
 
 Swagger é um frontend para testar apis em ambiente de desenvolvimento, não é exatamente necessário mas é um recurso que facilita os testes.
+
+[Voltar ao Índice](#índice)
 
 ---
 
@@ -73,6 +160,8 @@ Para todos os métodos http com exceção do get, você tem que chamar o método
 `_context.SaveChanges();`  
 Senão ele não salva no banco de dados.
 
+[Voltar ao Índice](#índice)
+
 ---
 
 ## Caminho URL API
@@ -86,11 +175,15 @@ public IActionResult ObterDataHora()
 Exemplo de como o link vai ficar:  
 `https://localhost:7275/Usuario/ObterDataHoraAtual`  
 
+[Voltar ao Índice](#índice)
+
 --- 
 
 ## ORM (Object Relational Mapper)
 
 ORM (Object Relational Mapper) é uma técnica de mapeamento objeto relacional que permite fazer uma relação dos objetos com os dados que os mesmos representam. É isso que o Entity Framework e o Dapper são, e existem varios outros ORM's disponiveis.
+
+[Voltar ao Índice](#índice)
 
 ---
 
@@ -98,6 +191,8 @@ ORM (Object Relational Mapper) é uma técnica de mapeamento objeto relacional q
 
 O Entity Framework é um framework ORM (Object-Relational Mapping) criado para facilitar a integração com o banco de dados, mapeando tabelas e gerando comandos SQL de forma automática.  
 Resumindo: ele gera os código que você colocaria na query automaticamente.  
+
+[Voltar ao Índice](#índice)
 
 --- 
 
@@ -108,6 +203,8 @@ Resumindo: ele gera os código que você colocaria na query automaticamente.
 - U - UPDATE (Update)  
 - D - DELETE (Delete)  
 
+[Voltar ao Índice](#índice)
+
 ---
 
 ## Verbos HTTP
@@ -117,9 +214,11 @@ Resumindo: ele gera os código que você colocaria na query automaticamente.
 - Patch - Atualizar parcialmente dados.   
 - Delete - Deletar dados.   
 
+[Voltar ao Índice](#índice)
+
 ---
 
-## Comandos dotnet para instalar pacotes
+## Comandos DotNet para instalar pacotes
 
 `dotnet tool install --global dotnet-ef` - Ferramenta para inserir comandos no entity framework via terminal, só precisa instalar uma vez no computador.  
 
@@ -127,12 +226,16 @@ Resumindo: ele gera os código que você colocaria na query automaticamente.
 
 `dotnet add package Microsoft.EntityFrameworkCore.SqlServer` - Pacote para instalar o modulo do entity framework para o SQL Server, o EF é modular então precisa instalar o Design q é uma base, e o modulo referente ao banco de dados que você for usar, nesse caso o SQL Server. Também precisa instalar em todo projeto.  
 
+[Voltar ao Índice](#índice)
+
 ---
 
 ## Entidades (Entities) 
 
 São classes no programa que também são tabelas no banco de dados.
 Nelas precisa ter propriedades com os mesmos nomes que vai ter na tabela do banco de dados.
+
+[Voltar ao Índice](#índice)
 
 ---
 ## Classes Context
@@ -144,6 +247,8 @@ public DbSet<NomeDaEntidade> NomeDaEntidade { get; set; }
 ```  
 Que vai servir para referenciar a entidade, senão ela só vai existir la nas entities mas nao vai funcionar.
 
+[Voltar ao Índice](#índice)
+
 ---
 
 ## AppSettings
@@ -151,6 +256,8 @@ Que vai servir para referenciar a entidade, senão ela só vai existir la nas en
 Existe 2 arquivos json no projeto, um é o appsetings, e um é o appsettings.Development, o primeiro você configura com as coisas que você vai precisar na hora de implementar o programa em ambiente de produção, e o segundo você usa com as configurações para o ambiente de desenvolvimento, por exemplo configurar para usar um banco de dados que é só para desenvolvimento e configurar um comando para impedir de mandar um email aos usuários.
 
 PS: o appsetting.Developtment.json no visual studio community fica escondido, ao lado do appsetting.json tem um triangulo para abrir como se fosse uma pasta, clique nele e vai aparecer o .Development abaixo.
+
+[Voltar ao Índice](#índice)
 
 ---
 
@@ -163,6 +270,8 @@ Você vai colocar a connection string logo depois de fechar a chave do Logging, 
   }
 ```
 O `"ConnectionStrings":` tem que ser sempre esse nome, mas o "ConexaoPadrao" pode ser o nome que você quiser.
+
+[Voltar ao Índice](#índice)
 
 ---
 
@@ -177,6 +286,8 @@ Aqui nos estamos dizendo para o builder adicionar um DbContext do tipo AgendaCon
 
 Daria para colocar a connection string direto aqui, mas se um dia precisar mudar teria que recompilar o código, e estando la no json ele vai estar junto com o programa compilado e ai é mais fácil alterar.  
 
+[Voltar ao Índice](#índice)
+
 ---
 
 ## Oque é o Migrations?
@@ -186,7 +297,9 @@ Ele vai executar nas classes que tiverem referenciadas na classe Context.
 "Migrations é um código que serve para espelhar as suas alterações no código no banco de dados".  
 Ele tem um método Up para aplicar mudanças nas tabelas, e um método Down para reverte-las.  
 
-## Executando o Migrations
+[Voltar ao Índice](#índice)
+
+### Executando o Migrations
 
 Para executar o migrations é preciso fazer o comando manualmente via terminal, o comando é:  
 `dotnet-ef migrations add CriacaoTabelaContato`  
@@ -199,6 +312,8 @@ Segundo se a classe tiver uma propriedade Id ele vai automaticamente reconhecer 
 
 Ai para adicionar essa tabela no banco de dados use o comando:  
 `dotnet-ef database update`  
+
+[Voltar ao Índice](#índice)
 
 ---
 
@@ -257,6 +372,8 @@ public string Nome { get; set; }
 
 OBS: No curso o Macoratti diz que usar DataAnnotations deixa o código "meio poluído" e que seria mais "elegante" usar a Fluent API para isso. Pelo que deu a entender é só uma questão estética não tendo muita diferença em qualidade.
 
+[Voltar ao Índice](#índice)
+
 ---
 
 ## Rotas / Endpoints
@@ -280,6 +397,8 @@ A outra forma é adicionar rotas nos métodos em si:
 ```
 Ai na hora de escrever na URL, usando o exemplo acima, vai ser o `NomeDaControladora/produtos`.
 
+</br>
+
 ### Informar mais de um parâmetro na action 
 
 Para mais de um parâmetro tem que colocar uma barra entre as chaves
@@ -294,6 +413,10 @@ Também é possível definir um valor padrão, quando o valor não for informado
 [HttpGet("{id}/{produto=Pastel}")]
 ```
 
+Para múltiplos parâmetros confira também [Model Binding](#model-binding)
+
+[Voltar ao Índice](#índice)
+
 ### Oque acontece se colocar uma barra no inicio do endpoint da action?
 
 Se colocar uma barra no endpoint da action, ele ignora a rota que está no atributo Route que está no cabeçalho da classe do controlador.
@@ -302,6 +425,8 @@ Se colocar uma barra no endpoint da action, ele ignora a rota que está no atrib
 ```
 A URL fica assim: `https://localhost:7275/primeiro`  
 Mesmo que na rota da classe tenha mais coisas, exemplo: `Route("[sistema/v2/api/Controller]")` ele vai ignorar toda essa rota e fazer como no exemplo acima.  
+
+[Voltar ao Índice](#índice)
 
 ### Múltiplos endpoints na mesma action
 
@@ -318,6 +443,8 @@ Nesse exemplo essa action vai poder ser acessada por 3 exemplos de rotas diferen
 `https://localhost:7275/produtos/primeiro`
 `https://localhost:7275/produtos/teste`
 `https://localhost:7275/primeiro`
+
+[Voltar ao Índice](#índice)
 
 ## Restrição de Rotas
 
@@ -385,6 +512,8 @@ Exemplos:
 
 Fonte da tabela: [Roteamento no ASP.NET Core - Microsoft Learn](https://learn.microsoft.com/pt-br/aspnet/core/fundamentals/routing?view=aspnetcore-7.0). (Leitura recomendada, documentação rica em informações interessantes sobre roteamento.)
 
+[Voltar ao Índice](#índice)
+
 ---
 
 ## Tipos de retorno de ação
@@ -440,6 +569,82 @@ return new ObjectResult(produto);
 
 Mais informações em: [Tipos de retorno de ação do controlador na API Web do ASP.NET Core - Microsoft Learn](https://learn.microsoft.com/pt-br/aspnet/core/web-api/action-return-types?view=aspnetcore-7.0)
 
+[Voltar ao Índice](#índice)
+
+---
+
+## Model Binding
+
+O Model Binding (Vinculação de Modelos) é um recurso que nos permite mapear dados de uma requisição HTTP para os parâmetros de uma Action de um controlador.
+
+Esse mapeamento inclui todos os tipos de parâmetros: números, strings, arrays, listas, tipos complexos, listas de objetos, etc.
+
+**Fonte de dados**
+
+1. Valores de Formulários: (Post e Put) enviados no corpo do request.
+2. Rotas: `[Route("api/[Controller]")]` ou `[HttpGet("{id}")]`. Verifique: [Rotas/Endpoints](#rotas--endpoints)
+3. QueryStrings: `api/produtos/4?nome=Suco&ativo=true`
+
+
+### QueryStrings
+
+QueryStrings são dados passados direto na uri após uma interrogação, exemplo:  
+neste link:  
+`https://localhost:7275/Produtos/1?nome=Suco&gelado=true`  
+a Query String é: `?nome=Suco&gelado=true`  
+Nela temos o parâmetro nome e o parâmetro gelado sendo informados.  
+O `&` serve para concatenar os parâmetros.
+
+### Valores de Formulários
+
+São valores recebidos no corpo do request, são usados para receber dados do tipo complexo, geralmente usado com Post e/ou Put.
+
+### Atributos para definir de onde é a fonte dos dados
+
+`[FromBody]` - Usando esse atributo você especifica que a propriedade vai pegar aquele atributo através do corpo do request.
+
+Exemplo:
+```c#
+[HttpPost]
+public ActionResult Put(int id, [FromBody] Produto produto)
+{}
+```
+O id vai vim pela rota e o json do produto vai vir pelo corpo do request.
+
+`[BindRequired]` - Usando esse atributo exige que o atributo seja informado, se não for ele vai retornar um erro 400.
+
+Exemplo:
+```c#
+[HttpPost]
+public ActionResult Put(int id, [BindRequired] string nome)
+{}
+```
+
+`[BindNever]` - Informa ao Model Binder para não vincular informação ao parâmetro. É usado na Model/Entidade.  
+
+Exemplo:
+```c#
+public class Categoria
+{
+    public int CategoriaId { get; set; }
+    public string Nome { get; set; }
+    
+    [BindNever]
+    public string ImagemUrl { get; set; }
+}
+```
+Dessa forma o model binder vai ignorar a vinculação dessa propriedade, ou não permitir.
+
+- `[FromForm]` - Utilize somente os dados recebidos do **formulário** enviado.
+- `[FromRoute]` - Vincula apenas os dados que são oriundos da **rota de dados**.
+- `[FromQuery]` - Recebe apenas os dados da cadeia de consulta (**QueryString**).
+- `[FromHeader]` - Vincula os valores que vêm no **cabeçalho** da requisição HTTP.
+- `[FromServices]` - Vincula o valor especificado à implementação que foi configurada no seu **container de injeção de dependência**.
+
+Leitura adicional: [Model binding no ASP.NET Core - Microsoft Learn](https://learn.microsoft.com/pt-br/aspnet/core/mvc/models/model-binding?view=aspnetcore-7.0)
+
+[Voltar ao Índice](#índice)
+
 ---
 
 ## Métodos Assíncronos
@@ -464,7 +669,7 @@ Todo método usado dentro de uma action async é bom conferir se tem versão asy
 - A palavra reservada `await` indica que um treco de código deve esperar por outro trecho de código para o controle retornar ao chamador do método.
 - A classe `Task<TResult>` representa uma **única operação** que **retorna** um valor, e essa **operação** pode ser executada de forma **assíncrona**.
 
-### **Vale a pena usar Actions Assíncronas?**
+### Vale a pena usar Actions Assíncronas?
 "O assincronismo é útil para melhorar a experiência do usuário quando há alguma operação que demanda muito tempo para ser executada."  
 
 **Pontos a serem avaliados:**
@@ -480,13 +685,15 @@ Fonte: [Curso Web API ASP.NET Core Essencial (.NET6) - Macoratti](https://www.ud
 
 Leitura recomendada: [Programação assíncrona com async e await (C#) - Microsoft Learn](https://learn.microsoft.com/pt-br/dotnet/csharp/programming-guide/concepts/async/)
 
+[Voltar ao Índice](#índice)
+
 ---
 
 ## Informações interessantes  
 
-### Uso do **FromBody**  
+### Validação do ModelState
 
-***Antes do dotnet core 2.2***, era necessário colocar `[FromBody]` e um if de validação nos métodos action.  
+***Antes do dotnet core 2.2***, era necessário colocar um if de validação nos métodos action.  
 Exemplo:  
 ```c#
 [HttpPost]
@@ -499,6 +706,8 @@ public ActionResult Post([FromBody] Produto produto)
 }
 ```
 A partir da versão 2.2 com a introdução do atributo `[ApiController]` no cabeçalho da classe, essa validação se tornou automática, então não é mais necessário o FromBody e o if.  
+
+[Voltar ao Índice](#índice)
 
 ---
 
@@ -520,6 +729,8 @@ Isso vai resolver o problema.
 
 Fonte: Curso WebAPI AspNet Core do Macoratti.
 
+[Voltar ao Índice](#índice)
+
 ---
 
 ## Otimizando o código
@@ -538,7 +749,7 @@ var produtos = _context.Produtos.AsNoTracking().ToList();
 
 **OBS: Usar `AsNoTracking()` APENAS para consultas somente leitura SEM a necessidade de alterar os dados.**
 
-#### **Dicas:**
+#### Dicas:
 
 - Nunca retorne todos os registros em uma consulta!  
 Exemplo de solução: Limite para pegar so alguns dados.  
@@ -557,6 +768,7 @@ _context.Categorias.Include(p => p.Produtos)
 ```
 *Obs: Em produção pode e deve ser aprimorado para paginação.*
 
+[Voltar ao Índice](#índice)
 
 ---
 
