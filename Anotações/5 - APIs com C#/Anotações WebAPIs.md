@@ -44,10 +44,12 @@
     - [QueryStrings](#querystrings)
     - [Valores de Formulários](#valores-de-formulários)
     - [Atributos para definir de onde é a fonte dos dados](#atributos-para-definir-de-onde-é-a-fonte-dos-dados)
+    - [\[FromServices\]](#fromservices)
+    - [Atribuição automática](#atribuição-automática)
   - [Métodos Assíncronos](#métodos-assíncronos)
     - [Vale a pena usar Actions Assíncronas?](#vale-a-pena-usar-actions-assíncronas)
   - [Informações interessantes](#informações-interessantes)
-    - [Validação do ModelState](#validação-do-modelstate)
+    - [Serviço Scooped, Singleton e Transient](#serviço-scooped-singleton-e-transient)
   - [Soluções de problemas](#soluções-de-problemas)
     - [Problema de Serialização CÍCLICA](#problema-de-serialização-cíclica)
   - [Otimizando o código](#otimizando-o-código)
@@ -643,6 +645,56 @@ Dessa forma o model binder vai ignorar a vinculação dessa propriedade, ou não
 
 Leitura adicional: [Model binding no ASP.NET Core - Microsoft Learn](https://learn.microsoft.com/pt-br/aspnet/core/mvc/models/model-binding?view=aspnetcore-7.0)
 
+### [FromServices]
+
+O atributo from services basicamente permite que você instancie um objeto que ja esteja carregado no services do program.cs.
+
+Você precisa ter uma interface para ele e sua classe com sua função.  
+Por exemplo, imagine um código de mensagem de saudação que irá receber o nome da pessoa.  
+No program.cs você coloca a seguinte linha de comando: 
+```c#
+services.AddTransient<IMeuServico, MeuServico>()  
+```
+Ou seja, aqui você definiu um serviço, que será Transient que significa que ele irá criar uma nova instancia do serviço toda vez que você chama-lo (existe também scooped e singleton), e definiu com a interface e a classe qual serviço é.  
+Mais sobre Scooped, Singleton e Transient em: [Serviço Scooped, Singleton e Transient](#serviço-scooped-singleton-e-transient)
+
+E na controladora você coloca:
+```c#
+[HttpGet("saudacao/{nome}")]
+public ActionResult<string> GetSaudacao([FromServices] IMeuServico meuServico, string nome)
+{
+  return meuServico.Saudacao(nome);
+}
+```
+Você coloca o atributo FromServices e chama o objeto pela interface.  
+
+Na realidade sua real utilidade segundo a documentação da microsoft é para injeção de dependência que exige construtor, um exemplo seria o _context do EFCore, onde você cria um readonly do _context, e no construtor carrega ele. Mas ai você tem algo que so vai usar uma vez ou poucas vezes que não compensa carregar junto da controladora, ou então é algum serviço de configuração que você pode usar o singleton que carrega ele apenas uma vez e só mata a instancia quando fechar o programa, assim você cria ele por fora la na program, com o tipo de inicialização de instancia que você precisar e usa.  
+Mais sobre Scooped, Singleton e Transient em: [Serviço Scooped, Singleton e Transient](#serviço-scooped-singleton-e-transient)
+
+Um pouquinho sobre FromServices no final da pagina: [Model binding no ASP.NET Core - Microsoft Learn](https://learn.microsoft.com/pt-br/aspnet/core/mvc/models/model-binding?view=aspnetcore-7.0)
+
+### Atribuição automática
+
+A partir do ASP.Net Core 2.2, ao colocar o atributo `[ApiController]` na classe controladora fica automático algumas atribuições, como por exemplo, o `[FromBody]` para tipos complexos.
+
+```markdown
+O atributo [ApiController] aplica regras de inferência para as fontes de dados padrão dos parâmetros de ação. Essas regras poupam você da necessidade de identificar as origens de associação manualmente aplicando atributos aos parâmetros de ação. As regras de inferência da origem de associação se comportam da seguinte maneira:
+
+- [FromServices] é inferido para parâmetros de tipo complexos registrados no Contêiner de DI.
+- [FromBody] é inferido para parâmetros de tipo complexos não registrados no Contêiner de DI. Uma exceção à regra de inferência [FromBody] é qualquer tipo interno complexo com um significado especial, como IFormCollection e CancellationToken. O código de inferência da origem da associação ignora esses tipos especiais.
+- [FromForm] é inferido para parâmetros de ação do tipo IFormFile e IFormFileCollection. Ele não é inferido para qualquer tipo simples ou definido pelo usuário.
+- [FromRoute] é inferido para qualquer nome de parâmetro de ação correspondente a um parâmetro no modelo de rota. Quando mais de uma rota correspondem a um parâmetro de ação, qualquer valor de rota é considerado [FromRoute].
+- [FromQuery] é inferido para todos os outros parâmetros de ação.
+```
+Fonte: [Criar APIs Web com o ASP.NET Core - Microsoft Learn](https://learn.microsoft.com/pt-br/aspnet/core/web-api/?view=aspnetcore-7.0)
+
+Outro recurso que a ApiController oferece é verificar automaticamente o estado do modelo e retorna respostas HTTP 400 em caso de erros de validação do modelo.
+
+Portanto, não precisamos verificar o modelo usando ModelState.IsValid explicitamente em nossas Actions nas Web APIs nem usar explicitamente [FromBody] graças ao atributo [ApiController].
+
+Leitura adicional em ingles (é o mesmo do link acima, mas achei que explicação está um pouco melhor):   
+[Create web APIs with ASP.NET Core - Microsoft Learn](https://learn.microsoft.com/en-us/aspnet/core/web-api/?view=aspnetcore-7.0)
+
 [Voltar ao Índice](#índice)
 
 ---
@@ -691,21 +743,25 @@ Leitura recomendada: [Programação assíncrona com async e await (C#) - Microso
 
 ## Informações interessantes  
 
-### Validação do ModelState
+### Serviço Scooped, Singleton e Transient
 
-***Antes do dotnet core 2.2***, era necessário colocar um if de validação nos métodos action.  
-Exemplo:  
-```c#
-[HttpPost]
-public ActionResult Post([FromBody] Produto produto)
-{
-    if(!ModelState.IsValid)
-    {
-        return BadRequest(ModelState);
-    }
-}
-```
-A partir da versão 2.2 com a introdução do atributo `[ApiController]` no cabeçalho da classe, essa validação se tornou automática, então não é mais necessário o FromBody e o if.  
+Transient: Cria uma nova instância do serviço, toda vez que você o solicita. Em um mesmo request se você solicitar o serviço mais de uma vez , para cada vez uma nova instância será criada.
+
+Scoped: Cria uma nova instância para cada escopo. (Cada request é um escopo). Dentro do escopo, ele reutiliza o serviço existente. Em um mesmo request se você solicitar o serviço mais de uma vez somente será criar uma instância do serviço e reusada dentro do request.
+
+Singleton: Cria um novo serviço apenas uma vez durante o tempo de vida do aplicativo e o usa em todos os lugares. Assim essa instância será usada em todos os request e será criada apenas uma vez no início e encerrada quando o processamento terminar
+
+É mais seguro criar serviços Transients, pois você sempre obtém a nova instância. Mas, como o sistema de injeção de dependência vai criar os serviços toda vez, eles usarão mais memória e recursos e podem ter um impacto negativo no desempenho se você usar muitos serviços neste tempo de vida.
+
+A recomendação e usar serviços Transient para serviços leves com pouco ou nenhum estado.
+
+Os serviços com tempo de vida Scoped são a melhor opção quando você deseja manter o estado dentro de um request. E são indicados para a maioria dos serviços usados em aplicações web.
+
+Um uso comum de Scoped seria para  qualquer lógica de banco de dados implementando classes, uma vez que uma conexão pode ser permitida em um request. A classe DbContext do EF Core geralmente usa este tempo de vida.
+
+Singletons são criados apenas uma vez e não são destruídos até o final do aplicativo. Qualquer vazamento de memória nesses serviços aumentará com o tempo. Singletons também são eficientes em termos de memória, pois são criados depois de reutilizados em todos os lugares.
+
+Use Singletons onde for necessário manter o estado geral do aplicativo e para tratar tarefas como:  Configuração ou parâmetros do aplicativo, serviço de registro, armazenamento em cache de dados são alguns dos exemplos em que você pode usar singletons.
 
 [Voltar ao Índice](#índice)
 
