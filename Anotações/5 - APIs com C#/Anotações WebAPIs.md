@@ -334,12 +334,18 @@ DataAnnotation é um [Atributo](../2%20-%20%20C%23/Anota%C3%A7%C3%B5es%20CSharp.
 - `[NotMapped]` - Exclui a propriedade do mapeamento.  
 - `[StringLenght]` - Define o tamanho mínimo e máximo permitido para o tipo.  
 - `[Required]` - Especifica que o valor do campo é obrigatório.  
+- `[RegularExpression(".+\\@.+\\..+")]` - Permite usar expressões regulares em validações mais específicas.
+- `[Compare("Senha")]` - Compara duas propriedades que o usuário informou (util para validação de senha, exemplo aquele campo para repetir a senha para confirmar).
 **Fonte: Curso WebAPI AspNet Core do Macoratti.**
 
-Mais atributos: [DataAnnotations - Learn EF Core](https://www.learnentityframeworkcore.com/configuration/data-annotation-attributes)
+Mais atributos:  
+[DataAnnotations - Learn EF Core](https://www.learnentityframeworkcore.com/configuration/data-annotation-attributes)  
+[Data Annotation Attributes - DevExpress](https://docs.devexpress.com/AspNet/400998/components/site-navigation-and-layout/form-layout/concepts/data-annotation-attributes)  
+[Model validation in ASP.NET Core MVC and Razor Pages - Microsoft Learn](https://learn.microsoft.com/en-us/aspnet/core/mvc/models/validation?view=aspnetcore-7.0)
 
 **Exemplos de uso:**  
 
+Na classe da Entity/Models:
 ```c#
 // Propriedades do tipo string
 // Com mensagem de erro:
@@ -365,10 +371,18 @@ public string Nome { get; set; }
 [StringLength(80)]
 public string Nome { get; set; }
 
+// Também dá para especificar o máximo e o mínimo. 
+[StringLength(80, MinimumLength=4)]
+public string Nome { get; set; }
+
 // E combinar com mensagem de erro:
 [Required(ErrorMessage = "Essa propriedade é obrigatória")]
 [StringLength(80), ErrorMessage = "Texto muito longo"]
 public string Nome { get; set; }
+
+// Exemplo de validação especifica de email.
+[RegularExpression(".+\\@.+\\..+", ErrorMessage = "Informe um email válido...")]
+public string Email { get; set; }
 ```
 **Fonte: Curso WebAPI AspNet Core do Macoratti.**
 
@@ -677,20 +691,20 @@ Um pouquinho sobre FromServices no final da pagina: [Model binding no ASP.NET Co
 
 A partir do ASP.Net Core 2.2, ao colocar o atributo `[ApiController]` na classe controladora fica automático algumas atribuições, como por exemplo, o `[FromBody]` para tipos complexos.
 
-```markdown
-O atributo [ApiController] aplica regras de inferência para as fontes de dados padrão dos parâmetros de ação. Essas regras poupam você da necessidade de identificar as origens de associação manualmente aplicando atributos aos parâmetros de ação. As regras de inferência da origem de associação se comportam da seguinte maneira:
+---
+O atributo [ApiController] aplica regras de inferência para as fontes de dados padrão dos parâmetros de ação. Essas regras poupam você da necessidade de identificar as origens de associação manualmente aplicando atributos aos parâmetros de ação. As regras de inferência da origem de associação se comportam da seguinte maneira: 
 
-- [FromServices] é inferido para parâmetros de tipo complexos registrados no Contêiner de DI.
+ - [FromServices] é inferido para parâmetros de tipo complexos registrados no Contêiner de DI.
 - [FromBody] é inferido para parâmetros de tipo complexos não registrados no Contêiner de DI. Uma exceção à regra de inferência [FromBody] é qualquer tipo interno complexo com um significado especial, como IFormCollection e CancellationToken. O código de inferência da origem da associação ignora esses tipos especiais.
 - [FromForm] é inferido para parâmetros de ação do tipo IFormFile e IFormFileCollection. Ele não é inferido para qualquer tipo simples ou definido pelo usuário.
 - [FromRoute] é inferido para qualquer nome de parâmetro de ação correspondente a um parâmetro no modelo de rota. Quando mais de uma rota correspondem a um parâmetro de ação, qualquer valor de rota é considerado [FromRoute].
-- [FromQuery] é inferido para todos os outros parâmetros de ação.
-```
-Fonte: [Criar APIs Web com o ASP.NET Core - Microsoft Learn](https://learn.microsoft.com/pt-br/aspnet/core/web-api/?view=aspnetcore-7.0)
+- [FromQuery] é inferido para todos os outros parâmetros de ação. 
+---
+O trecho acima foi retirado de: [Criar APIs Web com o ASP.NET Core - Microsoft Learn](https://learn.microsoft.com/pt-br/aspnet/core/web-api/?view=aspnetcore-7.0) 
 
-Outro recurso que a ApiController oferece é verificar automaticamente o estado do modelo e retorna respostas HTTP 400 em caso de erros de validação do modelo.
+Outro recurso que a ApiController oferece é verificar automaticamente o estado do modelo e retornar respostas HTTP 400 em caso de erros de validação do modelo.
 
-Portanto, não precisamos verificar o modelo usando ModelState.IsValid explicitamente em nossas Actions nas Web APIs nem usar explicitamente [FromBody] graças ao atributo [ApiController].
+Portanto, não precisamos verificar o modelo usando `ModelState.IsValid` explicitamente em nossas Actions nas Web APIs nem usar explicitamente [FromBody] graças ao atributo [ApiController].
 
 Leitura adicional em ingles (é o mesmo do link acima, mas achei que explicação está um pouco melhor):   
 [Create web APIs with ASP.NET Core - Microsoft Learn](https://learn.microsoft.com/en-us/aspnet/core/web-api/?view=aspnetcore-7.0)
