@@ -30,6 +30,9 @@
   - [Oque é o Migrations?](#oque-é-o-migrations)
     - [Executando o Migrations](#executando-o-migrations)
   - [DataAnnotations](#dataannotations)
+  - [Validação](#validação)
+    - [Criando Atributo customizado](#criando-atributo-customizado)
+    - [IValidatableObject](#ivalidatableobject)
   - [Rotas / Endpoints](#rotas--endpoints)
     - [Informar mais de um parâmetro na action](#informar-mais-de-um-parâmetro-na-action)
     - [Oque acontece se colocar uma barra no inicio do endpoint da action?](#oque-acontece-se-colocar-uma-barra-no-inicio-do-endpoint-da-action)
@@ -387,6 +390,108 @@ public string Email { get; set; }
 **Fonte: Curso WebAPI AspNet Core do Macoratti.**
 
 OBS: No curso o Macoratti diz que usar DataAnnotations deixa o código "meio poluído" e que seria mais "elegante" usar a Fluent API para isso. Pelo que deu a entender é só uma questão estética não tendo muita diferença em qualidade.
+
+[Voltar ao Índice](#índice)
+
+---
+
+## Validação
+
+A validação pode ser feita de duas formas, usando os atributos [DataAnnotations](#dataannotations), ou uma interface `IValidatableObject`.  
+
+Usando atributos, nós temos os atributos pré definidos, alguns exemplos aqui: [DataAnnotations](#dataannotations).    
+E temos também a possibilidade de criar um atributo customizado.  
+
+### Criando Atributo customizado
+
+Para criar um atributo customizado fazemos o seguinte.    
+- Primeiro é recomendado criar uma classe dentro de uma pasta **Validations**, essa classe deve ter no final de seu nome OBRIGATORIAMENTE a palavra **Attribute**, exemplo: PrimeiraLetraMaiusculaAtribbute.   
+- Ela deve herdar de **ValidationAttribute**.  
+- Deve sobrescrever o método **IsValid**.  
+- O **object? value** é o dado de entrada que será validado.  
+- O ValidationContext traz informações do contexto que o atributo de validação está sendo executado (ele é necessário mesmo que você não use ele diretamente).  
+  
+Seu método principal deve se parecer com isso:    
+```c#
+protected override ValidationResult? IsValid(object? value,
+            ValidationContext validationContext)
+{
+  // seu código aqui
+  // Exemplo da primeira letra maiúscula
+  if (value == null || string.IsNullOrEmpty(value.ToString()))
+  {
+      return ValidationResult.Success;
+  }
+
+  var primeiraLetra = value.ToString()[0].ToString();
+  if (primeiraLetra != primeiraLetra.ToUpper())
+  {
+      return new ValidationResult("A primeira letra do nome tem que ser maiúscula!");
+  }
+  return ValidationResult.Success;
+}
+```
+Explicando o código:  
+Primeiramente não é a função desse atributo do exemplo verificar se o valor é ou não nulo, sua função é apenas verificar a primeira letra da string, porém se for nulo ele não funciona, então se for nulo ele retorna um sucesso antes de verificar a letra e deixa a cargo das outras validações decidirem se é permitido ou não ser nulo.  
+Não sendo nulo ele vai fazer sua operação, sempre que você retorna um ValidationResult que não seja `.Success` ele considera que é um erro 400, pois quando há um sucesso na validação o retorno é silencioso (não tem como mandar mensagem).  
+
+### IValidatableObject
+
+Esse formato de validação é feito direto na model do produto por exemplo, ela tem como desvantagem não ser reaproveitável pois ela é criada direto na model para aquela model apenas, mas tem como vantagem permitir validações mais complexas e **bem** especificas, como por exemplo verificar alguma interação entre propriedades como só ser valido se propriedade A e propriedade B tiverem determinados dados.
+
+Para faze-lo:
+- A classe de modelo tem que implementar a interface **IValidatableObject**.
+- O método de validação é colocado abaixo das propriedades da model.
+
+```c#
+namespace Models;
+public class Produto : IValidatableObject
+{
+  public int ProdutoId { get; set; }
+  public string? Nome { get; set; }
+  public string? Descricao { get; set; }
+  public decimal Preco { get; set; }
+  public float Estoque { get; set; }
+  public DateTime DataCadastro { get; set; }
+
+  public IEnumerable<ValidationResult> Validate(ValidationContex validationContext)
+  {
+    if (!string.IsNullOrEmpty(this.Nome))
+        {
+            var primeiraLetra = this.Nome[0].ToString();
+            if (primeiraLetra != primeiraLetra.ToUpper())
+            {
+                yield return new
+                  ValidationResult("Aprimeira letra do produto deve ser maiúscula",
+                  new[]
+                  { nameof(this.Nome) }
+                  );
+            }
+        }
+
+        if (this.Estoque <= 0)
+        {
+            yield return new
+                ValidationResult("O estoque deve ser maior que zero",
+                new[]
+                { nameof(this.Estoque) }
+                );
+        }
+
+        // exemplo de interação de propriedades que
+        // essa forma de validação permite e a via Atributo não
+        // "Easter Egg"
+        if (this.Nome == "Café" && this.Estoque == 0)
+        {
+            yield return new
+                ValidationResult("CAFÉÉÉÉ!!! QUERO CAFÉÉÉ!!! NÃO TEM CAFÉÉÉ!!!!!!!!!",
+                new[]
+                { "Easter Egg" });
+        }
+
+  }
+}
+```
 
 [Voltar ao Índice](#índice)
 
