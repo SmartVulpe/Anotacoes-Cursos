@@ -49,8 +49,11 @@
     - [Atributos para definir de onde é a fonte dos dados](#atributos-para-definir-de-onde-é-a-fonte-dos-dados)
     - [\[FromServices\]](#fromservices)
     - [Atribuição automática](#atribuição-automática)
+  - [Tratando erros globalmente](#tratando-erros-globalmente)
   - [Métodos Assíncronos](#métodos-assíncronos)
     - [Vale a pena usar Actions Assíncronas?](#vale-a-pena-usar-actions-assíncronas)
+  - [Middleware](#middleware)
+  - [Modelo de Configuração](#modelo-de-configuração)
   - [Informações interessantes](#informações-interessantes)
     - [Serviço Scooped, Singleton e Transient](#serviço-scooped-singleton-e-transient)
   - [Soluções de problemas](#soluções-de-problemas)
@@ -818,6 +821,20 @@ Leitura adicional em ingles (é o mesmo do link acima, mas achei que explicaçã
 
 ---
 
+## Tratando erros globalmente
+
+Há uma forma mais "bonita" de tratar erros em APIs do que usando blocos TryCatch diretamente nos métodos action da controladora.  
+
+Essa forma consiste em extrair o TryCatch para outra area e reaproveita-lo nas apis de forma automatizada ao chama-lo no Program.cs.  
+
+Link para o artigo: 
+[ASP.NET Core Web API - Tratando erros globalmente - Macoratti](https://www.macoratti.net/19/08/aspnc_gberr1.htm)
+
+
+[Voltar ao Índice](#índice)
+
+---
+
 ## Métodos Assíncronos
 
 Nos métodos **SÍNCRONOS** quando uma solicitação chega ao servidor, ele consome uma "task" é processado, e devolvido, e só então libera esse slot de task.  
@@ -855,6 +872,85 @@ Todo método usado dentro de uma action async é bom conferir se tem versão asy
 Fonte: [Curso Web API ASP.NET Core Essencial (.NET6) - Macoratti](https://www.udemy.com/course/curso-web-api-asp-net-core-essencial/)
 
 Leitura recomendada: [Programação assíncrona com async e await (C#) - Microsoft Learn](https://learn.microsoft.com/pt-br/dotnet/csharp/programming-guide/concepts/async/)
+
+[Voltar ao Índice](#índice)
+
+---
+
+## Middleware
+
+Middlewares são trechos de código que podem ser executados no fluxo de execução da aplicação.
+
+Basicamente, você tem o request http, esse request vai passar pelo middleware que vai tratar o request, esse middleware pode passar para outro middleware ou retornar se for necessário, e apos passar por tudo ele entrega para a aplicação fazer seu trabalho e devolver para os middleware que irão retornando até devolver o response do request.
+
+OBS: A ordem de execução dos middlewares importa!
+
+OBS2: Middlewares que começam com Use (app.UseNomeDoMidleware()) eles rodam e passam para o proximo middleware, mas o middleware que tem o nome "Run" (app.Run()) ele é é o middleware final, ele não passa para o proximo.
+
+Leitura adicional recomendada: [Middleware do ASP.NET Core - Microsoft Learn](https://learn.microsoft.com/pt-br/aspnet/core/fundamentals/middleware/?view=aspnetcore-7.0)
+
+[Voltar ao Índice](#índice)
+
+---
+
+## Modelo de Configuração
+
+*Esta sessão é basicamente sobre como usar o appsettings.json para adicionar configurações ao projeto. Mas tem uma leitura adicional para mais formas.*
+
+A leitura das informações dos arquivos de configuração é fornecido pelo framework através do serviço IConfiguration.  
+E podemos utilizar a injeção de dependência para solicitar o serviço IConfiguration que já está configurado por padrão.  
+Exemplo:
+```c#
+// Definimos uma variável que é do tipo do serviço
+// IConfiguration e somente leitura
+private readonly IConfiguration _configuration;
+
+// E no construtor da classe nós injetamos via
+// injeção de dependência uma instancia de IConfiguration
+// na variável definida acima.
+public Construtor(IConfiguration config)
+{
+  _configuration = config;
+}
+
+// E por fim nós usamos essa variável para obter
+// os valores de configuração
+var valor = _configuration["chave"];
+```
+Chave é o nome dado a "propriedade" no appsettings.json, e também temos as sessões.  
+Exemplo:  
+```json
+{
+  "Sessao": {
+    "Sessao2":{
+      "Chave": "valor"
+    }
+  }
+}
+```
+Nesse exemplo, se você quiser o valor da chave ficaria assim:  
+```c#
+var valor = _configuration["Sessao:Sessao2:Chave"];
+```
+**OBS: É CASE SENSITIVE!!!**
+
+
+
+Dica:  
+Na controladora da api o construtor fica dessa forma:  
+```c#
+public CategoriasController(AppDbContext contexto, IConfiguration config)
+{
+  _context = contexto;
+  _configuration = config;
+}
+```
+Ou seja, para cada nova injeção de dependência você tem que adicionar uma virgula e a instancia.  
+
+</br>
+
+**Leitura adicional recomendada, bem completo com vários outros tipos de formas de configuração também:** [Configuração no ASP.NET Core - Microsoft Learn](https://learn.microsoft.com/pt-br/aspnet/core/fundamentals/configuration/?view=aspnetcore-7.0)
+
 
 [Voltar ao Índice](#índice)
 
