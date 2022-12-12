@@ -54,8 +54,13 @@
     - [Vale a pena usar Actions Assíncronas?](#vale-a-pena-usar-actions-assíncronas)
   - [Middleware](#middleware)
   - [Modelo de Configuração](#modelo-de-configuração)
+  - [Filtros](#filtros)
+    - [Filtros: Implementação Síncrona](#filtros-implementação-síncrona)
+    - [Filtros: Implementação Assíncrona](#filtros-implementação-assíncrona)
+    - [Filtros: Escopo e ordem de execução](#filtros-escopo-e-ordem-de-execução)
+    - [Exemplo Filtro Personalizado (ApiLoggingFilter)](#exemplo-filtro-personalizado-apiloggingfilter)
   - [Informações interessantes](#informações-interessantes)
-    - [Serviço Scooped, Singleton e Transient](#serviço-scooped-singleton-e-transient)
+    - [Serviço Scoped, Singleton e Transient](#serviço-scoped-singleton-e-transient)
   - [Soluções de problemas](#soluções-de-problemas)
     - [Problema de Serialização CÍCLICA](#problema-de-serialização-cíclica)
   - [Otimizando o código](#otimizando-o-código)
@@ -777,8 +782,8 @@ No program.cs você coloca a seguinte linha de comando:
 ```c#
 services.AddTransient<IMeuServico, MeuServico>()  
 ```
-Ou seja, aqui você definiu um serviço, que será Transient que significa que ele irá criar uma nova instancia do serviço toda vez que você chama-lo (existe também scooped e singleton), e definiu com a interface e a classe qual serviço é.  
-Mais sobre Scooped, Singleton e Transient em: [Serviço Scooped, Singleton e Transient](#serviço-scooped-singleton-e-transient)
+Ou seja, aqui você definiu um serviço, que será Transient que significa que ele irá criar uma nova instancia do serviço toda vez que você chama-lo (existe também scoped e singleton), e definiu com a interface e a classe qual serviço é.  
+Mais sobre Scoped, Singleton e Transient em: [Serviço Scoped, Singleton e Transient](#serviço-scoped-singleton-e-transient)
 
 E na controladora você coloca:
 ```c#
@@ -791,7 +796,7 @@ public ActionResult<string> GetSaudacao([FromServices] IMeuServico meuServico, s
 Você coloca o atributo FromServices e chama o objeto pela interface.  
 
 Na realidade sua real utilidade segundo a documentação da microsoft é para injeção de dependência que exige construtor, um exemplo seria o _context do EFCore, onde você cria um readonly do _context, e no construtor carrega ele. Mas ai você tem algo que so vai usar uma vez ou poucas vezes que não compensa carregar junto da controladora, ou então é algum serviço de configuração que você pode usar o singleton que carrega ele apenas uma vez e só mata a instancia quando fechar o programa, assim você cria ele por fora la na program, com o tipo de inicialização de instancia que você precisar e usa.  
-Mais sobre Scooped, Singleton e Transient em: [Serviço Scooped, Singleton e Transient](#serviço-scooped-singleton-e-transient)
+Mais sobre Scoped, Singleton e Transient em: [Serviço Scoped, Singleton e Transient](#serviço-scoped-singleton-e-transient)
 
 Um pouquinho sobre FromServices no final da pagina: [Model binding no ASP.NET Core - Microsoft Learn](https://learn.microsoft.com/pt-br/aspnet/core/mvc/models/model-binding?view=aspnetcore-7.0)
 
@@ -956,9 +961,136 @@ Ou seja, para cada nova injeção de dependência você tem que adicionar uma vi
 
 ---
 
+## Filtros
+
+Os **filtros** são [atributos](../2%20-%20%20C%23/Anota%C3%A7%C3%B5es%20CSharp.md/#atributos) anexados às classes ou métodos dos controladores que injetam lógica extra ao processamento da requisição e permitem a implementação de funcionalidades relacionadas a **autorização, exception, log e cache** de forma simples e elegante.  
+
+Eles permitem executar um código personalizado antes ou depois de executar um método action.  
+
+Permitem também realizar tarefas repetitivas comuns a métodos actions e são chamados em certos estágios do pipeline.  
+
+Os filtros são executados dentro do pipeline de invocação das actions do fluxo de requisição HTTP, às vezes chamado de pipeline de filtros.  
+
+O pipeline de filtros é executado apos o framework selecionar a action a ser executada.  
+
+**5 tipos de filtros principais**:  
+
+- **Authorization** - Determina se o usuário está autorizado no request atual. São executados primeiro.  
+- **Resource** - Podem executar código antes e depois do resto do filtro ser executado. Tratam do request após a autorização e executam antes do **model binding** ocorrer.  
+- **Action** - Executam o código imediatamente antes e depois do método **action** do controlador ser chamado.  
+- **Exception** - São usados para manipular exceções ocorridas antes de qualquer coisa ser escrita no corpo da resposta.  
+- **Result** - Executam o código antes ou depois da execução dos resultados das actions individuais do controlador.  
+
+### Filtros: Implementação Síncrona
+Os filtros síncronos que executam o código antes e depois do estágio do pipeline definem os métodos OnStage**Executing** e OnStage**Executed**.
+
+```c#
+public class CustomActionFilter : IActionFilter
+{
+  public void OnActionExecuting(ActionExecutingContext context)
+  {
+    // Código que vai ser executado ANTES da action.
+  }
+  public void OnActionExecuted(ActionExecutedContext context)
+  {
+    // Código que vai ser executado DEPOIS da action.
+  }
+}
+```
+
+### Filtros: Implementação Assíncrona
+
+Os filtros **assíncronos** herdam de **IAsyncActionFilter** e são definidos como um único método: **OnStageExecutionAsync** que usa um **FilterTypeExecutingContext** e o delegate **FilterTypeExecutionDelegate** para executar o estágio do pipeline do filtro.
+
+```c#
+public class CustomAsyncActionFilter : IAsyncActionFilter
+{
+  public async Task OnActionExecutionAsync(ActionExecutingContext context,
+    ActionExecutionDelegate next)
+    {
+      // Código que vai ser executado antes da action.
+      await next();
+      // Código que vai ser executado depois da action ser executada.
+    }
+}
+```
+
+### Filtros: Escopo e ordem de execução
+
+Um filtro pode ser adicionado ao pipeline em um dos três escopos:
+
+1. Pelo método Action;
+2. Pela classe do controlador;
+3. Globalmente (é aplicado a todos os controladores e actions).
+   
+A ordem padrão de execução é a seguinte:
+
+1. O filtro **global** é aplicado primeiro;
+2. Depois o filtro de nível de **classe** é aplicado;
+3. Finalmente, o filtro de nível de **método** é aplicado.
+
+### Exemplo Filtro Personalizado (ApiLoggingFilter)
+
+```c#
+public class ApiLoggingFilter : IActionFilter
+{
+  private readonly ILogger<ApiLoggingFilter> _logger;
+  // Injeção de dependência
+  public ApiLoggingFilter(ILogger<ApiLoggingFilter> logger)
+  {
+    _logger = logger;
+  }
+
+  // Executa antes da action
+  public void OnActionExecuting(ActionExecutingContext context)
+  {
+    _logger.LogInformation("### Executando -> OnActionExecuting");
+    _logger.LogInformation("##########################################");
+    _logger.LogInformation($"{DateTime.Now.ToLongTimeString()}");
+    _logger.LogInformation($"ModelState : {context.ModelState.IsValid}");
+    _logger.LogInformation("##########################################");
+  }
+
+  // Executa depois da action
+  public void OnActionExecuted(ActionExecutedContext context)
+  {
+    _logger.LogInformation("### Executando -> OnActionExecuted");
+    _logger.LogInformation("##########################################");
+    _logger.LogInformation($"{DateTime.Now.ToLongTimeString()}");
+    _logger.LogInformation("##########################################");
+  }
+}
+```
+
+Na classe Program.cs tem que adicionar:
+```c#
+builder.Services.AddScoped<ApiLoggingFilter>();
+```
+Sendo Scoped vai criar uma instancia cada vez que for chamado.
+Mais infos sobre [Serviço Scoped Singleton e Transient aqui](#serviço-scoped-singleton-e-transient).
+
+
+Aplicando o filtro à action que retorna os produtos:
+```c#
+[HttpGet]
+[ServiceFilter(typeof(ApiLoggingFilter))]
+public async Task<ActionResult<IEnumerable<Produto>>> Get()
+{
+  return await _context.Produtos.AsNoTracking().ToListAsync();
+}
+```
+
+
+
+Leitura adicional recomendada: [Filtros no ASP.NET Core - Microsoft Learn](https://learn.microsoft.com/pt-br/aspnet/core/mvc/controllers/filters?view=aspnetcore-7.0)
+
+[Voltar ao Índice](#índice)
+
+---
+
 ## Informações interessantes  
 
-### Serviço Scooped, Singleton e Transient
+### Serviço Scoped, Singleton e Transient
 
 Transient: Cria uma nova instância do serviço, toda vez que você o solicita. Em um mesmo request se você solicitar o serviço mais de uma vez , para cada vez uma nova instância será criada.
 
