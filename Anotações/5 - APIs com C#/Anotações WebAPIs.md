@@ -59,6 +59,9 @@
     - [Filtros: Escopo e ordem de execução](#filtros-escopo-e-ordem-de-execução)
     - [Exemplo Filtro Personalizado (ApiLoggingFilter)](#exemplo-filtro-personalizado-apiloggingfilter)
   - [Tratando erros globalmente com extensão de middleware](#tratando-erros-globalmente-com-extensão-de-middleware)
+  - [Logging](#logging)
+    - [Criando um Log](#criando-um-log)
+    - [Criando um registro de log customizado](#criando-um-registro-de-log-customizado)
   - [Informações interessantes](#informações-interessantes)
     - [Serviço Scoped, Singleton e Transient](#serviço-scoped-singleton-e-transient)
   - [Soluções de problemas](#soluções-de-problemas)
@@ -1171,6 +1174,93 @@ Leitura adicional recomendada: [Tratar erros no ASP.NET Core - Microsoft Learn](
 
 Esse artigo do Macoratti mostra uma forma ligeiramente diferente de fazer isso, ele usou um bloco tryCatch no middleware:
 [ASP.NET Core Web API - Tratando erros globalmente - Macoratti](https://www.macoratti.net/19/08/aspnc_gberr1.htm)
+
+[Voltar ao Índice](#índice)
+
+---
+
+## Logging
+
+A ASP.NET Core dá suporte a uma API de Logging ou registro de atividades em log que funciona com uma variedade de provedores de logs.
+
+Os Provedores internos permitem que você envie logs para um ou mais destinos e você também pode se conectar a uma estrutura de registros de log de terceiros como Log4Net, Nlog e Elmah.
+
+- Um provedor de log exibe ou armazena logs.
+- Os níveis de log permitem definir os níveis de severidade do registro das informações.
+
+| Níveis de log | Descrição                                                                                                                                                                                                         |
+| ------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Critical      | Logs que descrevem uma falha de sistema que requer atenção imediata.                                                                                                                                              |
+| Debug         | Logs que são usados para investigação interativa durante o desenvolvimento.                                                                                                                                       |
+| Error         | Logs que destacam quando o fluxo atual de execução é interrompido devido a uma falha.                                                                                                                             |
+| Information   | Registros que rastreiam o fluxo geral do aplicativo.                                                                                                                                                              |
+| None          | Especifica que uma categoria de log não deve gravar nenhuma mensagem.                                                                                                                                             |
+| Trace         | Logs que contêm as mensagens mais detalhadas. Essas mensagens podem conter dados confidenciais do aplicativo. Essas mensagens estão desativadas por padrão e nunca devem ser ativadas em um ambiente de produção. |
+| Warning       | Logs que destacam um evento anormal ou inesperado no fluxo do aplicativo, mas não fazem com que a execução do aplicativo pare.                                                                                    |
+
+No arquivo appsettings.json e appsettings.Development.json há definições padrão de logging.
+
+Exemplo do appsettings.Development.json
+```json
+{
+  "Logging": {
+    "LogLevel": {
+      "Default": "Debug",
+      "System": "Information",
+      "Microsoft": "Information"
+    },
+    "Console": {
+      "IncludeScopes": true
+    }
+  }
+}
+```
+- A propriedade Logging pode ter as propriedades **LogLevel** e **Console** (Provider).  
+- A propriedade **LogLevel** em Logging especifica o nível mínimo para registrar categorias selecionadas.
+- No exemplo, as categorias **System** e **Microsoft** registram o log a a nível de **Information** e todas as outras registram no nível de **Debug**.
+
+### Criando um Log
+
+Podemos usar uma instância da interface ILogger via **Injeção de dependência** para criar logs usando o método Log e informando o nível de log e um texto.
+
+Exemplo de injeção
+```c#
+private readonly CatalogoAPIContext _context;
+private readonly ILogger _logger;
+
+public CategoriasController(CatalogoAPIContext context,
+        ILogger<CategoriasController> logger)
+{
+  _context = context;
+  _logger = logger;
+}
+```
+
+Depois é só usar no lugar que você quiser:
+```c#
+_logger.Log(LogLevel.Information, "texto");
+```
+Ou usando um método especifico para definir o nível de log:
+```c#
+_logger.LogInformation("texto");
+```
+O texto que você digitar irá aparecer no console por padrão.
+
+### Criando um registro de log customizado
+
+Primeiramente, o ideal é fazer um planejamento detalhado das necessidades do projeto na hora de implementar o registro de logging.
+
+Esse exemplo vai ser bem simples de um log de dados que irá ser salvo em um txt. Existem centenas de implementações diferentes, com logs salvos em arquivos texto, logs salvo em banco de dados, com captura de dados de forma diferente, etc.
+
+
+[Não anotado ainda]
+
+
+Leitura adicional recomendada: [Como fazer registro em log no .NET Core e no ASP.NET Core](https://learn.microsoft.com/pt-br/aspnet/core/fundamentals/logging/?view=aspnetcore-7.0)
+
+
+Leitura adicional recomendada: [Registro em log no .NET - Microsoft Learn](https://learn.microsoft.com/pt-br/dotnet/core/extensions/logging?tabs=command-line)
+
 
 [Voltar ao Índice](#índice)
 
