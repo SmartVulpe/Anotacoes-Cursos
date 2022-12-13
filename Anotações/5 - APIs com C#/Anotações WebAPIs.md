@@ -49,7 +49,6 @@
     - [Atributos para definir de onde é a fonte dos dados](#atributos-para-definir-de-onde-é-a-fonte-dos-dados)
     - [\[FromServices\]](#fromservices)
     - [Atribuição automática](#atribuição-automática)
-  - [Tratando erros globalmente](#tratando-erros-globalmente)
   - [Métodos Assíncronos](#métodos-assíncronos)
     - [Vale a pena usar Actions Assíncronas?](#vale-a-pena-usar-actions-assíncronas)
   - [Middleware](#middleware)
@@ -59,6 +58,7 @@
     - [Filtros: Implementação Assíncrona](#filtros-implementação-assíncrona)
     - [Filtros: Escopo e ordem de execução](#filtros-escopo-e-ordem-de-execução)
     - [Exemplo Filtro Personalizado (ApiLoggingFilter)](#exemplo-filtro-personalizado-apiloggingfilter)
+  - [Tratando erros globalmente com extensão de middleware](#tratando-erros-globalmente-com-extensão-de-middleware)
   - [Informações interessantes](#informações-interessantes)
     - [Serviço Scoped, Singleton e Transient](#serviço-scoped-singleton-e-transient)
   - [Soluções de problemas](#soluções-de-problemas)
@@ -826,20 +826,6 @@ Leitura adicional em ingles (é o mesmo do link acima, mas achei que explicaçã
 
 ---
 
-## Tratando erros globalmente
-
-Há uma forma mais "bonita" de tratar erros em APIs do que usando blocos TryCatch diretamente nos métodos action da controladora.  
-
-Essa forma consiste em extrair o TryCatch para outra area e reaproveita-lo nas apis de forma automatizada ao chama-lo no Program.cs.  
-
-Link para o artigo: 
-[ASP.NET Core Web API - Tratando erros globalmente - Macoratti](https://www.macoratti.net/19/08/aspnc_gberr1.htm)
-
-
-[Voltar ao Índice](#índice)
-
----
-
 ## Métodos Assíncronos
 
 Nos métodos **SÍNCRONOS** quando uma solicitação chega ao servidor, ele consome uma "task" é processado, e devolvido, e só então libera esse slot de task.  
@@ -1083,6 +1069,108 @@ public async Task<ActionResult<IEnumerable<Produto>>> Get()
 
 
 Leitura adicional recomendada: [Filtros no ASP.NET Core - Microsoft Learn](https://learn.microsoft.com/pt-br/aspnet/core/mvc/controllers/filters?view=aspnetcore-7.0)
+
+[Voltar ao Índice](#índice)
+
+---
+
+## Tratando erros globalmente com extensão de middleware
+
+Esse tratamento global que foi ensinado no curso, ele é uma **extensão** do middleware **ExceptionHandler** nativo, basicamente você pega a mensagem de erro e torna os dados dela mais organizada e mostrando informações em campos detalhados.
+
+Para fazer você vai:
+- Criar uma model com as propriedades para organizar os dados de retorno do erro e serializar.
+- Criar uma classe que terá o código de middleware.
+- Chamar o nosso middleware no program.cs
+  
+Exemplos:
+
+Model ErrorDetails:
+```c#
+using System.Text.Json;
+
+namespace CatalogoAPI.Models
+{
+    // model usada no middleware ApiExceptionMiddlewareExtensions
+    public class ErrorDetails
+    {
+        public int StatusCode { get; set; }
+        public string? Message { get; set; }
+        public string? Trace { get; set; }
+        public override string ToString()
+        {
+            return JsonSerializer.Serialize(this);
+        }
+    }
+}
+```
+
+Classe do middleware
+```c#
+using CatalogoAPI.Models;
+using Microsoft.AspNetCore.Diagnostics;
+using System.Net;
+
+/* Esse middleware serve para "tratar" erros de forma global
+ * nesse caso são erros não esperados, por exemplo erro na conexão,
+ * entra no lugar do trycatch que retornava o status code 500.
+ */
+namespace CatalogoAPI.Extensions
+{
+    // tem que ser uma classe estática
+    public static class ApiExceptionMiddlewareExtensions
+    {
+        // o método também tem que ser estático
+        public static void ConfigureExceptionHandler(this IApplicationBuilder app)
+        {
+            // Aqui estamos usando o middleware
+            app.UseExceptionHandler(appError =>
+            {
+                appError.Run(async context =>
+                {
+                    // Aqui obtemos o status code
+                    context.Response.StatusCode = (int)HttpStatusCode.InternalServerError;
+                    // Aqui definimos o tipo de retorno que vai ser json
+                    context.Response.ContentType = "application/json";
+
+                    // Aqui obtemos informações e detalhes do erro
+                    var contextFeature = context.Features.Get<IExceptionHandlerFeature>();
+                    if (contextFeature != null)
+                    {
+                        await context.Response.WriteAsync(new ErrorDetails()
+                        {
+                            // E aqui é o retorno 
+                            // Código de status 
+                            StatusCode = context.Response.StatusCode,
+                            // Mensagem
+                            Message = contextFeature.Error.Message,
+                            // Pilha de erros
+                            Trace = contextFeature.Error.StackTrace
+                        }.ToString());
+                    }
+                });
+            });
+        }
+    }
+}
+```
+
+E no program.cs basta colocar:
+```c#
+app.ConfigureExceptionHandler();
+```
+Após o `app.Builder();`   
+A ordem de middlewares de tratamento de exceções deve ser:
+- Antes de chamar o roteamento,
+- De definir o mapeamento dos endpoints,
+- E definições da autenticação e autorização.  
+
+**É possível também ter tratamentos mais específicos, mais informações no link da leitura adicional abaixo. Porém, isso não tira a necessidade de criar tratamentos básicos nas controladoras retornando os StatusCode corretos em operações como NotFound ou BadRequest.**
+
+Leitura adicional recomendada: [Tratar erros no ASP.NET Core - Microsoft Learn](https://learn.microsoft.com/pt-br/aspnet/core/fundamentals/error-handling?view=aspnetcore-6.0#exception-handler-lambda)
+
+Esse artigo do Macoratti mostra uma forma ligeiramente diferente de fazer isso, ele usou um bloco tryCatch no middleware:
+[ASP.NET Core Web API - Tratando erros globalmente - Macoratti](https://www.macoratti.net/19/08/aspnc_gberr1.htm)
 
 [Voltar ao Índice](#índice)
 
