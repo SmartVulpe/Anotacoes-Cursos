@@ -1253,7 +1253,139 @@ Primeiramente, o ideal é fazer um planejamento detalhado das necessidades do pr
 Esse exemplo vai ser bem simples de um log de dados que irá ser salvo em um txt. Existem centenas de implementações diferentes, com logs salvos em arquivos texto, logs salvo em banco de dados, com captura de dados de forma diferente, etc.
 
 
-[Não anotado ainda]
+Neste exemplo criamos uma pasta Logging, e nela criamos 3 classes.
+- CustomLoggerProviderConfiguration.cs
+- CustomLoggerProvider.cs
+- CustomerLogger.cs
+
+Configuration:
+```c#
+namespace CatalogoAPI.Logging
+{
+    public class CustomLoggerProviderConfiguration
+    {
+        // Represenda o nivel do log, pré carregada com warning,
+        // mas quando o sistema começar salvar ela ja é sobrescrita
+        // com o nivel do que estiver sendo logado.
+        public LogLevel LogLevel { get; set; } = LogLevel.Warning;
+        // Representa o Id do nossos eventos, pré carregado com 0.
+        public int EventId { get; set; } = 0;
+
+        // Dependendo do objetivo podemos colocar mais propriedades.
+    }
+}
+```
+
+Provider:
+```c#
+using System.Collections.Concurrent;
+
+namespace CatalogoAPI.Logging
+{
+    // Implementa a interface ILoggerProvider
+    public class CustomLoggerProvider : ILoggerProvider
+    {
+        readonly CustomLoggerProviderConfiguration loggerConfig;
+
+        readonly ConcurrentDictionary<string, CustomerLogger> loggers =
+                 new ConcurrentDictionary<string, CustomerLogger>();
+
+        // O construtor recebe e define a nossa configuração do logger
+        public CustomLoggerProvider(CustomLoggerProviderConfiguration config)
+        {
+            loggerConfig = config;
+        }
+
+        // CreateLogger cria uma instancia do meu log customizado
+        // por nome de categoria e vai armazenar isso em um dicionario
+        // para isso a gente define a instancia acima de CurrentDictionary
+        public ILogger CreateLogger(string categoryName)
+        {
+            // e aqui a gente define o nosso logger a ser instanciado.
+            return loggers.GetOrAdd(categoryName, name => new CustomerLogger(name, loggerConfig));
+        }
+
+        // Libera os recursos depois que não precisa mais usar.
+        public void Dispose()
+        {
+            loggers.Clear();
+        }
+    }
+}
+```
+
+Logger
+```c#
+namespace CatalogoAPI.Logging
+{
+    // Implementa a interface ILogger
+    public class CustomerLogger : ILogger
+    {
+        readonly string loggerName;
+        readonly CustomLoggerProviderConfiguration loggerConfig;
+
+        public CustomerLogger(string name, CustomLoggerProviderConfiguration config)
+        {
+            loggerName = name;
+            loggerConfig = config;
+        }
+
+        public IDisposable BeginScope<TState>(TState state)
+        {
+            return null;
+        }
+
+        public bool IsEnabled(LogLevel logLevel)
+        {
+            return logLevel == loggerConfig.LogLevel;
+        }
+
+        // Método da propria interface que o sistema irá executar com nosso código
+        public void Log<TState>(LogLevel logLevel, EventId eventId, TState state,
+            Exception exception, Func<TState, Exception, string> formatter)
+        {
+            // Formatando a mensagem do log
+            string mensagem = $"{logLevel.ToString()}: {eventId.Id} - {formatter(state, exception)}";
+
+            EscreverTextoNoArquivo(mensagem);
+        }
+
+        private void EscreverTextoNoArquivo(string mensagem)
+        {
+            // caminho onde vai salvar o log
+            string caminhoArquivoLog = @"c:\TestesLogs\CatalogoAPI_Log.txt";
+
+            // Escopo instanciando o StreamWriter que estamos usando para escrever no arquivo de texto.
+            using (StreamWriter streamWriter = new StreamWriter(caminhoArquivoLog, true))
+            {
+                try
+                {
+                    // Escreve mensagem no arquivo de texto.
+                    streamWriter.WriteLine(mensagem);
+                    streamWriter.Close();
+                }
+                catch (Exception)
+                {
+                    throw;
+                }
+            }
+        }
+    }
+}
+```
+
+E por fim para funcionar, no arquivo Program.cs você coloca:
+```c#
+// Ativando o logging
+// adiciona o provider e sua configuração
+builder.Logging.AddProvider(new CustomLoggerProvider(new CustomLoggerProviderConfiguration
+{
+    // atribui o nivel de log para information
+    LogLevel = LogLevel.Information
+}));
+```
+Você pode colocar dentro do IF "isDevelopment" para funcionar só em ambiente de desenvolvimento, colocar um ELSE nesse if para colocar para só em produção, ou colocar fora da logica e funcionar nos dois.    
+Você pode ter configurações e atribuições diferentes para em desenvolvimento e em produção, apenas atribuindo e chamando configurações diferentes dentro desse IF.    
 
 
 Leitura adicional recomendada: [Como fazer registro em log no .NET Core e no ASP.NET Core](https://learn.microsoft.com/pt-br/aspnet/core/fundamentals/logging/?view=aspnetcore-7.0)
