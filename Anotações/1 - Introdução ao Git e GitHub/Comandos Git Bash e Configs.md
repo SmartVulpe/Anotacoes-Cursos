@@ -11,12 +11,14 @@
 - `git clone "link do repositório sem aspas"` --- clona o repositório para a tua maquina.
 - `git reset` ou `git reset nomeDoArquivo` --- desfaz o git add, se ainda não foi feito o commit. 
 - `git commit --allow-empty -m "Empty-Commit"` --- allow-empty é para fazer commits vazios, ou seja, sem ter dado add em nada.
+- `git log --oneline --graph --color --all --decorate` ---  mostra o log de commits e branchs.
 
 Se você criar um repositório no PC e quiser upar pro github, tem que criar o rep no github, ai ele vai dar os comandos para usar ja com o link certinho só copiar e colar, todavia os comandos são os seguintes:
 
 - `git remote add origin "link sem aspas"`
 - `git branch -M main` --- o git cria a branch com o nome de master, se usar esse comando ele vai mudar o nome para main.
 - `git push -u origin main`
+
 
 ## Comandos Branching 
 
