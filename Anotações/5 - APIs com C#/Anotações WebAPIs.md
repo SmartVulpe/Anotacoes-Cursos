@@ -52,6 +52,7 @@
   - [Métodos Assíncronos](#métodos-assíncronos)
     - [Vale a pena usar Actions Assíncronas?](#vale-a-pena-usar-actions-assíncronas)
   - [Middleware](#middleware)
+  - [Delegate](#delegate)
   - [Modelo de Configuração](#modelo-de-configuração)
   - [Filtros](#filtros)
     - [Filtros: Implementação Síncrona](#filtros-implementação-síncrona)
@@ -69,6 +70,16 @@
   - [Otimizando o código](#otimizando-o-código)
     - [HTTP GET](#http-get)
       - [Dicas:](#dicas)
+- [Repository](#repository)
+  - [Oque é o padrão Repositório?](#oque-é-o-padrão-repositório)
+  - [Implementação do Repositório](#implementação-do-repositório)
+    - [Passos Teóricos](#passos-teóricos)
+    - [Prática](#prática)
+  - [Links Úteis](#links-úteis)
+- [Diferenças entre IQueryable, List e IEnumerator](#diferenças-entre-iqueryable-list-e-ienumerator)
+- [Leituras interessantíssimas](#leituras-interessantíssimas)
+  - [Artigos sobre não usar ou quando usar o EF junto com o Repository](#artigos-sobre-não-usar-ou-quando-usar-o-ef-junto-com-o-repository)
+    - [Minha analise](#minha-analise)
 
 
 
@@ -887,6 +898,17 @@ Leitura adicional recomendada: [Middleware do ASP.NET Core - Microsoft Learn](ht
 
 ---
 
+## Delegate
+
+Explicação curta: Delegates são uma forma de referenciar um método. Ou seja você pode chamar ele diretamente, e de forma segura. Inclusive com algumas particularidades como chamar de forma anonima e conforme a necessidade do que está acontecendo em tempo de execução.
+
+Este artigo tem uma explicação mais detalhada sobre, não vi necessidade de copia-lo ou resumi-lo pois está muito bom assim, **Leitura Obrigatória**: [C# - Delegates e Eventos : Conceitos básicos - Macoratti](https://www.macoratti.net/11/05/c_dlg1.htm)
+
+
+[Voltar ao Índice](#índice)
+
+---
+
 ## Modelo de Configuração
 
 *Esta sessão é basicamente sobre como usar o appsettings.json para adicionar configurações ao projeto. Mas tem uma leitura adicional para mais formas.*
@@ -1484,5 +1506,89 @@ _context.Categorias.Include(p => p.Produtos)
 [Voltar ao Índice](#índice)
 
 ---
+
+# Repository
+
+## Oque é o padrão Repositório?
+
+Definição de **Martin Fowler**:
+"O padrão **Repository** faz a mediação entre o domínio e as camadas de mapeamento de dados, agindo como uma **coleção de objetos de domínio em memória**.....Conceitualmente, um repositório encapsula o conjunto de objetos persistidos em um armazenamento de dados e as operações realizadas sobre eles, fornecendo uma visão mais orientada a objetos da camada de persistência.....e também da suporte ao objetivo de alcançar uma separação limpa e uma forma de dependência entre o domínio e as camadas de mapeamento de dados.".   
+[Link Fonte]](https://martinfowler.com/eaaCatalog/repository.html)
+
+O padrão repositório permite criar um desacoplamento do código da api em relação aos sistemas usados, é como se criasse um conector que permite esse desacoplamento, por exemplo, as controladoras que funcionam especificamente com o EFCore possam desencaixar do EFCore e ser encaixados no Dapper sem alterações expressivas, só desencaixar de um e encaixar em outro.
+
+Benefícios do padrão repositório:
+
+1. Minimiza a lógica de consultas na sua aplicação evitando consultas esparramadas pelo seu código (**encapsula a lógica das consultas no repositório**).
+2. Desacopla a sua aplicação dos frameworks de persistência como o EF Core (**você pode substituir o framework usado**).
+3. Facilita a realização de **testes unitários** em sua aplicação (Repositório Fake).
+
+Links:
+
+Nesse link tem um projeto q encaixa nos 2 ao mesmo tempo:  
+[C# .Net Core — Criando uma aplicação utilizando Repository Pattern com dois ORMs diferentes Dapper e Entity Framework Core — Parte 1](https://medium.com/@adlerpagliarini/c-net-core-criando-uma-aplica%C3%A7%C3%A3o-utilizando-repository-pattern-com-dois-orms-diferentes-dapper-97e8aa6ca35)
+
+Leitura adicional, meio desatualizado mas a base funciona: [.NET - Apresentando o padrão de projeto Repository - Macoratti](https://www.macoratti.net/11/10/net_pr1.htm)
+
+Leitura adicional, um pouco mais atualizado: [.NET - Padrão Repository e Unit of Work com EF 6 (revisitado)](https://www.macoratti.net/16/01/net_uow1.htm)
+
+
+[Voltar ao Índice](#índice)
+
+---
+
+## Implementação do Repositório
+
+### Passos Teóricos
+
+1. Definimos uma interface genérica `Interface<T>` com os métodos a serem implementados.
+2. Criamos uma classe concreta que implementamos a interface e uma instancia DbContext.
+3. Criamos uma interface especifica para a entidade, essa interface herda a interface genérica.
+4. Implementamos a interface especifica da entidade em uma classe concreta e ela também herda a classe concreta genérica.
+
+### Prática
+
+
+
+## Links Úteis
+
+[Como adicionar includes por expressão em repository pattern C#](https://pt.stackoverflow.com/questions/322030/como-adicionar-includes-por-express%c3%a3o-em-repository-pattern-c)
+
+[C# - Apresentando o delegate Func](https://www.macoratti.net/14/11/c_deleg2.htm)
+
+
+[Voltar ao Índice](#índice)
+
+---
+
+
+# Diferenças entre IQueryable, List e IEnumerator
+
+Link para traduzir
+
+https://stackoverflow.com/questions/4844660/differences-between-iqueryable-list-ienumerator
+
+# Leituras interessantíssimas
+
+- [Não cometa esses erros ao utilizar o Entity Framework](https://imasters.com.br/back-end/nao-cometa-esses-erros-ao-utilizar-o-entity-framework)
+
+## Artigos sobre não usar ou quando usar o EF junto com o Repository
+
+- [Quando usar Entity Framework com Repository Pattern?](https://pt.stackoverflow.com/questions/51536/quando-usar-entity-framework-com-repository-pattern)  
+Esse tópico é muito interessante, há argumentos fortes para não utilizar o EF junto com Repository, porém há muita gente defendendo seu uso mesmo assim. É uma leitura muito boa.
+
+- [Is the repository pattern useful with Entity Framework Core?](https://www.thereformedprogrammer.net/is-the-repository-pattern-useful-with-entity-framework-core/)  
+Quase a mesma coisa do link acima do StackOverflow, só que em ingles e com uma analise diferente. Possui algumas abordagens para resolver alguns problemas.
+
+- [Implement the infrastructure persistence layer with Entity Framework Core - Microsoft Learn](https://learn.microsoft.com/en-us/dotnet/architecture/microservices/microservice-ddd-cqrs-patterns/infrastructure-persistence-layer-implementation-entity-framework-core#using-a-custom-repository-versus-using-ef-dbcontext-directly)
+Na sessão "Using a custom repository versus using EF DbContext directly" fala um pouco sobre usar com repository.
+
+- [Repository Pattern in ASP.NET Core – Ultimate Guide](https://codewithmukesh.com/blog/repository-pattern-in-aspnet-core/)
+Artigo conciliando o uso do EF com Repository
+
+### Minha analise
+Bom, existem alguns problemas em utilizar o EF com o Repository, porém em aplicações muito complexas não tem muito para onde fugir de forma que não torne a coisa ainda mais complexa, exite alguns cuidados a serem tomados, e se feito corretamente o impacto não é para ser perceptível.   
+Vale a pena conhecer pois muito provavelmente você vai esbarrar com um projeto utilizando isso e não vai poder simplesmente muda-lo para não usar.
+
 
 
