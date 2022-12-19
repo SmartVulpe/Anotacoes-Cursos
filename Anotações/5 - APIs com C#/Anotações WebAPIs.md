@@ -74,7 +74,8 @@
   - [Oque é o padrão Repositório?](#oque-é-o-padrão-repositório)
   - [Implementação do Repositório](#implementação-do-repositório)
     - [Passos Teóricos](#passos-teóricos)
-    - [Prática](#prática)
+    - [Prática (Síncrono)](#prática-síncrono)
+    - [Unit Of Work](#unit-of-work)
   - [Links Úteis](#links-úteis)
 - [Diferenças entre IQueryable, List e IEnumerator](#diferenças-entre-iqueryable-list-e-ienumerator)
 - [Leituras interessantíssimas](#leituras-interessantíssimas)
@@ -1545,10 +1546,267 @@ Leitura adicional, um pouco mais atualizado: [.NET - Padrão Repository e Unit o
 2. Criamos uma classe concreta que implementamos a interface e uma instancia DbContext.
 3. Criamos uma interface especifica para a entidade, essa interface herda a interface genérica.
 4. Implementamos a interface especifica da entidade em uma classe concreta e ela também herda a classe concreta genérica.
+5. Criamos a Unit of Work
+6. Implementamos na controladora
 
-### Prática
+### Prática (Síncrono)
 
+1. **Definindo a interface genérica:** 
+ 
+A interface genérica deverá conter os métodos mais genéricos a serem utilizados, como get, add, update, delete.    
+OBS: É genérica por conta do tipo T. Vide [Classes Genéricas](../2%20-%20%20C%23/Anota%C3%A7%C3%B5es%20CSharp.md/#classes-gen%C3%A9ricas)
+```c#
+public interface IRepository<T>
+{
+    // IQueryable é melhor nesse caso Linq-To-SQL
+    IQueryable<T> Get();
+    T GetById(Expression<Func<T, bool>> predicate);
+    void Add(T entity);
+    void Update(T entity);
+    void Delete(T entity);
+}
+```
 
+2. **Implementando a interface genérica em uma classe**  
+
+Após criar a interface é preciso implementa-lá em uma classe genérica.  
+```c#
+// Esse "where T : class" é para especificar que é para receber
+// somente tipos que são classes, exemplo Produto.
+public class Repository<T> : IRepository<T> where T : class
+{
+  // É preciso fazer a injeção de dependência do DBContext
+  // do EF aqui
+  protected CatalogoAPIContext _context;
+
+  public Repository(CatalogoAPIContext context)
+  {
+    _context = context;
+  }
+
+  // Então começamos a implementar os métodos
+  public IQueryable<T> Get()
+  {
+    return _context.Set<T>().AsNoTracking();
+  }
+
+  // O predicate é um delegate que verifica se o parâmetro
+  // atende a uma condição especifica ou não.
+  public T GetById(Expression<Func<T, bool>> predicate)
+  {
+    return _context.Set<T>().AsNoTracking().SingleOrDefault(predicate);
+  }
+
+  public void Add(T entity)
+  {
+    _context.Set<T>().Add(entity);
+  }
+
+  public void Delete(T entity)
+  {
+    _context.Set<T>().Remove(entity);
+  }
+
+  public void Update(T entity)
+  {
+    // Não precisa exatamente desse entity state, é mais para reforçar
+    // pois ele ja esta sendo rastreado e o EF ja vai saber que
+    // ele está modificado, mas reforçando garante melhor que sabe.
+    _context.Entry(entity).State = EntityState.Modified;
+    _context.Set<T>().Update(entity);
+  }
+}
+```
+
+3. **Interface específica**
+
+Fazemos uma interface especifica para a controladora para definir o tipo e colocar os métodos específicos. Ela implementa a interface genérica com a entidade para qual ela vai servir já definida no tipo, neste caso Produto.
+```c#
+public interface IProdutoRepository : IRepository<Produto>
+    {
+        IEnumerable<Produto> GetProdutosPorPreco();
+    }
+```
+
+4. **Classe específica**
+
+A classe de repositório especifica implementa a interface especifica e herda o repositório genérico.
+
+```c#
+public class ProdutoRepository : Repository<Produto>, IProdutoRepository
+{
+  public ProdutoRepository(CatalogoAPIContext context) : base(context)
+  {
+  }
+
+  public IEnumerable<Produto> GetProdutosPorPreco()
+  {
+    return Get().OrderBy(c => c.Preco).ToList();
+  }
+}
+```
+
+### Unit Of Work
+
+A Unit of Work é usada para unificar nosso repositório dentro de um único contexto para utilização simplificada.
+
+**Continuação da prática:**  
+5. **Criamos a Unit of Work**   
+**Interface**:  
+```c#
+public interface IUnitOfWork
+{
+  // Une os repositórios
+  IProdutoRepository ProdutoRepository { get; }
+  ICategoriaRepository CategoriaRepository { get; }
+  // Adiciona o commit
+  void Commit();
+}
+```
+
+**Implementamos a interface em uma classe:**  
+A classe da Unit of Work ela verifica se a instancia das controladoras já está criada, e implementa uma forma de salvar os dados.
+```c#
+public class UnitOfWork : IUnitOfWork
+{
+  private ProdutoRepository _produtoRepo;
+  private CategoriaRepository _categoriaRepo;
+  public CatalogoAPIContext _context;
+
+  public UnitOfWork(CatalogoAPIContext context)
+  {
+    _context = context;
+  }
+
+  public IProdutoRepository ProdutoRepository
+  {
+    get
+    {
+      // Se a instancia for nula ele da um new (direita do ??),
+      // se não for, ele manda a instancia que ja existe (esquerda do ??).
+      return _produtoRepo = _produtoRepo ?? new ProdutoRepository(_context);
+    }
+  }
+
+  public ICategoriaRepository CategoriaRepository
+  {
+    get
+    {
+      return _categoriaRepo = _categoriaRepo ?? new CategoriaRepository(_context);
+    }
+  }
+                
+
+  public void Commit()
+  {
+    _context.SaveChanges();
+  }
+
+  public void Dispose()
+  {
+    _context.Dispose();
+  }
+}
+```
+
+6. **Implementamos as controladoras**  
+   
+É praticamente a mesma coisa, mas utilizando os métodos das classes especificas do repositório.
+```c#
+[Route("[controller]")]
+[ApiController]
+public class ProdutosController : ControllerBase
+{
+  // Injeção de dependência igual a context que usava antes
+  private readonly IUnitOfWork _uow;
+
+  public ProdutosController(IUnitOfWork context)
+  {
+    _uow = context;
+  }
+
+  [HttpGet]
+  public ActionResult<IEnumerable<Produto>> GetProdutos()
+  {
+    // Usa o método Get() da ProdutoRepository
+    var produtos = _uow.ProdutoRepository.Get().ToList();
+    if (produtos is null)
+    {
+      return NotFound("Produtos não encontrados...");
+    }
+    return Ok(produtos);
+  }
+
+  [HttpGet("menorpreco")]
+  public ActionResult<IEnumerable<Produto>> GetProdutosPrecos()
+  {
+    return _uow.ProdutoRepository.GetProdutosPorPreco().ToList();
+  }
+
+  [HttpGet("{id:int}", Name = "ObterProduto")]
+  public ActionResult<Produto> GetProdutoIdAsync(int id)
+  {
+    // Usa o método GetById que está implementado na ProdutoRepository
+    // e faz a conferição via predicate se ProdutoId é igual ao id
+    var produto = _uow.ProdutoRepository.GetById(p => p.ProdutoId == id);
+    if (produto is null)
+    {
+      return NotFound($"Produto com id= {id} não localizado...");
+    }
+    return Ok(produto);
+
+  }
+
+  [HttpPost]
+  public ActionResult PostProdutoAsync(Produto produto)
+  {
+    if (produto is null)
+    return BadRequest();
+
+    // Usa o método Add da ProdutoRepository         
+    _uow.ProdutoRepository.Add(produto);
+    // Usa o SaveChanges que está na UnitOfWork
+    _uow.Commit();
+
+    return new CreatedAtRouteResult("ObterProduto",
+    new { id = produto.ProdutoId }, produto);
+  }
+
+  [HttpPut("{id:int}")]
+  public ActionResult PutProdutoAsync(int id, Produto produto)
+  {
+    if (id != produto.ProdutoId)
+    {
+      return BadRequest($"O id informado ({id}) não é o mesmo id recebido para atualização ({produto.ProdutoId})");
+    }
+
+    // Usa o Update da ProdutoRepository
+    _uow.ProdutoRepository.Update(produto);
+    // Usa o SaveChanges que está na UnitOfWork
+    _uow.Commit();
+
+    return Ok(produto);
+  }
+
+  [HttpDelete("{id:int}")]
+  public ActionResult DeleteProdutoAsync(int id)
+  { 
+    var produto = _uow.ProdutoRepository.GetById(p => p.ProdutoId == id);
+
+    if (produto is null)
+      return NotFound($"Produto com id= {id} não localizado...");
+
+  // Usa o Delete da ProdutoRepository
+  _uow.ProdutoRepository.Delete(produto);
+  // Usa o SaveChanges que está na UnitOfWork
+  _uow.Commit();
+
+  return Ok(produto);
+  }
+}
+```
+
+E é isso.
 
 ## Links Úteis
 
