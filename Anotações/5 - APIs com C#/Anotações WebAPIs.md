@@ -1546,8 +1546,9 @@ Leitura adicional, um pouco mais atualizado: [.NET - Padrão Repository e Unit o
 2. Criamos uma classe concreta que implementamos a interface e uma instancia DbContext.
 3. Criamos uma interface especifica para a entidade, essa interface herda a interface genérica.
 4. Implementamos a interface especifica da entidade em uma classe concreta e ela também herda a classe concreta genérica.
-5. Criamos a Unit of Work
-6. Implementamos na controladora
+5. Criamos a Unit of Work.
+6. Registramos o serviço.
+7. Implementamos na controladora.
 
 ### Prática (Síncrono)
 
@@ -1709,7 +1710,15 @@ public class UnitOfWork : IUnitOfWork
 }
 ```
 
-6. **Implementamos as controladoras**  
+6. **Registrando o serviço**
+
+Na program.cs colocamos o seguinte serviço como scoped.  
+Assim registramos a UnitOfWork para ser usada nas controladoras.    
+```c#
+builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
+```
+
+7. **Implementando as controladoras**  
    
 É praticamente a mesma coisa, mas utilizando os métodos das classes especificas do repositório.
 ```c#
