@@ -70,17 +70,24 @@
   - [Otimizando o código](#otimizando-o-código)
     - [HTTP GET](#http-get)
       - [Dicas:](#dicas)
-- [Repository](#repository)
+- [Repository Pattern](#repository-pattern)
   - [Oque é o padrão Repositório?](#oque-é-o-padrão-repositório)
   - [Implementação do Repositório](#implementação-do-repositório)
     - [Passos Teóricos](#passos-teóricos)
     - [Prática (Síncrono)](#prática-síncrono)
     - [Unit Of Work](#unit-of-work)
-  - [Links Úteis](#links-úteis)
-- [Diferenças entre IQueryable, List e IEnumerator](#diferenças-entre-iqueryable-list-e-ienumerator)
-- [Leituras interessantíssimas](#leituras-interessantíssimas)
-  - [Artigos sobre não usar ou quando usar o EF junto com o Repository](#artigos-sobre-não-usar-ou-quando-usar-o-ef-junto-com-o-repository)
-    - [Minha analise](#minha-analise)
+  - [Vale a pena usar o Padrão Repository e Unit of Work com EF Core?](#vale-a-pena-usar-o-padrão-repository-e-unit-of-work-com-ef-core)
+    - [Uso do IEnumerable ou IQueryable na interface do Repository](#uso-do-ienumerable-ou-iqueryable-na-interface-do-repository)
+    - [Usar ou não uma camada de serviços com esses padrões?](#usar-ou-não-uma-camada-de-serviços-com-esses-padrões)
+    - [Conclusão usar ou não usar esses padrões?](#conclusão-usar-ou-não-usar-esses-padrões)
+    - [Links Artigos](#links-artigos)
+    - [Links Úteis Relacionados](#links-úteis-relacionados)
+    - [Artigos sobre não usar ou quando usar o EF junto com o Repository](#artigos-sobre-não-usar-ou-quando-usar-o-ef-junto-com-o-repository)
+- [DTO e AutoMapper](#dto-e-automapper)
+  - [DTO - Data Transfer Objects](#dto---data-transfer-objects)
+  - [AutoMapper](#automapper)
+  - [Prática](#prática)
+- [Leituras interessantes](#leituras-interessantes)
 
 
 
@@ -1508,7 +1515,7 @@ _context.Categorias.Include(p => p.Produtos)
 
 ---
 
-# Repository
+# Repository Pattern
 
 ## Oque é o padrão Repositório?
 
@@ -1817,29 +1824,62 @@ public class ProdutosController : ControllerBase
 
 E é isso.
 
-## Links Úteis
+[Voltar ao Índice](#índice)
+
+## Vale a pena usar o Padrão Repository e Unit of Work com EF Core?
+
+Existe muita discussão sobre usar ou não o Repository e o Unit of Work **em aplicações que usam o Entity Framework**. Isso deve-se ao fato do EF ja ter integrado esses padrões, o DBContext por exemplo é uma unit of work, e o DBSet representa uma coleção de objetos na memória que é oque o repositório faz, então fazer o uso aplicaria uma segunda camada de abstração que envolveria a camada ja existente.    
+- Um dos maiores argumentos para se usar são a facilidade de testes unitários, pois você poderia substituir o EF por um banco falso, mas atualmente existe o pacote EF InMemory que facilita muito a criação de um banco falso de testes enfraquecendo esse argumento. 
+- Também seria mais fácil trocar o Entity Framework por outro ORM, mas qualquer aplicação Orientada a Objetos que seja bem projetada, ela vai trazer com encapsulamento a possibilidade de expor nossa API e ocultar sua implementação, isso vai naturalmente facilitar a troca da ORM se isso for REALMENTE necessário, enfraquecendo também esse argumento.
+
+### Uso do IEnumerable ou IQueryable na interface do Repository
+
+Um aspecto que devemos considerar quando utilizamos a implementação do padrão repositório é o tipo de retorno dos métodos definidos na interface.  
+Geralmente nós podemos retornar **IEnumerable ou IQueryable**. 
+
+O **IEnumerable** ele atua da seguinte maneira, as consultas no repositório que retornam **IEnumerable** vão filtrar os dados no CLIENTE. Então ao fazer a consulta ele retorna **TODOS OS REGISTROS** do banco de dados e faz o filtro na memória. Ou seja, ele executa a consulta na memória com os objetos que o banco retornar.
+
+Já a abordagem usando **IQueryable** faz o filtro NO BANCO DE DADOS!
+
+A principal diferença desses 2 aqui é onde ele vai fazer o filtro. E ao meu ver, com meu conhecimento atual, puxar o banco inteiro para a memoria para depois fazer a filtragem, não parece muito bom.
+
+### Usar ou não uma camada de serviços com esses padrões?
+
+Uma camada de serviço ela encapsula a lógica de negócios, controlando transações e coordenando respostas na implementação das suas operações.  
+Usar uma camada de serviço torna seus controladores mais enxutos e centraliza a lógica de negócio, mas também acrescenta uma complexidade ao seu projeto.  
+Dessa forma, usar ou não esse recurso da camada de serviço vai depender do tamanho e do propósito do seu aplicativo. Na maioria dos aplicativos de grande escala você pode querer lhe fornecer outro nível de abstração para facilitar o gerenciamento da sua camada de dados. Nesse cenário geralmente é uma boa ideia expor a sua camada de repositório a uma camada de serviço.
+
+Exemplo: Isso implicaria remover dos controladores qualquer logica de negócio deixando apenas a lógica dos controladores resumida a receber a requisição e repassar a resposta ao cliente.
+
+### Conclusão usar ou não usar esses padrões?
+
+***Depende!***   
+Para aplicações simples e de media complexidade realmente nós não precisamos desse padrão pois eles aumentam a complexidade e de certa forma acrescentam uma abstração que não vai trazer muitas vantagens.    
+Agora, para aplicações mais complexas, usar esses padrões permite centralizar as consultas e a persistência facilitando a manutenção.    
+Então cabe a você analisar o cenário com cautela e tomar a sua decisão.    
+
+Fonte: Curso Web API Essencial do Macoratti.
+
+### Links Artigos
+
+[Repository - Martin Fowler](https://martinfowler.com/eaaCatalog/repository.html)
+[Unit Of Work - Martin Fowler](https://martinfowler.com/eaaCatalog/unitOfWork.html)
+[Service Layer - Martin Fowler](https://martinfowler.com/eaaCatalog/serviceLayer.html)
+
+### Links Úteis Relacionados
 
 [Como adicionar includes por expressão em repository pattern C#](https://pt.stackoverflow.com/questions/322030/como-adicionar-includes-por-express%c3%a3o-em-repository-pattern-c)
 
 [C# - Apresentando o delegate Func](https://www.macoratti.net/14/11/c_deleg2.htm)
+
+[Differences between IQueryable, List, IEnumerator? - StackOverflow](https://stackoverflow.com/questions/4844660/differences-between-iqueryable-list-ienumerator)
 
 
 [Voltar ao Índice](#índice)
 
 ---
 
-
-# Diferenças entre IQueryable, List e IEnumerator
-
-Link para traduzir
-
-https://stackoverflow.com/questions/4844660/differences-between-iqueryable-list-ienumerator
-
-# Leituras interessantíssimas
-
-- [Não cometa esses erros ao utilizar o Entity Framework](https://imasters.com.br/back-end/nao-cometa-esses-erros-ao-utilizar-o-entity-framework)
-
-## Artigos sobre não usar ou quando usar o EF junto com o Repository
+### Artigos sobre não usar ou quando usar o EF junto com o Repository
 
 - [Quando usar Entity Framework com Repository Pattern?](https://pt.stackoverflow.com/questions/51536/quando-usar-entity-framework-com-repository-pattern)  
 Esse tópico é muito interessante, há argumentos fortes para não utilizar o EF junto com Repository, porém há muita gente defendendo seu uso mesmo assim. É uma leitura muito boa.
@@ -1853,9 +1893,244 @@ Na sessão "Using a custom repository versus using EF DbContext directly" fala u
 - [Repository Pattern in ASP.NET Core – Ultimate Guide](https://codewithmukesh.com/blog/repository-pattern-in-aspnet-core/)
 Artigo conciliando o uso do EF com Repository
 
-### Minha analise
-Bom, existem alguns problemas em utilizar o EF com o Repository, porém em aplicações muito complexas não tem muito para onde fugir de forma que não torne a coisa ainda mais complexa, exite alguns cuidados a serem tomados, e se feito corretamente o impacto não é para ser perceptível.   
-Vale a pena conhecer pois muito provavelmente você vai esbarrar com um projeto utilizando isso e não vai poder simplesmente muda-lo para não usar.
+[Voltar ao Índice](#índice)
 
+---
+
+# DTO e AutoMapper
+
+## DTO - Data Transfer Objects
+
+DTO é um contêiner de dados usado para transportar dados entre camadas de uma aplicação.
+
+No caso da API que estou usando de exemplo, ele vai ser usado para representar os dados que desejamos expor ao cliente, ou seja, ele vai servir para restringir oque é entregue ao cliente.    
+A nossa entidade que está na pasta models, ela possui todos os dados da tabela que ela representa, pois utilizamos ela para criar a tabela no banco com o migrations. Nem todos esses dados precisam ser entregues ao cliente, **conforme nossa regra de negocio do projeto** alguns dados apenas são desnecessários, outros podem expor conteúdos sensíveis que servem apenas para outra area de cadastro e não devemos expor ao cliente, somente ao administrador.   
+
+*O DTO é como a entidade só que apenas com oque desejamos entregar ao cliente, então ao invés de entregar para o cliente a entidade em si, carregamos um DTO somente com o necessário e entregamos.*
+
+**Alguns benefícios** além de não expor dados desnecessários, são:   
+
+- Ajuda na evolução da API, pois se precisar enviar uma informação extra aos clientes, eu posso definir essa informação apenas no DTO, e, não preciso alterar o nosso modelo de entidades.
+- Da mesma forma se eu precisar criar uma nova propriedade na entidade que não desejo expor, isso vai afetar apenas o nosso modelo, enquanto que o DTO vai ficar inalterado
+
+Assim partes distintas da nossa aplicação podem evoluir de maneira independente sem afetar os clientes da API.
+
+Para usa-lo precisamos fazer o mapeamento dos objetos que representam nossas entidades, e os objetos que representam nossos DTOs, isso é necessário pois na controladora o tipo de retorno não será mais o tipo da entidade e sim o tipo do DTO.   
+Para isso, podemos fazer o **mapeamento manualmente**, ou usar o **AutoMapper**.
+
+Manualmente é bem ruim e exige muito código por controladora, pois obriga você a retornar uma instancia do DTO, exemplo:
+```c#
+[HttpGet("{id}")]
+public ActionResult<ProdutoDTO> Get(int id)
+{
+  var produto = _uow.ProdutoRepository.GetById(p => p.ProdutoId == id);
+  if (produto == null)
+    return NotFound();
+  
+  // Ao invés de retornar assim:
+  //return produto;
+
+  // Tem que retornar assim:
+  return new ProdutoDTO
+  {
+    Produto Id = produto.ProdutoId,
+    Nome = produto.Nome,
+    Preco = produto.Preco,
+    ImagemUrl = produto.ImagemUrl,
+    Descricao = produto.Descricao,
+    CategoriaId = produto.CategoriaId
+  };
+}
+```
+Isso não é muito recomendado, está sujeito a erros, além de ser tedioso.   
+Por isso vamos usar o **AutoMapper**.
+
+[Voltar ao Índice](#índice)
+
+## AutoMapper
+
+O AutoMapper faz o mapeamento entre os objetos que representam as nossas entidades e os objetos que representam os nossos DTOs e filtra as propriedades que desejamos expor aos clientes.
+
+Para usa-lo precisamos incluir as seguintes bibliotecas via Nuget:
+- AutoMapper
+- AutoMapper.Extensions.Microsoft.DependencyInjection
+
+[Voltar ao Índice](#índice)
+
+## Prática
+
+Primeiros instalamos as bibliotecas do AutoMapper via Nuget citadas logo acima.
+
+Criamos uma pasta chamada **DTOs** para adicionar as nossas classes DTO, e **criamos uma DTO para cada Entidade**.   
+Exemplo:
+```c#
+public class ProdutoDTO
+    {
+        // Na DTO não precisa por as DataAnnotations
+        public int ProdutoId { get; set; }
+        public string? Nome { get; set; }
+        public string? Descricao { get; set; }
+        public decimal Preco { get; set; }
+        public string? ImagemUrl { get; set; }
+        public int CategoriaId { get; set; }
+    }
+```
+Na entidade Produto há mais coisas, mas na DTO tem apenas oque queremos que o cliente tenha acesso.
+
+Após criar nossos DTOs com oque desejamos expor, precisamos criar uma classe para definir o mapeamento entre as entidades e os DTOs.   
+Recomendado: Criar uma pasta chamada **Mappings** dentro da pasta **DTOs**
+
+```c#
+public class MappingProfile : Profile
+{
+  public MappingProfile()
+        {
+            // Cria um mapeamento entre a entidade e o DTO,
+            // o reverseMap é para que esse mapeamento também 
+            // seja "vice versa".
+            CreateMap<Produto, ProdutoDTO>().ReverseMap();
+            CreateMap<Categoria, CategoriaDTO>().ReverseMap();
+        } 
+}
+```
+
+Com isso feito, vamos **registrar o serviço** na classe **Program.cs**.
+```c#
+// Registrando o serviço do AutoMapper
+var mappingConfig = new MapperConfiguration(mc =>
+{
+    mc.AddProfile(new MappingProfile());
+});
+IMapper mapper = mappingConfig.CreateMapper();
+builder.Services.AddSingleton(mapper);
+```
+Observe que é um serviço **Singleton**, pois o AutoMaper vai criar o mapeamento que precisa ser feito entre a entidade e o DTO, e isso só precisa ser feito uma vez pois as propriedades da entidade e do dto não vão mudar sem ter que alterar o código, então não há sentido em refazer a cada request, por isso o uso do Singleton, abriu o APP, fez, usa o mesmo mapeamento toda vez.   
+Esse código pode ser colocado em qualquer lugar que seja a area de build.Services, se ja for "builder.OutraCoisa", ou "app.", ou antes de declarar a "var builder", não dá.   
+
+Por fim, resta implementar nas controladoras.
+
+Você tem que fazer a injeção de dependência:
+```c#
+private readonly IUnitOfWork _uow;
+// AutoMapper
+private readonly IMapper _mapper;
+
+public ProdutosController(IUnitOfWork context, IMapper mapper)
+{
+  _uow = context;
+  _mapper = mapper;
+}
+```
+
+E então nas controladoras você vai ter que converter o retorno para DTO, ou vice versa.
+
+Os códigos que podem ser usados são:
+```c#
+// Converte UM produto para produtoDto
+var produtoDto = _mapper.Map<ProdutoDTO>(produto);
+
+// Converte uma lista de produtos para produtosDto
+var produtosDto = _mapper.Map<List<ProdutoDTO>>(produtos);
+
+// Converte um produtoDto em um produto
+var produto = _mapper.Map<Produto>(produtoDto);
+```
+
+A partir dai começamos adaptar nossas controladoras, exemplos:
+
+```c#
+[HttpGet]
+public ActionResult<IEnumerable<ProdutoDTO>> GetProdutos()
+{
+  var produtos = _uow.ProdutoRepository.Get().ToList();
+  if (produtos is null)
+  {
+    return NotFound("Produtos não encontrados...");
+  }
+  // Converte para lista DTO
+  var produtosDto = _mapper.Map<List<ProdutoDTO>>(produtos);
+  // Entrega o DTO
+  return Ok(produtosDto);
+}
+
+[HttpGet ("{id}")]
+public ActionResult<ProdutoDTO> GetProdutoId(int id)
+{
+  var produto = _uow.ProdutoRepository.GetById(p => p.ProdutoId == id);
+  if (produto is null)
+  {
+    return NotFound($"Produto com id= {id} não localizado...");
+  }
+  // Converte para DTO
+  var produtoDto = _mapper.Map<ProdutoDTO>(produto);
+  return Ok(produtoDto);
+}
+
+[HttpPost]
+public ActionResult PostProduto(ProdutoDTO produtoDto)
+{
+  if (produtoDto is null)
+    return BadRequest();
+
+  // Inverte o mapeamento aqui
+  // Converte ProdutoDTO para Produto
+  var produto = _mapper.Map<Produto>(produtoDto);
+
+  _uow.ProdutoRepository.Add(produto);
+  _uow.Commit();
+
+  // Mas mostra produtoDto
+  return new CreatedAtRouteResult("ObterProduto",
+          new { id = produto.ProdutoId }, produtoDto);
+}
+
+[HttpPut("{id:int}")]
+public ActionResult PutProduto(int id, ProdutoDTO produtoDto)
+{
+  if (id != produtoDto.ProdutoId)
+  {
+    return BadRequest($"O id informado ({id}) não é o mesmo id recebido para atualização ({produtoDto.ProdutoId})");
+  }
+
+  // Converte ProdutoDTO para Produto
+  var produto = _mapper.Map<Produto>(produtoDto);
+
+  _uow.ProdutoRepository.Update(produto);
+  _uow.Commit();
+
+  // Mas mostra produtoDto
+  return Ok(produtoDto);
+}
+
+[HttpDelete("{id:int}")]
+public ActionResult DeleteProduto(int id)
+{ 
+  var produto = _uow.ProdutoRepository.GetById(p => p.ProdutoId == id);
+
+  if (produto is null)
+    return NotFound($"Produto com id= {id} não localizado...");
+
+  _uow.ProdutoRepository.Delete(produto);
+  _uow.Commit();
+
+  // Converte ProdutoDTO para Produto
+  var produtoDto = _mapper.Map<ProdutoDTO>(produto);
+
+  // Mas mostra produtoDto
+  return Ok(produtoDto);
+}
+```
+
+E é isso, agora o cliente vai trabalhar apenas com o DTO sem ter acesso às propriedades que não desejamos que ele acesse.
+
+[Voltar ao Índice](#índice)
+
+---
+
+
+
+# Leituras interessantes
+
+- [Não cometa esses erros ao utilizar o Entity Framework](https://imasters.com.br/back-end/nao-cometa-esses-erros-ao-utilizar-o-entity-framework)
 
 
