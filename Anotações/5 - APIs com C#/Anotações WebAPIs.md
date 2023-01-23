@@ -87,6 +87,14 @@
   - [DTO - Data Transfer Objects](#dto---data-transfer-objects)
   - [AutoMapper](#automapper)
   - [Prática](#prática)
+- [Paginação de Dados](#paginação-de-dados)
+    - [Forma 1](#forma-1)
+      - [Implementação](#implementação)
+    - [Forma 2](#forma-2)
+      - [Implementação](#implementação-1)
+    - [Forma 2 Adicional](#forma-2-adicional)
+      - [Implementação](#implementação-2)
+    - [Conclusão](#conclusão)
 - [Leituras interessantes](#leituras-interessantes)
 
 
@@ -2127,6 +2135,229 @@ E é isso, agora o cliente vai trabalhar apenas com o DTO sem ter acesso às pro
 
 ---
 
+# Paginação de Dados
+
+A **paginação** é quando você pega somente uma parte dos dados por consulta, por exemplo, na primeira pagina (ou primeiro retorno) eu quero os primeiros 20 registros do DB, na segunda os próximos 20, e assim por diante até chegar no final se desejar ver mesmo tudo.
+
+Não é uma boa pratica ter um get que puxe toda a tabela do banco, o ideal é ter algum limite, e para isso a melhor forma é fazer uma **paginação de dados**.
+
+A paginação vai evitar problemas de desempenho, lentidão e até o travamento quando se dá um Get em uma tabela muuuito grande.
+
+
+Nas aulas do curso foi passado duas formas:
+
+### Forma 1
+
+Vamos precisar criar uma pasta Pagination para criar a classe "ProdutosParameters.cs" (estamos fazendo uma especifica para as controladoras dos produtos), essa classe será responsável por encapsular e tratar os parâmetros da nossa paginação.
+
+#### Implementação
+
+```c#
+public class ProdutosParameters
+{
+    const int maxPageSize = 50;
+    public int PageNumber { get; set; } = 1;
+    private int _pageSize = 10;
+    public int PageSize
+    {
+        get
+        {
+            return _pageSize;
+        }
+        set
+        {
+            // Aqui vai verificar se o valor informador é maior que os 50 da const,
+            // se for ele atribui 50, senão ele atribui o valor que foi passado.
+            _pageSize = (value > maxPageSize) ? maxPageSize : value;
+        }
+    }
+}
+```
+
+Criamos o método GetProduto() no repositório produto (interface e classe).   
+Na interface IProdutosRepository colocamos:
+```c#
+IEnumerable<Produto> GetProdutos(ProdutosParameters produtosParameters);
+```
+Na classe ProdutosRepository colocamos:
+```c#
+public IEnumerable<Produto> GetProdutos(ProdutosParameters produtosParameters)
+{
+    return Get()
+        // Ordena por nome
+        .OrderBy(n => n.Nome)
+        // Pula os registros (efeito de mudar de pagina)
+        .Skip((produtosParameters.PageNumber - 1) * produtosParameters.PageSize)
+        // Pega a quantia de registros definido no PageSize
+        .Take(produtosParameters.PageSize)
+        // Joga os registros em uma lista.
+        .ToList();
+}
+```
+
+Por fim alteramos o código da controladora para:
+```c#
+var produtos = _uow.ProdutoRepository.GetProdutos(produtosParameters);
+```
+
+### Forma 2
+
+Nesta forma pegamos o que foi feito na forma anterior e incluímos novas informações como:
+- CurrentPage - Representa a pagina atual (pageNumber);
+- TotalPages - Representa o número total de páginas existentes;
+- HasPrevious - Indica se existe uma página anterior;
+- HasNext - Indica se existe uma próxima página;
+
+Criaremos também uma classe `PagedList<T>` que herda de `List<T>` para tratar as informações.
+
+A lógica de skip/take estará na classe PagedList e não mais no repositório.
+
+E com essa forma podemos ter todas essas informações no Header do Response.
+
+#### Implementação
+
+**Usando a Forma 1 como base, criamos e alteramos os seguintes:**
+
+Primeiro criamos o método genérico `PagedList<T>` na pasta Pagination onde está o ProdutosParameters (que será mantido e usado, confira na forma 1 como fazer).
+```c#
+public class PagedList<T> : List<T>
+{
+    public int CurrentPage { get; set; }
+    public int TotalPages { get; set; }
+    public int PageSize { get; set; }
+    public int TotalCount { get; set; }
+
+    // Logica true/false automática
+    public bool HasPrevious => CurrentPage > 1;
+    public bool HasNext => CurrentPage < TotalPages;
+
+    public PagedList(List<T> items, int count, int pageNumber, int pageSize)
+    {
+        TotalCount= count;
+        PageSize = pageSize;
+        CurrentPage = pageNumber;
+        // arredondamento ao positivo, Ex. 7,03 vai ser 8.
+        TotalPages = (int)Math.Ceiling(count / (double)pageSize);
+
+        AddRange(items);
+    }
+
+    public static PagedList<T> ToPagedList(IQueryable<T> source, int pageNumber, int pageSize)
+    {
+        var count = source.Count();
+        var items = source.Skip((pageNumber -1) * pageSize).Take(pageSize).ToList();
+
+        return new PagedList<T>(items, count, pageNumber, pageSize);
+    }
+}
+```
+
+No IProdutoRepository altera de IEnumerable para PagedList (em relação a forma 1, neste caso estamos fazendo um upgrade a partir da forma 1).
+```c#
+  PagedList<Produto> GetProdutos(ProdutosParameters produtosParameters);
+```
+
+No ProdutoRepository altera o tipo do método GetProdutos de IEnumerable para PagedList e cria o seguinte retorno:
+```c#
+public PagedList<Produto> GetProdutos(ProdutosParameters produtosParameters)
+{
+    return PagedList<Produto>.ToPagedList(Get().OrderBy(on => on.ProdutoId),
+        produtosParameters.PageNumber, produtosParameters.PageSize);
+}
+```
+
+### Forma 2 Adicional
+
+Nesta forma vamos alterar a forma 2 para que ela fique genérica e trabalhe com ambos produtos e categorias sem repetir código.
+
+#### Implementação
+
+Primeiramente criamos a classe `QueryStringParameters`, e **MOVEMOS** o código de `ProdutosParameters` para ela, e então fazemos a `ProdutosParameters` herdar a `QueryStringParameters`.
+
+```c#
+public class QueryStringParameters
+{
+    const int maxPageSize = 50;
+    public int PageNumber { get; set; } = 1;
+    private int _pageSize = 10;
+    public int PageSize
+    {
+        get
+        {
+            return _pageSize;
+        }
+        set
+        {
+            // Aqui vai verificar se o valor informador é maior que os 50 da const,
+            // se for ele atribui 50, senão ele atribui o valor que foi passado.
+            _pageSize = (value > maxPageSize) ? maxPageSize : value;
+        }
+    }
+}
+```
+
+E a ProdutosParameters vai ficar vazia assim:
+```c#
+public class ProdutosParameters : QueryStringParameters
+{}
+```
+
+Criamos uma CategoriasParameters que herda QueryStringParameters também.
+
+Assim se precisarmos fazer uma alteração especifica para alguma delas temos pronto já.
+
+Na interface ICategoriaRepository adicionamos:
+```c#
+public interface ICategoriaRepository : IRepository<Categoria>
+{
+    PagedList<Categoria> GetCategorias(CategoriasParameters categoriasParameters);
+}
+```
+Em CategoriaRepository adicionamos: (é a mesma coisa do produtos)
+```c#
+public PagedList<Categoria> GetCategorias(CategoriasParameters categoriasParameters)
+{
+    return PagedList<Categoria>.ToPagedList(Get().OrderBy(on => on.CategoriaId),
+        categoriasParameters.PageNumber,
+        categoriasParameters.PageSize);
+}
+```
+
+Por fim, em [CategoriasController](../../../CatalogoAPI/CatalogoAPI/CatalogoAPI/Controllers/CategoriasController.cs) implementamos no Get o código que ficará assim:
+```c#
+[HttpGet]
+public ActionResult<IEnumerable<CategoriaDTO>>
+    GetCategorias([FromQuery] CategoriasParameters categoriasParameters)
+{
+    var categorias = _uow.CategoriaRepository.GetCategorias(categoriasParameters);
+    if (categorias is null)
+        return NotFound("Categorias não encontradas...");
+
+    // Cria um metadata adicionar os dados de paginação no header do response
+    var metadata = new
+    {
+        categorias.TotalCount,
+        categorias.PageSize,
+        categorias.CurrentPage,
+        categorias.TotalPages,
+        categorias.HasNext,
+        categorias.HasPrevious
+    };
+
+    // Serializa em Json o metadata e adiciona no Header do Response.
+    Response.Headers.Add("X-Pagination", JsonSerializer.Serialize(metadata));
+
+    var categoriasDto = _mapper.Map<List<CategoriaDTO>>(categorias);
+
+    return Ok(categoriasDto);
+}
+```
+
+### Conclusão
+
+Existem diversas outras formas de implementar paginação, esses são exemplos bem simples que servem para o proposito, muito melhor do que deixar sem.
+
+---
 
 
 # Leituras interessantes
