@@ -2323,7 +2323,7 @@ public PagedList<Categoria> GetCategorias(CategoriasParameters categoriasParamet
 }
 ```
 
-Por fim, em [CategoriasController](../../../CatalogoAPI/CatalogoAPI/CatalogoAPI/Controllers/CategoriasController.cs) implementamos no Get o código que ficará assim:
+Por fim, em [CategoriasController](https://github.com/daniellfranco/CatalogoAPI/blob/main/CatalogoAPI/CatalogoAPI/Controllers/CategoriasController.cs) implementamos no Get o código que ficará assim:
 ```c#
 [HttpGet]
 public ActionResult<IEnumerable<CategoriaDTO>>
@@ -2353,9 +2353,11 @@ public ActionResult<IEnumerable<CategoriaDTO>>
 }
 ```
 
-### Conclusão
+Conclusão
 
 Existem diversas outras formas de implementar paginação, esses são exemplos bem simples que servem para o proposito, muito melhor do que deixar sem.
+
+[Voltar ao Índice](#índice)
 
 ---
 
@@ -2363,5 +2365,8 @@ Existem diversas outras formas de implementar paginação, esses são exemplos b
 # Leituras interessantes
 
 - [Não cometa esses erros ao utilizar o Entity Framework](https://imasters.com.br/back-end/nao-cometa-esses-erros-ao-utilizar-o-entity-framework)
+
+[Voltar ao Índice](#índice)
+
 
 
