@@ -94,7 +94,6 @@
       - [Implementação](#implementação-1)
     - [Forma 2 Adicional](#forma-2-adicional)
       - [Implementação](#implementação-2)
-    - [Conclusão](#conclusão)
 - [Leituras interessantes](#leituras-interessantes)
 
 
