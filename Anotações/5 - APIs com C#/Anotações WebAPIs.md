@@ -76,6 +76,8 @@
     - [Passos Teóricos](#passos-teóricos)
     - [Prática (Síncrono)](#prática-síncrono)
     - [Unit Of Work](#unit-of-work)
+  - [Alterando o Repository de SÍNCRONO para ASSÍNCRONO](#alterando-o-repository-de-síncrono-para-assíncrono)
+    - [Implementando](#implementando)
   - [Vale a pena usar o Padrão Repository e Unit of Work com EF Core?](#vale-a-pena-usar-o-padrão-repository-e-unit-of-work-com-ef-core)
     - [Uso do IEnumerable ou IQueryable na interface do Repository](#uso-do-ienumerable-ou-iqueryable-na-interface-do-repository)
     - [Usar ou não uma camada de serviços com esses padrões?](#usar-ou-não-uma-camada-de-serviços-com-esses-padrões)
@@ -94,6 +96,7 @@
       - [Implementação](#implementação-1)
     - [Forma 2 Adicional](#forma-2-adicional)
       - [Implementação](#implementação-2)
+    - [Paginação Assíncrona](#paginação-assíncrona)
 - [Leituras interessantes](#leituras-interessantes)
 
 
@@ -874,11 +877,14 @@ ToList também precisa ser Async para funcionar corretamente.
 Todo método usado dentro de uma action async é bom conferir se tem versão async, por exemplo o `FirstOrDefault`, ele tem a versão `FirstOrDefaultAsync` e ela deve ser usada.
 
 - A instrução `async` faz com que um método possa ser executado de forma assíncrona.
-- A palavra reservada `await` indica que um treco de código deve esperar por outro trecho de código para o controle retornar ao chamador do método.
-- A classe `Task<TResult>` representa uma **única operação** que **retorna** um valor, e essa **operação** pode ser executada de forma **assíncrona**.
+- A palavra reservada `await` indica que um trecho de código deve esperar por outro trecho de código para o controle retornar ao chamador do método. É obrigatorioter pelo menos 1 await no metodo, pois o metodo será executado de forma SINCRONA até chegar no await, um mesmo metodo pode ter varios await.
+- `Task<TResult>` representa uma **única operação** que **retorna** um valor, e essa **operação** pode ser executada de forma **assíncrona**.
+- `Task` representa uma operação que não retorna um valor.
+- `void` é usada em manipuladores de eventos.
 
 ### Vale a pena usar Actions Assíncronas?
-"O assincronismo é útil para melhorar a experiência do usuário quando há alguma operação que demanda muito tempo para ser executada."  
+"O assincronismo é útil para melhorar a experiência do usuário quando há alguma operação que demanda muito tempo para ser executada."
+Evita gargalo de desempenho e bloqueio do software.  
 
 **Pontos a serem avaliados:**
 - O assincronismo não é grátis.
@@ -1833,6 +1839,125 @@ E é isso.
 
 [Voltar ao Índice](#índice)
 
+## Alterando o Repository de SÍNCRONO para ASSÍNCRONO
+
+**Estrategia**
+
+Alterar a definição dos métodos nas interfaces   
+- IRepository
+- ICategoriaRepository
+- IProdutoRepository
+- IUnitOfWork
+
+Alterar a implementação nas Classes Concretas    
+- Repository
+- CategoriaRepository
+- ProdutoRepository
+- UnitOfWork
+
+Alterar a implementação nos controladores    
+- CategoriasController
+- ProdutosController
+
+**Observações**  
+- O método Get retorna um IQueryable que permite chamadas assíncronas, então não precisa alterar no repositório, somente la no controller.
+- **Add, Update e Delete** não modificam dados, apenas rastreiam as alterações nas entidades que são persistidas sando SaveChanges, portanto eles não precisam ser alterados, **apenas o SaveChanges precisa ser assíncrono**.
+
+### Implementando
+
+Em **IRepository** o único trecho de código a ser alterado é:
+```c#
+T GetById(Expression<Func<T, bool>> predicate);
+```
+Para
+```c#
+Task<T> GetById(Expression<Func<T, bool>> predicate);
+```
+
+Em **Repository** tornamos o método GetById async, `Task<T>`, colocamos await e mudamos o SingleOrDefault para Async:
+```c#
+public async Task<T> GetById(Expression<Func<T, bool>> predicate)
+{
+    return await _context.Set<T>().AsNoTracking().SingleOrDefaultAsync(predicate);
+}
+```
+Os demais métodos desta classe não precisam de alteração como ja explicado acima nas observações.
+
+Em **ICategoriaRepository** adicionamos o Task no GetCategoriasProdutos():
+```c#
+Task<IEnumerable<Categoria>> GetCategoriasProdutos();
+```
+
+Em **CategoriaRepository** tonamos o método async, task, await, e adicionamos o ToListAsync() que não tinha antes.
+```c#
+public async Task<IEnumerable<Categoria>> GetCategoriasProdutos()
+{
+    return await Get().Include(x => x.Produtos).ToListAsync();
+}
+```
+
+Na interface e na classe concreta de ProdutoRepository é a mesma coisa da Categoria.
+
+Em **IUnityOfWork** a única alteração necessária é no Commit, que é o nosso **SaveChanges**.  
+O Commit que aqui era void agora vai ser task.
+```c#
+Task Commit();
+```
+
+Em **UnitOfWork** alteramos o método Commit para ter async, Task, await, e o SaveChanges passa a ser SaveChangesAsync:
+```c#
+public async Task Commit()
+{
+    await _context.SaveChangesAsync();
+}
+```
+
+Nas controladoras o processo é bem simples também, iremos alterar os gets apenas, adicionando async, task e awaits, e adicionando versões assíncronas dos métodos que forem necessários, ex. ToList**Async**().
+
+Em CategoriasController, no método GetCategoriasAsync, alteramos apenas essa parte:
+```c#
+public async Task<ActionResult<IEnumerable<CategoriaDTO>>> GetCategoriasProdutos()
+{
+    var categorias = await _uow.CategoriaRepository.GetCategoriasProdutos();
+```
+
+No método Get que é aquele com IQueryable, fica igual os outros mesmo sem ter alterado no repositório, isso é por conta do IQueryable que suporta já o async.
+
+```c#
+public async Task<ActionResult<IEnumerable<CategoriaDTO>>> GetCategorias(){
+  var categorias = await _uow.CategoriaRepository.GetCategorias().ToListAsync();
+```
+
+- Agora se esse método Get estiver com paginação (que é o ideal) ai é necessário fazer diferente.  
+A alteração da versão com paginação está na sessão [Paginação Assíncrona](#paginação-assíncrona).
+
+- No método post é similar aos outros mas como ele não tem o get, o único local que você irá colocar um await é no Commit().
+
+No Put e no Delete como eles tem Get você irá colocar um await no get e no Commit().
+Exemplo do Delete:
+```c#
+[HttpDelete("{id:int}")]
+public async Task<ActionResult> DeleteCategoria(int id)
+{
+    var categoria = await _uow.CategoriaRepository.GetById(c => c.CategoriaId == id);
+
+    if (categoria is null)
+        return NotFound($"Categoria com id= {id} não localizada...");
+
+    _uow.CategoriaRepository.Delete(categoria);
+    await _uow.Commit();
+
+    var categoriaDto = _mapper.Map<Categoria>(categoria);
+
+    return Ok(categoriaDto);
+}
+```
+
+E é isso, não é complicado, praticamente intuitivo, e no controlador produtos é similar.
+
+
+[Voltar ao Índice](#índice)
+
 ## Vale a pena usar o Padrão Repository e Unit of Work com EF Core?
 
 Existe muita discussão sobre usar ou não o Repository e o Unit of Work **em aplicações que usam o Entity Framework**. Isso deve-se ao fato do EF ja ter integrado esses padrões, o DBContext por exemplo é uma unit of work, e o DBSet representa uma coleção de objetos na memória que é oque o repositório faz, então fazer o uso aplicaria uma segunda camada de abstração que envolveria a camada ja existente.    
@@ -2355,6 +2480,53 @@ public ActionResult<IEnumerable<CategoriaDTO>>
 Conclusão
 
 Existem diversas outras formas de implementar paginação, esses são exemplos bem simples que servem para o proposito, muito melhor do que deixar sem.
+
+[Voltar ao Índice](#índice)
+
+### Paginação Assíncrona
+
+Nesta sessão vamos fazer a atualização da [Forma 2](#forma-2) de síncrona para assíncrona.
+
+Para transformar a Paginação em assíncrona, vamos na classe PagedList, e deixamos o método ToPagedList da seguinte forma:
+Colocamos async, Task, await, e alteramos o ToList para ToListAsync.
+```c#
+public async static Task<PagedList<T>> ToPagedList(IQueryable<T> source, int pageNumber, int pageSize)
+{
+    var count = source.Count();
+    var items = await source.Skip((pageNumber -1) * pageSize).Take(pageSize).ToListAsync();
+
+    return new PagedList<T>(items, count, pageNumber, pageSize);
+}
+```
+
+Na interface ICategoriaRepository, adicionamos um Task no GetCategorias:
+```c#
+Task<PagedList<Categoria>> GetCategorias(CategoriasParameters categoriasParameters);
+```
+Na implementação CategoriaRepository deixamos assim:
+```c#
+public async Task<PagedList<Categoria>> GetCategorias(CategoriasParameters categoriasParameters)
+{
+    return await PagedList<Categoria>.ToPagedList(Get().OrderBy(on => on.CategoriaId),
+        categoriasParameters.PageNumber,
+        categoriasParameters.PageSize);
+}
+```
+
+- Em IProdutoRepository e ProdutoRepository fazemos a mesma coisa.
+
+Nas controladoras, basta tornar async e adicionar o await no get. Vai ficar assim:
+```c#
+public async Task<ActionResult<IEnumerable<CategoriaDTO>>>
+            GetCategorias([FromQuery] CategoriasParameters categoriasParameters)
+{
+    var categorias = await _uow.CategoriaRepository.GetCategorias(categoriasParameters);
+    // o restante não muda
+    
+    // ...código restante...
+}
+```
+
 
 [Voltar ao Índice](#índice)
 
