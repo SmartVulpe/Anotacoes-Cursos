@@ -97,6 +97,8 @@
     - [Forma 2 Adicional](#forma-2-adicional)
       - [Implementação](#implementação-2)
     - [Paginação Assíncrona](#paginação-assíncrona)
+- [Segurança](#segurança)
+- [JWT - JSON Web Token](#jwt---json-web-token)
 - [Leituras interessantes](#leituras-interessantes)
 
 
@@ -2532,6 +2534,34 @@ public async Task<ActionResult<IEnumerable<CategoriaDTO>>>
 
 ---
 
+# Segurança
+
+Nesta sessão veremos como é feito o acesso seguro às nossas APIs e alguns dos recursos disponíveis para isso.
+
+**Autenticação e Autorização**
+
+- A **Autenticação** é a verificação a identidade do usuário pela comparação das credenciais apresentadas com outras pré-definidas.
+- A **Autorização** verifica quais as permissões que o usuário possui e o que ele pode fazer.
+
+**Oque usar para isso:**
+
+- A aspnet core possui um recurso nativo conhecido como **Identity** para efetuar a **autenticação**.
+- Além do Identity podemos usar provedores externos como google, facebook, etc.
+- Podemos também fazer a autenticação no servidor usando o Identiry Server, OpenId, Azure Active Directory, etc.
+- Autenticação baseada em Tokens - **JWT - Json Web Tokens**.
+
+**Esquemas de Autenticação**
+
+- Anônimo - Uma requisição anônima **não contem** informações de autenticação.
+- Basic - A autenticação básica envia uma cadeia de caracteres codificada em **Base64** que contém um nome de usuário e senha para o cliente (comum em logins, precisa de SSL para funcionar com segurança).
+- Tokens (Bearer) - É um esquema de autenticação HTTp que envolve tokens de segurança chamados tokens de portador (bearer token). (JWT é assim).
+
+# JWT - JSON Web Token
+
+
+
+
+[Voltar ao Índice](#índice)
 
 # Leituras interessantes
 
