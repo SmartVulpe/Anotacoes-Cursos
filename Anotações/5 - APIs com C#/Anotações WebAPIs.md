@@ -98,7 +98,18 @@
       - [Implementação](#implementação-2)
     - [Paginação Assíncrona](#paginação-assíncrona)
 - [Segurança](#segurança)
-- [JWT - JSON Web Token](#jwt---json-web-token)
+  - [JWT - JSON Web Token](#jwt---json-web-token)
+    - [Token JWT](#token-jwt)
+      - [Vantagens](#vantagens)
+      - [Processo de Autenticação](#processo-de-autenticação)
+      - [Implementação](#implementação-3)
+        - [Preparando o projeto: Habilitando o Identity](#preparando-o-projeto-habilitando-o-identity)
+        - [Tabelas geradas pelo Identity](#tabelas-geradas-pelo-identity)
+        - [Configurando o Identity no projeto](#configurando-o-identity-no-projeto)
+        - [Registro de Usuário, Login e Token](#registro-de-usuário-login-e-token)
+        - [Testando com o Postman](#testando-com-o-postman)
+        - [Testando com o Swagger](#testando-com-o-swagger)
+        - [Link JWT para teste do Token](#link-jwt-para-teste-do-token)
 - [Leituras interessantes](#leituras-interessantes)
 
 
@@ -2536,7 +2547,7 @@ public async Task<ActionResult<IEnumerable<CategoriaDTO>>>
 
 # Segurança
 
-Nesta sessão veremos como é feito o acesso seguro às nossas APIs e alguns dos recursos disponíveis para isso.
+Nesta sessão veremos como permitir o acesso apenas aos usuários autorizados à nossa API de forma segura e alguns dos recursos disponíveis para isso.
 
 **Autenticação e Autorização**
 
@@ -2547,21 +2558,524 @@ Nesta sessão veremos como é feito o acesso seguro às nossas APIs e alguns dos
 
 - A aspnet core possui um recurso nativo conhecido como **Identity** para efetuar a **autenticação**.
 - Além do Identity podemos usar provedores externos como google, facebook, etc.
-- Podemos também fazer a autenticação no servidor usando o Identiry Server, OpenId, Azure Active Directory, etc.
+- Podemos também fazer a autenticação no servidor usando o Identity Server, OpenId, Azure Active Directory, etc.
 - Autenticação baseada em Tokens - **JWT - Json Web Tokens**.
 
 **Esquemas de Autenticação**
 
-- Anônimo - Uma requisição anônima **não contem** informações de autenticação.
-- Basic - A autenticação básica envia uma cadeia de caracteres codificada em **Base64** que contém um nome de usuário e senha para o cliente (comum em logins, precisa de SSL para funcionar com segurança).
-- Tokens (Bearer) - É um esquema de autenticação HTTp que envolve tokens de segurança chamados tokens de portador (bearer token). (JWT é assim).
+- Anônimo - Uma requisição anônima **não contem** informações de autenticação.   
+- Basic - A autenticação básica envia uma cadeia de caracteres codificada em **Base64** que contém um nome de usuário e senha para o cliente (comum em logins, precisa de SSL para funcionar com segurança).   
+- Tokens (Bearer) - É um esquema de autenticação HTTp que envolve tokens de segurança chamados tokens de portador (bearer token). (JWT é assim).   
 
-# JWT - JSON Web Token
+## JWT - JSON Web Token
+
+JWT é um padrão que define uma forma segura de transmitir informações entre duas partes.   
+A transmissão pode ser feita via URL, POST, ou em cabeçalho HTTP e a informação é assinada digitalmente por um algoritmo ou par de chaves publica/privada usando RSA (sistema de criptografia de chave publica).    
+São usados assim tokens criptografados para permitir o acesso aos recursos de uma Web API (essa abordagem é conhecida como Bearer Authentication). 
+
+### Token JWT
+
+Um token JWT é formado por 3 partes: **header.payload.signature**    
+
+- **Header** - Contém o tipo de token (JWT) e a criptografia usada (HMAC ou RSA).
+- **Payload** - Contém os "pedidos". São declarações ou claims associadas ao usuário do token.
+- **Signature** - Assinatura usada na validação do token usando uma **chave secreta**.
+
+Para gerar a assinatura usamos o Header e o Payload codificando-os e a seguir assinamos usando o algoritmo definido.  
+
+![exemplo token header-payload-signature](./imgs/header-payload-signature.png)
+
+Usando o algoritmo definido no Header, o Header e o Payload são concatenados e assinados usando uma chave secreta.   
+A assinatura é anexada ao final do token que pode ser usado (por quem tiver a chave secreta) para verificar se o emissor do JWT é quem ele afirma ser e se o token é válido.(claims)
+
+#### Vantagens
+
+1. Te livra da dependência com banco de dados.
+2. Não tem session (stateless).
+3. Pode ser usado para web, mobile, desktop, etc. (e não depende de cookies).
+
+#### Processo de Autenticação
+
+1. Controlador - Gerar Token
+   - Verificar **credenciais**.
+   - Definir **claims** do usuário (nome, email, etc).
+   - Definir a **chave secreta** e **algoritmo** de encriptação usados.
+   - **Gerar token** com base no **emissor, audiência, claims** e definir a **data de expiração**.
+
+2. Feita na classe Startup (ou equivalente) da aplicação : validar o token
+   - Validar **emissor**.
+   - Validar **audiência**.
+   - Validar **assinatura** com **chave secreta**.
+
+#### Implementação
+
+##### Preparando o projeto: Habilitando o Identity
+
+O nosso objetivo é usar e configurar o **Identity**, que é um sistema **nativo** de associação que adiciona a funcionalidade de Logon para aplicativos AspNet Core, e criar as tabelas para persistência das informações do usuário com as informações de login (nomes de usuários, senhas e dados de perfil)..
+
+Dessa forma ao invés de criar manualmente as tabelas para guardar essas informações nós vamos usar o Identity e **aplicar o Migrations** para gerar essas tabelas em nossos bancos de dados SQL existente.
+
+Nós precisamos desses recursos para poder autenticar o usuário e assim gerar o token JWT.
+
+##### Tabelas geradas pelo Identity
+
+São elas:  
+
+![Tabelas Geradas pelo Identity](./imgs/Tabelas-geradas-pelo-identity.png)
+
+- AspNetUsers - Contém as informações do usuário.
+- AspNetUserLogins - Contém as informações de provedores de autenticação interna.
+- AspNetUserClaims - Contém informações de declarações do usuário.
+- AspNetUserRoles - Contém a relação dos usuários com seus perfis.
+- AspNetRoles - Contém informações dos perfis dos usuários.
+
+##### Configurando o Identity no projeto
+
+1. Iniciamos alterando nossa classe de [Contexto](https://github.com/daniellfranco/CatalogoAPI/blob/main/CatalogoAPI/CatalogoAPI/Context/CatalogoAPIContext.cs) fazendo ela herdar de IdentityDbContext e não mais de DbContext.
+
+Para isso precisamos ir no nuget package manager e instalar o pacote: **Microsoft.AspNetCore.Identity.EntityFrameworkCore**
+Obs: a versão 7 é para o net 7, é necessario instalar a versão mais recente da versão 6 se estiver usando o net 6, diferente do entity framework core em si que a versão 7 é compativel com o net 6 até o momento dessa anotação.
+
+O arquivo deve ficar assim, com o Using referente do Identity e a Herança do IdentityDbContext:
+```c#
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore;
+using Models;
+
+namespace CatalogoAPI.Context;
+
+public class CatalogoAPIContext : IdentityDbContext
+{
+    public CatalogoAPIContext(DbContextOptions<CatalogoAPIContext> options) : base(options)
+    {}
+
+    public DbSet<Categoria>? Categorias { get; set; }
+    public DbSet<Produto>? Produtos { get; set; }
+}
+
+```
+
+Depois disso temos que adicionar o serviço do Identity no arquivo [Program.cs](https://github.com/daniellfranco/CatalogoAPI/blob/main/CatalogoAPI/CatalogoAPI/Program.cs).  
+Pode ser logo após o serviço AddDbContext que adiciona a connection string.
+```c#
+// IdentityUser é o usuário do identity, e o 
+// IdentityRole trata perfis de usuário.
+builder.Services.AddIdentity<IdentityUser, IdentityRole>()
+// O AddEntityFrameworkStores adiciona uma implementação
+// do entity framework core do Identity para o
+// context que é o AppDbContext
+        .AddEntityFrameworkStores<CatalogoAPIContext>()
+// O AddDefaultTokenProviders ele permite gerar tokens
+// ALEATÓRIOS para quando houver mudança de email,
+// precisar resetar uma senha, altera telefone, e para
+// gerar uma autenticação de de duas etapas.
+// (Esse não tem a ver com o JWT que estamos implementando)
+        .AddDefaultTokenProviders();
+```
+
+A seguir vamos incluir o middleware de Autenticação e Autorização.
+```
+Curiosidade: Nas versões anteriores à AspNetCore 3.0, a autorização era feito pelo atributo [Authorize] pois o middleware de autorização não estava disponível. A partir da 3.0 nós temos o middleware de autorização e ele é necessário.
+```
+Devemos, obrigatoriamente colocar o middleware de Autenticação ANTES do de Autorização.
+o `app.UseAuthorization();` já existe lá, é só encontra-lo e colocar o de autenticação acima. Ele fica bem no final, após o builder.Build().
+
+```c#
+app.UseAuthentication();
+
+app.UseAuthorization();
+```
 
 
+E para concluir vamos aplicar o migrations para gerar as tabelas no nosso banco de dados.  
+Usando o comando:   
+`dotnet-ef migrations add Identity`   
+o Identity é o nome da migration, pode ser qualquer nome mas vamos usar Identity para identificar que é a adição do mesmo.   
+
+E em seguida usamos o comando:   
+`dotnet-ef database update`    
+Para aplicar as alterações no nosso banco de dados.     
+
+Agora que a base está feita devemos fazer uma controladora para registrar o usuário, fazer o login e gerar o token JWT.
+
+##### Registro de Usuário, Login e Token
+
+**Planejamento**   
+Vamos criar uma controladora chamada AutorizaController que terá 3 métodos actions:
+- Get - HttpGet() - Apenas vai verificar se a API está atendendo e retornar uma string.
+- RegisterUser - HttpPost("register") - Cria um novo usuário.
+- Login - HttpPost("login") - Verifica as credenciais de um usuário existente.
+
+E um método para gerar o Token:
+- GeraToken(UsuarioDTO userInfo) - Gera o Token JWT.
+
+Temos que definir uma classe DTO chamada UsuarioDTO com 3 propriedades:
+- Email
+- Password
+- ConfirmPassword
+
+Essa classe vai ser usada apenas para transportar dados para o IdentityUser.
+
+**Mãos a massa:**
+
+Criamos primeiro a classe DTO.
+```c#
+public class UsuarioDTO
+{
+    public string Email { get; set; }
+    public string Password { get; set; }
+    public string ConfirmPassword { get; set; }
+}
+```
+Bem simples e simplificado, dependendo do nosso objetivo poderia ser diferente.
+
+Agora vamos à controladora AutorizaController:
+
+Primeiro vamos criar os 3 métodos action e o necessário para nossa controladora fazer tudo oque vamos adicionar nela, e depois vamos ao token.
+```c#
+[Route("api/[controller]")]
+[ApiController]
+public class AutorizaController : ControllerBase
+{
+    // Instancias necessárias do identity
+    private readonly UserManager<IdentityUser> _userManager;
+    private readonly SignInManager<IdentityUser> _signInManager;
+
+    // Instancia do IConfiguration para ler o appsetting.json
+    private readonly IConfiguration _configuration;
+
+    public AutorizaController(UserManager<IdentityUser> userManager,
+                            SignInManager<IdentityUser> signInManager,
+                            IConfiguration configuration)
+    {
+        _userManager = userManager;
+        _signInManager = signInManager;
+        _configuration = configuration;
+    }
+
+
+    // Get apenas para verificar se a API está atendendo.
+    [HttpGet]
+    public ActionResult<string> Get()
+    {
+        return $"AutorizaController :: Acessado em : {DateTime.Now.ToLongDateString()}";
+    }
+
+    [HttpPost("register")]
+    public async Task<ActionResult> RegisterUser([FromBody] UsuarioDTO model)
+    {   
+        // Cria uma instancia do usuario do Identity e
+        // insere os dados que estão vindo no corpo do request [FromBody]
+        var user = new IdentityUser
+        {
+            UserName = model.Email,
+            Email = model.Email,
+            // Está definido como true apenas para neste momento nao ter que
+            // enviar uma solicitação para o email do usuário para confirmação
+            EmailConfirmed = true
+        };
+
+
+        // Criamos o usuário com as informações recebidas
+        // Note que a senha está sendo passada por fora-----------v
+        var result = await _userManager.CreateAsync(user, model.Password);
+
+        // ai verificamos a criação
+        // se não for feita com sucesso, retornamos um bad request.
+        if(!result.Succeeded)
+        {
+            return BadRequest(result.Errors);
+        }
+
+        // Se foi feita com sucesso então loga o usuário
+        await _signInManager.SignInAsync(user, false);
+        // Chama o método que gera o token e entrega para o usuário.
+        return Ok(GeraToken(model));
+    }
+
+    [HttpPost("login")]
+    public async Task<ActionResult> Login([FromBody] UsuarioDTO userInfo)
+    {
+        // Verfica as credenciais do usuário e retorna um valor
+        var result = await _signInManager.PasswordSignInAsync(userInfo.Email,
+            // o lockoutOnFailure é para bloquear se tentar mais de 3x
+            userInfo.Password, isPersistent: false, lockoutOnFailure: false);
+
+        if (result.Succeeded)
+        {
+            return Ok(GeraToken(userInfo));
+        }
+        else
+        {
+            ModelState.AddModelError(string.Empty, "Login Inválido...");
+            return BadRequest(ModelState);
+        }
+    }
+
+    // Método privado GeraToken vem aqui, será adicionado no passo abaixo
+
+}
+```
+
+**Token**
+
+Agora para criar o Token, precisamos:
+- Incluir no projeto os pacotes: `System.IdentityModel.Tokens.Jwt` e `Microsoft.AspNetCore.Authentication.JwtBearer`
+- Definir **Reserved Claims** (são atributos não obrigatórios usados para validar o token) no arquivo **appsettings.json**
+  - Issuer (iss) -> Quem emite o token JWT;
+  - Audience (aud) -> Aplicações que podem usar o token JWT;
+  - Expires (exp) -> Tempo de expiração do token;
+- Definir a **chave secreta** no arquivo appsettings.json.  
+Essa chave secreta é uma chave privada que será usada no algoritmo de encriptação para a geração e validação do token.
+- Criar um DTO chamado UsuarioToken para retornar os dados do token.
+- Criamos o método privado na controladora para gerar o token.
+- Adicionar na Program.cs um código de validação do token, isso é necessario para quando uma requisição chegar com um token no header ele seja validado. E se for validado o programa processa a requisição.
+
+**Mãos a massa**
+
+Incluimos os pacotes com o nuget package manager.    
+Obs: se estiver usando o .net 6, atenção ao `Microsoft.AspNetCore.Authentication.JwtBearer`, a versão 6.x é para o net6 mas ele vai tentar instalar a mais recente que é a 7.x que é para o .net 7.    
+ 
+No appsetting.json, vamos definir as Reserved Claims e a chave secreta deste modo:
+```json
+"Jwt": {
+  "Key": "alpha@bravo*exemplo&arroba@minhachavesecreta1#539013464%temquesercomplexa"
+},
+"TokenConfiguration": {
+  "Audience": "Exemplo_Audience",
+  "Issuer": "Exemplo_Issuer",
+  "ExpireHours":  2
+}
+```
+A chave secreta tem que ser complexa.
+
+Criamos o DTO responsavel por carregar o Token `UsuarioToken`:
+```c#
+public class UsuarioToken
+{
+    // Se está autenticado ou não
+    public bool Authenticated { get; set; }
+
+    // Quando expira
+    public DateTime Expiration { get; set; }
+
+    // O Token em si
+    public string Token { get; set; }
+
+    // Mensagem que pode ser de erro, gerado com sucesso, etc
+    public string Message { get; set; }
+}
+```
+
+Com isso pronto, vamos ao método privado responsavel por gerar o token lá na controladora:
+```c#
+private UsuarioToken GeraToken(UsuarioDTO userInfo)
+{
+    // Define declarações do usuário
+    // Não é obrigatorio mas aumenta a segurança
+    // Isso seria como informações adicionais que os registros
+    // pedem para fazer ao criar a conta, mas está sendo definido
+    // diretamente aqui para simplificar
+    var claims = new[]
+    {
+        // Cadastra o email no campo UniqueName
+        new Claim(JwtRegisteredClaimNames.UniqueName, userInfo.Email),
+        
+        // Esses claim na verdade podem ser qualquer coisa.
+        // O Claim funciona da seguinte forma:
+        // no primeiro campo você define o tipo do campo ou dá um nome,
+        // no segundo campo você carrega o dado do campo.
+        new Claim("meuPet", "pipoca"),
+        
+        // Definimos um Guid para o ID do token
+        new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString())
+    };
+
+    // Gera uma chave com base em um algoritmo simetrico
+    var key = new SymmetricSecurityKey(
+        // Usa nossa chave secreta que está no appsettings.json
+        Encoding.UTF8.GetBytes(_configuration["Jwt:key"]));
+
+    // Gera a assinatura digital do token usando o
+    // algoritmo HMAC e a chave privada
+    var credenciais = new SigningCredentials(key,
+        SecurityAlgorithms.HmacSha256);
+
+    // Define o tempo de expiração do token.
+    // Mais uma vez pega uma definição inserida no appsettings.json
+    var expiracao = _configuration["TokenConfiguration:ExpireHours"];
+    
+    // Aqui convertemos o valor para o formato UTC
+    // isso é importante porque se o usuario usar um formato
+    // diferente de hora/fuso horario, não vai dar problema.
+    var expiration = DateTime.UtcNow.AddHours(double.Parse(expiracao));
+
+    // Classe que representa um token JWT e gera o token
+    JwtSecurityToken token = new JwtSecurityToken(
+        issuer: _configuration["TokenConfiguration:Issuer"],
+        audience: _configuration["TokenConfiguration:Audience"],
+        claims: claims,
+        expires: expiration,
+        signingCredentials: credenciais);
+
+    // Retorna os dados com o token e informações
+    return new UsuarioToken()
+    {
+        // informa se está autenticado
+        Authenticated = true,
+        // Serializa o token gerado
+        Token = new JwtSecurityTokenHandler().WriteToken(token),
+        // data de expiração
+        Expiration = expiration,
+        Message = "Token JWT OK"
+    };
+}
+```
+
+E por fim, para tudo funcionar certinho, devemos adicionar na classe Program.cs uma validação para o token, toda vez que o token for recebido em um request ele deverá ser validado para que o request seja recebido.
+
+Esse trecho de código deverá ser colocado depois do `builder.Services.AddIdentity<>` e antes do `builder.Services.AddAuthentication()`.
+```c#
+// JWT
+// Adiciona o manipulador de autenticação e define o
+// esquema de autenticação usado : Bearer
+// valida o emissor, a audiencia e a chave
+// usando a chave secreta valida a assinatura
+builder.Services.AddAuthentication(
+    JwtBearerDefaults.AuthenticationScheme)
+    .AddJwtBearer(options =>
+        options.TokenValidationParameters = new TokenValidationParameters
+        {
+            ValidateIssuer = true,
+            ValidateAudience = true,
+            ValidateLifetime = true,
+            ValidAudience = builder.Configuration["TokenConfiguration:Audience"],
+            ValidIssuer = builder.Configuration["TokenConfiguration:Issuer"],
+            ValidateIssuerSigningKey = true,
+            IssuerSigningKey = new SymmetricSecurityKey(
+                Encoding.UTF8.GetBytes(builder.Configuration["Jwt:key"]))
+        });
+```
+
+Com isso nosso sistema de registro, login e token está pronto, agora precisamos dizer às controladoras para exigirem isso.
+
+**Configurando a controladora**
+
+Na controladora, basicamente, oque você precisa fazer é colocar um atributo junto com os atributos de rota no cabeçalho da classe da controladora, que vai ativar a exigencia de um token do tipo bearer para que os requests sejam autorizados.   
+Exemplo:
+```c#
+// Esse Authorize faz a controladora exigir autenticação
+// do tipo bearer para os requests.
+[Authorize(AuthenticationSchemes = "Bearer")]
+[Route("[controller]")]
+[ApiController]
+public class ProdutosController : ControllerBase
+{}
+```
+
+A partir de agora, se algum método action for acessado **sem receber o token no corpo do request**, ele vai retornar um erro **410 Unauthorized**.
+
+##### Testando com o Postman
+
+O Postman por ser mais manual, permite uma visualização melhor de como os softwares que irão tabalhar com a sua API devem usar os dados recebidos.
+
+Para liberar o acesso, devemos fazer um cadastro (que por enquanto não tem nenhuma restrição de cadastramento).
+Devemos enviar no request o seguinte json com os dados referentes ao seu cadastro:
+```json
+{
+  "email": "string",
+  "password": "string",
+  "confirmPassword": "string"
+}
+```
+O identity tem verificadores integrados que se o email ou a senha não seguir um certo padrão ele impede o cadastro.
+
+Depois de feito o cadastro, que retorna apenas um 200 Ok, temos que fazer o login, onde mandamos o mesmo json do exemplo acima com os dados utilizados para cadastrar.  
+
+![Exemplo Login Postman](./imgs/PostmanCatalogoAPIExemploLogin.png)
+
+O login retorna o Token, esse token nós devemos colocar na area Authorization do Postman.
+
+![Exemplo Autorização Postman](./imgs/AuthorizationPostmanCatalogoAPIExemplo.png)
+
+E pronto, agora está liberado o acesso às controladoras protegidas e é só usar como antes.
+
+##### Testando com o Swagger
+
+O Swagger permite testes mais simplificados e faceis de fazer, pois ele nos entrega exemplos de como o json já deve ser e mostra tudo de uma forma mais amigavel. Essa simplificação as vezes tira um pouco a ideia de como deve ser o uso pratico da api por alguma outra aplicação.   
+Para usar o Swagger agora, é necessario fazer mais algumas alterações no nosso código, pois o mesmo não aceita automaticamente o sistema de inserção de token para validação e nem possui um local para colar o token e efetuar a autorização como no Postman.  
+
+Para configurar o swagger fazemos o seguinte:
+
+Na classe Program.cs voce deve procurar por `builder.Services.AddSwaggerGen();`.  
+Nós vamos expandir esse serviço com o seguinte código (código baseado na documentação do swagger para jwt):
+```c#
+builder.Services.AddSwaggerGen(c =>
+{
+    c.SwaggerDoc("v1", new OpenApiInfo { Title = "CatalogoAPI", Version = "v1" });
+
+    // informa o tipo de segurança usado e uma descrição de
+    // como inserir ela na janelinha que isso vai criar no swagger
+    c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme()
+    {
+        Name = "Authorization",
+        Type = SecuritySchemeType.ApiKey,
+        Scheme = "Bearer",
+        BearerFormat = "JWT",
+        In = ParameterLocation.Header,
+        Description = "Header de autoriação JWT usando o esquema Bearer." +
+        "\r\n\r\nInforme 'Bearer'[espaço] e o seu token." +
+        "\r\n\r\nExamplo: \'Bearer 12345abcdef\'",
+    });
+
+    // Informa o tipo de segurança requerido
+    c.AddSecurityRequirement(new OpenApiSecurityRequirement
+    {
+        {
+            new OpenApiSecurityScheme
+            {
+                Reference = new OpenApiReference
+                {
+                    Type= ReferenceType.SecurityScheme,
+                    Id = "Bearer"
+                }
+            },
+            new string[] {}
+        }
+    });
+});
+```
+
+E pronto, agora iniciamos o projeto e no swagger para autenticar vamos na action de login, inserimos nossos dados cadastrados, e ele irá retornar o token:
+![Token swagger](./imgs/TokenSwaggerExemplo.png)  
+
+Agora copiamos esse token e subimos até o topo da pagina onde há um botão escrito **Authorize**, clicamos e irá aparecer uma janela com os dados de autenticação, e a explicação de como inserir no campo que colocamos na descrição do código de configuração do swagger que está aqui logo acima.  
+![Authorize Swagger](./imgs/AuthorizeSwaggerExemplo.png)   
+Como podemos ver, a descrição indica para escrever primeiro Bearer, dar um espaço, e dai colar nosso token que não aparece completo na imagem mas é aquele monte de letrinha que tem na imagem acima no campo token.   
+Por fim clicamos no Authorize desta janela e pronto, todas as funções da API estão liberadas usando este token por duas horas que é o tempo de validade definido no appsetting.json.  
+
+Note que agora há cadeados no swagger e quando o login está efetuado eles ficam de uma cor mais escura indicado que você está logado.
+
+##### Link JWT para teste do Token
+
+[https://jwt.io/](https://jwt.io/)
+
+Neste site você pode colocar o token gerado, ele descriptografa e mostra as informações, porém só é possivel valida-lo se você colocar também a chave secreta no campo "your-256-bit-secret".
+
+
+Fonte: Curso Web API ASP .NET Core Essencial (.NET 6) - Macoratti - Udemy
+
+Leituras adicionais:
+
+Para criar um Refresh Token após sua expiração (Meio desatualizado mas a lógica ainda segue a mesma): [ASP.NET Core 3.1 API - JWT Authentication with Refresh Tokens](https://jasonwatmore.com/post/2020/05/25/aspnet-core-3-api-jwt-authentication-with-refresh-tokens)    
+Mais um sobre Refresh Token: [How to Use Refresh Tokens in ASP.NET Core APIs – JWT Authentication](https://codewithmukesh.com/blog/refresh-tokens-in-aspnet-core/)     
+   
+Artigo sobre criptografia ASSIMETRICA (a implementada nesta sessão é simetrica): [JWT Authentication with Asymmetric Encryption using certificates in ASP.NET Core ](https://dev.to/eduardstefanescu/jwt-authentication-with-asymmetric-encryption-using-certificates-in-asp-net-core-2o7e)     
 
 
 [Voltar ao Índice](#índice)
+
+---
 
 # Leituras interessantes
 
