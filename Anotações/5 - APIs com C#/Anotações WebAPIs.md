@@ -110,6 +110,14 @@
         - [Testando com o Postman](#testando-com-o-postman)
         - [Testando com o Swagger](#testando-com-o-swagger)
         - [Link JWT para teste do Token](#link-jwt-para-teste-do-token)
+- [CORS](#cors)
+  - [Política de mesma origem](#política-de-mesma-origem)
+  - [Cross-Origin Resource Sharing (CORS)](#cross-origin-resource-sharing-cors)
+  - [Usando o CORS na API](#usando-o-cors-na-api)
+    - [Via  Middleware](#via--middleware)
+    - [Via Atributo](#via-atributo)
+  - [Conclusão](#conclusão)
+  - [Links Úteis](#links-úteis)
 - [Leituras interessantes](#leituras-interessantes)
 
 
@@ -239,7 +247,7 @@ Exemplo de como o link vai ficar:
 
 ## ORM (Object Relational Mapper)
 
-ORM (Object Relational Mapper) é uma técnica de mapeamento objeto relacional que permite fazer uma relação dos objetos com os dados que os mesmos representam. É isso que o Entity Framework e o Dapper são, e existem varios outros ORM's disponiveis.
+ORM (Object Relational Mapper) é uma técnica de mapeamento objeto relacional que permite fazer uma relação dos objetos com os dados que os mesmos representam. É isso que o Entity Framework e o Dapper são, e existem vários outros ORM's disponíveis.
 
 [Voltar ao Índice](#índice)
 
@@ -311,9 +319,9 @@ Que vai servir para referenciar a entidade, senão ela só vai existir la nas en
 
 ## AppSettings
 
-Existe 2 arquivos json no projeto, um é o appsetings, e um é o appsettings.Development, o primeiro você configura com as coisas que você vai precisar na hora de implementar o programa em ambiente de produção, e o segundo você usa com as configurações para o ambiente de desenvolvimento, por exemplo configurar para usar um banco de dados que é só para desenvolvimento e configurar um comando para impedir de mandar um email aos usuários.
+Existe 2 arquivos json no projeto, um é o appsettings, e um é o appsettings.Development, o primeiro você configura com as coisas que você vai precisar na hora de implementar o programa em ambiente de produção, e o segundo você usa com as configurações para o ambiente de desenvolvimento, por exemplo configurar para usar um banco de dados que é só para desenvolvimento e configurar um comando para impedir de mandar um email aos usuários.
 
-PS: o appsetting.Developtment.json no visual studio community fica escondido, ao lado do appsetting.json tem um triangulo para abrir como se fosse uma pasta, clique nele e vai aparecer o .Development abaixo.
+PS: o appsettings.Development.json no visual studio community fica escondido, ao lado do appsettings.json tem um triangulo para abrir como se fosse uma pasta, clique nele e vai aparecer o .Development abaixo.
 
 [Voltar ao Índice](#índice)
 
@@ -890,7 +898,7 @@ ToList também precisa ser Async para funcionar corretamente.
 Todo método usado dentro de uma action async é bom conferir se tem versão async, por exemplo o `FirstOrDefault`, ele tem a versão `FirstOrDefaultAsync` e ela deve ser usada.
 
 - A instrução `async` faz com que um método possa ser executado de forma assíncrona.
-- A palavra reservada `await` indica que um trecho de código deve esperar por outro trecho de código para o controle retornar ao chamador do método. É obrigatorioter pelo menos 1 await no metodo, pois o metodo será executado de forma SINCRONA até chegar no await, um mesmo metodo pode ter varios await.
+- A palavra reservada `await` indica que um trecho de código deve esperar por outro trecho de código para o controle retornar ao chamador do método. É obrigatório ter pelo menos 1 await no método, pois o método será executado de forma SÍNCRONA até chegar no await, um mesmo método pode ter vários await.
 - `Task<TResult>` representa uma **única operação** que **retorna** um valor, e essa **operação** pode ser executada de forma **assíncrona**.
 - `Task` representa uma operação que não retorna um valor.
 - `void` é usada em manipuladores de eventos.
@@ -924,7 +932,7 @@ Basicamente, você tem o request http, esse request vai passar pelo middleware q
 
 OBS: A ordem de execução dos middlewares importa!
 
-OBS2: Middlewares que começam com Use (app.UseNomeDoMidleware()) eles rodam e passam para o proximo middleware, mas o middleware que tem o nome "Run" (app.Run()) ele é é o middleware final, ele não passa para o proximo.
+OBS2: Middlewares que começam com Use (app.UseNomeDoMiddleware()) eles rodam e passam para o proximo middleware, mas o middleware que tem o nome "Run" (app.Run()) ele é é o middleware final, ele não passa para o proximo.
 
 Leitura adicional recomendada: [Middleware do ASP.NET Core - Microsoft Learn](https://learn.microsoft.com/pt-br/aspnet/core/fundamentals/middleware/?view=aspnetcore-7.0)
 
@@ -1320,9 +1328,9 @@ namespace CatalogoAPI.Logging
 {
     public class CustomLoggerProviderConfiguration
     {
-        // Represenda o nivel do log, pré carregada com warning,
+        // Representa o nível do log, pré carregada com warning,
         // mas quando o sistema começar salvar ela ja é sobrescrita
-        // com o nivel do que estiver sendo logado.
+        // com o nível do que estiver sendo logado.
         public LogLevel LogLevel { get; set; } = LogLevel.Warning;
         // Representa o Id do nossos eventos, pré carregado com 0.
         public int EventId { get; set; } = 0;
@@ -1396,7 +1404,7 @@ namespace CatalogoAPI.Logging
             return logLevel == loggerConfig.LogLevel;
         }
 
-        // Método da propria interface que o sistema irá executar com nosso código
+        // Método da própria interface que o sistema irá executar com nosso código
         public void Log<TState>(LogLevel logLevel, EventId eventId, TState state,
             Exception exception, Func<TState, Exception, string> formatter)
         {
@@ -1436,7 +1444,7 @@ E por fim para funcionar, no arquivo Program.cs você coloca:
 // adiciona o provider e sua configuração
 builder.Logging.AddProvider(new CustomLoggerProvider(new CustomLoggerProviderConfiguration
 {
-    // atribui o nivel de log para information
+    // atribui o nível de log para information
     LogLevel = LogLevel.Information
 }));
 ```
@@ -2149,7 +2157,7 @@ var mappingConfig = new MapperConfiguration(mc =>
 IMapper mapper = mappingConfig.CreateMapper();
 builder.Services.AddSingleton(mapper);
 ```
-Observe que é um serviço **Singleton**, pois o AutoMaper vai criar o mapeamento que precisa ser feito entre a entidade e o DTO, e isso só precisa ser feito uma vez pois as propriedades da entidade e do dto não vão mudar sem ter que alterar o código, então não há sentido em refazer a cada request, por isso o uso do Singleton, abriu o APP, fez, usa o mesmo mapeamento toda vez.   
+Observe que é um serviço **Singleton**, pois o AutoMapper vai criar o mapeamento que precisa ser feito entre a entidade e o DTO, e isso só precisa ser feito uma vez pois as propriedades da entidade e do dto não vão mudar sem ter que alterar o código, então não há sentido em refazer a cada request, por isso o uso do Singleton, abriu o APP, fez, usa o mesmo mapeamento toda vez.   
 Esse código pode ser colocado em qualquer lugar que seja a area de build.Services, se ja for "builder.OutraCoisa", ou "app.", ou antes de declarar a "var builder", não dá.   
 
 Por fim, resta implementar nas controladoras.
@@ -2557,13 +2565,13 @@ Nesta sessão veremos como permitir o acesso apenas aos usuários autorizados à
 **Oque usar para isso:**
 
 - A aspnet core possui um recurso nativo conhecido como **Identity** para efetuar a **autenticação**.
-- Além do Identity podemos usar provedores externos como google, facebook, etc.
+- Além do Identity podemos usar provedores externos como Google, Facebook, etc.
 - Podemos também fazer a autenticação no servidor usando o Identity Server, OpenId, Azure Active Directory, etc.
 - Autenticação baseada em Tokens - **JWT - Json Web Tokens**.
 
 **Esquemas de Autenticação**
 
-- Anônimo - Uma requisição anônima **não contem** informações de autenticação.   
+- Anônimo - Uma requisição anônima **não contém** informações de autenticação.   
 - Basic - A autenticação básica envia uma cadeia de caracteres codificada em **Base64** que contém um nome de usuário e senha para o cliente (comum em logins, precisa de SSL para funcionar com segurança).   
 - Tokens (Bearer) - É um esquema de autenticação HTTp que envolve tokens de segurança chamados tokens de portador (bearer token). (JWT é assim).   
 
@@ -2634,7 +2642,7 @@ São elas:
 1. Iniciamos alterando nossa classe de [Contexto](https://github.com/daniellfranco/CatalogoAPI/blob/main/CatalogoAPI/CatalogoAPI/Context/CatalogoAPIContext.cs) fazendo ela herdar de IdentityDbContext e não mais de DbContext.
 
 Para isso precisamos ir no nuget package manager e instalar o pacote: **Microsoft.AspNetCore.Identity.EntityFrameworkCore**
-Obs: a versão 7 é para o net 7, é necessario instalar a versão mais recente da versão 6 se estiver usando o net 6, diferente do entity framework core em si que a versão 7 é compativel com o net 6 até o momento dessa anotação.
+Obs: a versão 7 é para o net 7, é necessário instalar a versão mais recente da versão 6 se estiver usando o net 6, diferente do entity framework core em si que a versão 7 é compatível com o net 6 até o momento dessa anotação.
 
 O arquivo deve ficar assim, com o Using referente do Identity e a Herança do IdentityDbContext:
 ```c#
@@ -2667,7 +2675,7 @@ builder.Services.AddIdentity<IdentityUser, IdentityRole>()
         .AddEntityFrameworkStores<CatalogoAPIContext>()
 // O AddDefaultTokenProviders ele permite gerar tokens
 // ALEATÓRIOS para quando houver mudança de email,
-// precisar resetar uma senha, altera telefone, e para
+// precisar resetar uma senha, alterar telefone, e para
 // gerar uma autenticação de de duas etapas.
 // (Esse não tem a ver com o JWT que estamos implementando)
         .AddDefaultTokenProviders();
@@ -2764,7 +2772,7 @@ public class AutorizaController : ControllerBase
     [HttpPost("register")]
     public async Task<ActionResult> RegisterUser([FromBody] UsuarioDTO model)
     {   
-        // Cria uma instancia do usuario do Identity e
+        // Cria uma instancia do usuário do Identity e
         // insere os dados que estão vindo no corpo do request [FromBody]
         var user = new IdentityUser
         {
@@ -2796,7 +2804,7 @@ public class AutorizaController : ControllerBase
     [HttpPost("login")]
     public async Task<ActionResult> Login([FromBody] UsuarioDTO userInfo)
     {
-        // Verfica as credenciais do usuário e retorna um valor
+        // Verifica as credenciais do usuário e retorna um valor
         var result = await _signInManager.PasswordSignInAsync(userInfo.Email,
             // o lockoutOnFailure é para bloquear se tentar mais de 3x
             userInfo.Password, isPersistent: false, lockoutOnFailure: false);
@@ -2829,14 +2837,14 @@ Agora para criar o Token, precisamos:
 Essa chave secreta é uma chave privada que será usada no algoritmo de encriptação para a geração e validação do token.
 - Criar um DTO chamado UsuarioToken para retornar os dados do token.
 - Criamos o método privado na controladora para gerar o token.
-- Adicionar na Program.cs um código de validação do token, isso é necessario para quando uma requisição chegar com um token no header ele seja validado. E se for validado o programa processa a requisição.
+- Adicionar na Program.cs um código de validação do token, isso é necessário para quando uma requisição chegar com um token no header ele seja validado. E se for validado o programa processa a requisição.
 
 **Mãos a massa**
 
-Incluimos os pacotes com o nuget package manager.    
+Incluímos os pacotes com o nuget package manager.    
 Obs: se estiver usando o .net 6, atenção ao `Microsoft.AspNetCore.Authentication.JwtBearer`, a versão 6.x é para o net6 mas ele vai tentar instalar a mais recente que é a 7.x que é para o .net 7.    
  
-No appsetting.json, vamos definir as Reserved Claims e a chave secreta deste modo:
+No appsettings.json, vamos definir as Reserved Claims e a chave secreta deste modo:
 ```json
 "Jwt": {
   "Key": "alpha@bravo*exemplo&arroba@minhachavesecreta1#539013464%temquesercomplexa"
@@ -2849,7 +2857,7 @@ No appsetting.json, vamos definir as Reserved Claims e a chave secreta deste mod
 ```
 A chave secreta tem que ser complexa.
 
-Criamos o DTO responsavel por carregar o Token `UsuarioToken`:
+Criamos o DTO responsável por carregar o Token `UsuarioToken`:
 ```c#
 public class UsuarioToken
 {
@@ -2867,7 +2875,7 @@ public class UsuarioToken
 }
 ```
 
-Com isso pronto, vamos ao método privado responsavel por gerar o token lá na controladora:
+Com isso pronto, vamos ao método privado responsável por gerar o token lá na controladora:
 ```c#
 private UsuarioToken GeraToken(UsuarioDTO userInfo)
 {
@@ -2891,7 +2899,7 @@ private UsuarioToken GeraToken(UsuarioDTO userInfo)
         new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString())
     };
 
-    // Gera uma chave com base em um algoritmo simetrico
+    // Gera uma chave com base em um algoritmo simétrico
     var key = new SymmetricSecurityKey(
         // Usa nossa chave secreta que está no appsettings.json
         Encoding.UTF8.GetBytes(_configuration["Jwt:key"]));
@@ -2906,8 +2914,8 @@ private UsuarioToken GeraToken(UsuarioDTO userInfo)
     var expiracao = _configuration["TokenConfiguration:ExpireHours"];
     
     // Aqui convertemos o valor para o formato UTC
-    // isso é importante porque se o usuario usar um formato
-    // diferente de hora/fuso horario, não vai dar problema.
+    // isso é importante porque se o usuário usar um formato
+    // diferente de hora/fuso horário, não vai dar problema.
     var expiration = DateTime.UtcNow.AddHours(double.Parse(expiracao));
 
     // Classe que representa um token JWT e gera o token
@@ -2939,7 +2947,7 @@ Esse trecho de código deverá ser colocado depois do `builder.Services.AddIdent
 // JWT
 // Adiciona o manipulador de autenticação e define o
 // esquema de autenticação usado : Bearer
-// valida o emissor, a audiencia e a chave
+// valida o emissor, a audiência e a chave
 // usando a chave secreta valida a assinatura
 builder.Services.AddAuthentication(
     JwtBearerDefaults.AuthenticationScheme)
@@ -2961,7 +2969,7 @@ Com isso nosso sistema de registro, login e token está pronto, agora precisamos
 
 **Configurando a controladora**
 
-Na controladora, basicamente, oque você precisa fazer é colocar um atributo junto com os atributos de rota no cabeçalho da classe da controladora, que vai ativar a exigencia de um token do tipo bearer para que os requests sejam autorizados.   
+Na controladora, basicamente, oque você precisa fazer é colocar um atributo junto com os atributos de rota no cabeçalho da classe da controladora, que vai ativar a exigência de um token do tipo bearer para que os requests sejam autorizados.   
 Exemplo:
 ```c#
 // Esse Authorize faz a controladora exigir autenticação
@@ -2977,7 +2985,7 @@ A partir de agora, se algum método action for acessado **sem receber o token no
 
 ##### Testando com o Postman
 
-O Postman por ser mais manual, permite uma visualização melhor de como os softwares que irão tabalhar com a sua API devem usar os dados recebidos.
+O Postman por ser mais manual, permite uma visualização melhor de como os softwares que irão trabalhar com a sua API devem usar os dados recebidos.
 
 Para liberar o acesso, devemos fazer um cadastro (que por enquanto não tem nenhuma restrição de cadastramento).
 Devemos enviar no request o seguinte json com os dados referentes ao seu cadastro:
@@ -3002,8 +3010,8 @@ E pronto, agora está liberado o acesso às controladoras protegidas e é só us
 
 ##### Testando com o Swagger
 
-O Swagger permite testes mais simplificados e faceis de fazer, pois ele nos entrega exemplos de como o json já deve ser e mostra tudo de uma forma mais amigavel. Essa simplificação as vezes tira um pouco a ideia de como deve ser o uso pratico da api por alguma outra aplicação.   
-Para usar o Swagger agora, é necessario fazer mais algumas alterações no nosso código, pois o mesmo não aceita automaticamente o sistema de inserção de token para validação e nem possui um local para colar o token e efetuar a autorização como no Postman.  
+O Swagger permite testes mais simplificados e fáceis de fazer, pois ele nos entrega exemplos de como o json já deve ser e mostra tudo de uma forma mais amigável. Essa simplificação as vezes tira um pouco a ideia de como deve ser o uso pratico da api por alguma outra aplicação.   
+Para usar o Swagger agora, é necessário fazer mais algumas alterações no nosso código, pois o mesmo não aceita automaticamente o sistema de inserção de token para validação e nem possui um local para colar o token e efetuar a autorização como no Postman.  
 
 Para configurar o swagger fazemos o seguinte:
 
@@ -3023,9 +3031,9 @@ builder.Services.AddSwaggerGen(c =>
         Scheme = "Bearer",
         BearerFormat = "JWT",
         In = ParameterLocation.Header,
-        Description = "Header de autoriação JWT usando o esquema Bearer." +
+        Description = "Header de autorização JWT usando o esquema Bearer." +
         "\r\n\r\nInforme 'Bearer'[espaço] e o seu token." +
-        "\r\n\r\nExamplo: \'Bearer 12345abcdef\'",
+        "\r\n\r\nExemplo: \'Bearer 12345abcdef\'",
     });
 
     // Informa o tipo de segurança requerido
@@ -3052,7 +3060,7 @@ E pronto, agora iniciamos o projeto e no swagger para autenticar vamos na action
 Agora copiamos esse token e subimos até o topo da pagina onde há um botão escrito **Authorize**, clicamos e irá aparecer uma janela com os dados de autenticação, e a explicação de como inserir no campo que colocamos na descrição do código de configuração do swagger que está aqui logo acima.  
 ![Authorize Swagger](./imgs/AuthorizeSwaggerExemplo.png)   
 Como podemos ver, a descrição indica para escrever primeiro Bearer, dar um espaço, e dai colar nosso token que não aparece completo na imagem mas é aquele monte de letrinha que tem na imagem acima no campo token.   
-Por fim clicamos no Authorize desta janela e pronto, todas as funções da API estão liberadas usando este token por duas horas que é o tempo de validade definido no appsetting.json.  
+Por fim clicamos no Authorize desta janela e pronto, todas as funções da API estão liberadas usando este token por duas horas que é o tempo de validade definido no appsettings.json.  
 
 Note que agora há cadeados no swagger e quando o login está efetuado eles ficam de uma cor mais escura indicado que você está logado.
 
@@ -3060,7 +3068,7 @@ Note que agora há cadeados no swagger e quando o login está efetuado eles fica
 
 [https://jwt.io/](https://jwt.io/)
 
-Neste site você pode colocar o token gerado, ele descriptografa e mostra as informações, porém só é possivel valida-lo se você colocar também a chave secreta no campo "your-256-bit-secret".
+Neste site você pode colocar o token gerado, ele descriptografa e mostra as informações, porém só é possível valida-lo se você colocar também a chave secreta no campo "your-256-bit-secret".
 
 
 Fonte: Curso Web API ASP .NET Core Essencial (.NET 6) - Macoratti - Udemy
@@ -3070,8 +3078,136 @@ Leituras adicionais:
 Para criar um Refresh Token após sua expiração (Meio desatualizado mas a lógica ainda segue a mesma): [ASP.NET Core 3.1 API - JWT Authentication with Refresh Tokens](https://jasonwatmore.com/post/2020/05/25/aspnet-core-3-api-jwt-authentication-with-refresh-tokens)    
 Mais um sobre Refresh Token: [How to Use Refresh Tokens in ASP.NET Core APIs – JWT Authentication](https://codewithmukesh.com/blog/refresh-tokens-in-aspnet-core/)     
    
-Artigo sobre criptografia ASSIMETRICA (a implementada nesta sessão é simetrica): [JWT Authentication with Asymmetric Encryption using certificates in ASP.NET Core ](https://dev.to/eduardstefanescu/jwt-authentication-with-asymmetric-encryption-using-certificates-in-asp-net-core-2o7e)     
+Artigo sobre criptografia ASSIMÉTRICA (a implementada nesta sessão é simétrica): [JWT Authentication with Asymmetric Encryption using certificates in ASP.NET Core ](https://dev.to/eduardstefanescu/jwt-authentication-with-asymmetric-encryption-using-certificates-in-asp-net-core-2o7e)     
 
+
+[Voltar ao Índice](#índice)
+
+---
+
+# CORS
+
+Antes de começar explicar o CORS e oque ele é, vamos entender um pouco sobre a **política de mesma origem**.
+
+## Política de mesma origem
+
+A política de mesma origem especifica que um **navegador Web** (ou seja, é uma política somente de browsers) só permitirá a comunicação entre duas URLs se elas pertencerem à mesma origem.
+
+Duas URLs têm a mesma origem se tiverem **esquemas** (Http ou Https), **hosts** (nome de domínio) e **portas** idênticas.
+
+Origem = Esquema URI + nome do host + numero da porta.
+
+Exemplo:  
+`http://meuDominio.com`  
+é diferente de   
+|Origem  | Motivo porque é diferente |
+| --- | --- |
+|`http://www.meuDominio.com` | O subdomínio WWW |
+| `https://meuDominio.com` | O protocolo HTTPS |
+| `http://meuDominio.com:1234` | A porta 1234 |
+| `http://meuDominio.net` | O domínio é diferente |
+
+Ou seja, a aplicação cliente `https://exemplo.com` não pode se comunicar com a aplicação no servidor `https://exemplo.net`, pois eles pertencem a uma **origem diferente**.
+
+Usando o site [ApiRequest.io](www.apirequest.io) podemos testar isso dando um GET na nossa api que está rodando localmente no nosso PC.  
+Se não estiver permitido ele vai sugerir habilitar o **CORS**.
+
+Essa restrição pode ser útil para segurança, mas, hoje em dia muitos sistemas web são feitos separados e trabalham em conjunto, e essa restrição acaba não fazendo sentido nesse caso, sendo necessário uma maneira de permitir as requisições entre domínios distintos, e é ai que entra o CORS.
+
+## Cross-Origin Resource Sharing (CORS)
+
+O **CORS** é um mecanismo para **ignorar** a **política de mesma origem** de um **navegador Web**.  
+Ou seja, o CORS é uma maneira de contornar essa limitação de segurança por motivos legítimos.
+
+O CORS é um padrão W3C sendo uma especificação de uma **tecnologia de navegadores web** que define meios para um servidor permitir que seus recursos sejam acessados por uma **página web** de um domínio diferente.
+
+**LEMBRANDO QUE ISSO É UMA POLÍTICA DE NAVEGADORES**, se a API for acessada por um software seja de PC, Celular ou outro servidor, que **não seja um browser**, ela vai funcionar normalmente.
+
+## Usando o CORS na API
+
+Para usar o CORS na nossa API para permitir requisições de origem diferente, devemos:
+
+1. Incluir o pacote `Microsoft.AspNetCore.Cors` no projeto. (OBS: No curso diz isso, mas eu esqueci e foi mesmo assim, talvez não seja mais necessário nas versões mais recentes do .net).
+2. Incluir o serviço CORS na Program.cs
+3. E ai podemos habilitar o CORS das seguintes maneiras:
+   - Usando o middleware:  
+   Habilite o CORS e adicione os serviços CORS e defina a política usando o middleware para passar o nome da política **para toda a aplicação**.
+   - Usando Atributos:  
+   Adicione o serviço CORS, define a politica CORS, e habilite o CORS para Actions especificas, Controladoras especificas ou globalmente, usando o atributo: [EnableCors("nomeDaPolitica")]
+
+### Via  Middleware
+
+1. Incluir o serviço CORS na Program.cs
+`builder.Services.AddCors();`
+
+2. Habilitar o middleware CORS antes de UseAuthorization() e depois de UseRouting() se tiver, e definir a politica de segurança CORS que podem ser das seguintes formas:
+```c#
+// O WithOrigins permite incluir origens
+// especificas a serem permitidas na politica CORS
+app.UseCors(options => options.WithOrigins("origem1", "origem2"));
+
+
+// O WithMethods inclui os métodos a serem permitidos na politica CORS
+app.UseCors(options => options.WithOrigins("origem")
+        .WithMethods("GET", "POST"));
+
+
+// O WithHeaders inclui os headers permitidos na politica CORS
+app.UseCors(options => options
+        .WithOrigins("origem")
+          .WithMethods("GET", "POST")
+            .WithHeaders("accept", "content-type", "origin"));
+
+// Também podemos usar os métodos AllowAnyOrigin,
+// AllowAnyMethod e AllowAnyHeader, para permitir qualquer
+// origem, método e header respectivamente.
+app.UseCors(op => op.AllowAnyOrigin()
+        .AllowAnyMethod()
+          .AllowAnyHeader());
+
+// Dá para usar assim permitindo tudo, ou dá para combinar
+// da forma que quiser
+// com algum dos acima e permitir somente os específicos:
+app.UseCors(op=> op.WithOrigins("origem")
+        .AllowAnyMethods()
+          .WithHeaders("accept", "origin"));
+
+// Libera tudo mesmo não tendo os outros
+app.UseCors(op => op.AllowAnyOrigin());
+```
+
+### Via Atributo
+
+1. Incluir o serviço CORS no Program.cs e definir a politica
+As definições de politicas é similar ao do via middleware.
+```c#
+builder.Services.AddCors(options=>
+{
+  options.AddPolicy("NomeDaPoliticaQualquer",
+    builder => builder.WithOrigins("origin1")
+      .WithMethods("GET", "POST")
+        .AllowAnyHeader());
+});
+```
+
+2. Habilitar o CORS após o build().
+`app.UseCors()`
+
+3. Usar o atributo `[EnableCors("nome_da_politica")]` no Controlador (ex. junto com o atributo route.) ou na Action e dai ele só vai valer para a action especifica.
+
+Obs: Se na politica estiver WithMethods("GET") e você colocar em uma Action POST não adianta nada que vai continuar não funcionando.
+
+## Conclusão
+
+O CORS permite a liberação do acesso da nossa API em browsers de outras origens.  
+É um recurso mais para segurança.
+Recomendo usar o via Atributo pois permite mais precisão no que liberar além de múltiplas politicas.
+
+## Links Úteis
+
+[CORS - Microsoft Learn](https://learn.microsoft.com/en-US/aspnet/core/security/cors?view=aspnetcore-6.0) Leitura recomendada - Documentação
+
+[ApiRequest.io](https://www.apirequest.io/) - É um site que permite fazer requests, por ser de uma origem diferente ele é perfeito para fazer testes no CORS.
 
 [Voltar ao Índice](#índice)
 
