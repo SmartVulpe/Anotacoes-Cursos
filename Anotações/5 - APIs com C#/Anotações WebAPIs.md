@@ -118,6 +118,13 @@
     - [Via Atributo](#via-atributo)
   - [Conclusão](#conclusão)
   - [Links Úteis](#links-úteis)
+- [Versionamento de APIs](#versionamento-de-apis)
+  - [Implementação usando pacote](#implementação-usando-pacote)
+    - [Primeira forma de uso:](#primeira-forma-de-uso)
+    - [Segunda forma de uso:](#segunda-forma-de-uso)
+    - [Terceira forma de uso:](#terceira-forma-de-uso)
+    - [Quarta forma de uso:](#quarta-forma-de-uso)
+  - [Corrigindo o Swagger](#corrigindo-o-swagger)
 - [Leituras interessantes](#leituras-interessantes)
 
 
@@ -3208,6 +3215,173 @@ Recomendo usar o via Atributo pois permite mais precisão no que liberar além d
 [CORS - Microsoft Learn](https://learn.microsoft.com/en-US/aspnet/core/security/cors?view=aspnetcore-6.0) Leitura recomendada - Documentação
 
 [ApiRequest.io](https://www.apirequest.io/) - É um site que permite fazer requests, por ser de uma origem diferente ele é perfeito para fazer testes no CORS.
+
+[Voltar ao Índice](#índice)
+
+---
+
+# Versionamento de APIs
+
+O versionamento de APIs útil pois podemos ter cenários onde mais de uma versão está em produção ao mesmo tempo, atendendo diferentes clientes.
+
+No .net podemos versionar as APIs de algumas formas diferentes.  
+
+Sem nenhum pacote adicional podemos só colocar uma versão na rota para a API, mas isso é **desaconselhado** pois com o pacote a seguir temos funções de controle muito mais úteis como o report de uma api descontinuada por exemplo, e também o versionamento pelo header sem poluir a URI.
+
+## Implementação usando pacote
+
+**Primeiro vamos instalar o pacote:** `Microsoft.AspNetCore.Mvc.Versioning` 
+
+**E agora vamos ver a base de todas as formas:** 
+
+Na classe Program.cs devemos colocar o seguinte código na area de builder.Services:
+```c#
+builder.Services.AddApiVersioning(options =>
+{
+    // Se a versão não for especificada ele carrega a versão padrão especificada
+    options.AssumeDefaultVersionWhenUnspecified = true;
+
+    // Especifica qual é a versão padrão
+    options.DefaultApiVersion = new ApiVersion(1, 0);
+
+    // Diz no header a versão (da para ver pelo Postman)
+    options.ReportApiVersions = true;
+});
+```
+
+E nos atributos d controladora colocamos `[ApiVersion("1.0")]`:
+```c#
+[ApiVersion("1.0")]
+// Deixamos a rota com o mesmo nome para que os 2 controladores
+// possam ser acessados apenas alterando qual a versão,
+// já que não pode existir duas classes com o mesmo nome
+[Route("api/teste")]
+[ApiController]
+public class TesteVersionV1Controller : ControllerBase
+{}
+```
+Onde ta 1.0 pode ser a versão que desejar.
+
+E isso é a **base** para o versionamento de API, agora veremos as configurações conforme os objetivos:
+
+### Primeira forma de uso:
+
+Apenas com essa base e 2 controladoras, uma v1 e uma v2, para exemplificar, ao acessar a URL da api, exemplo:   
+`https://localhost:7018/api/teste`    
+Vai acessar a 1.0 que está definido como padrão.  
+Agora, se fizermos assim:   
+`https://localhost:7018/api/teste?api-version=2`   
+Estamos adicionando via query string a informação de que queremos acessar a versão 2.0 da nossa API.    
+- Essa não é a melhor forma de uso pois pode trazer algumas inconsistências quando utilizada mais query strings em conjunto.
+
+
+### Segunda forma de uso:
+
+Outra opção é usar o versionamento na URL da seguinte forma:  
+```c#
+[ApiVersion("1.0")]
+[Route("api/v{v:apiVersion}/teste")]
+[ApiController]
+public class TesteVersionV1Controller : ControllerBase
+{}
+```
+
+Dessa forma para acessar a versão colocamos a rota conforme a versão da API:   
+`https://localhost:7018/api/v1/teste`   
+obs: antes da chave tem um v{}, esse v não é necessário, se remover ele do atributo bastaria botar somente a chave {v:apiVersion}, mas eu usei assim por fazer mais sentido para indicar que aquele 1 é a versão e ai ao invés de ficar /1/ fica /v1/.
+
+Porém nesse cenário o **não informe** da versão resulta em uma pagina não encontrada. Diferente da primeira opção que se não informar ele entra na versão padrão.
+
+
+### Terceira forma de uso:
+
+Controladora que contém métodos action com mais de uma versão.  
+
+Para indicar as versões devemos colocar no cabeçalho da controladora as versões que as action possuem
+E na action colocamos junto com o HttpGet o atributo MapToApiVersion("Numero da versão").   
+Exemplo:
+```c#
+[ApiVersion("1.0")]
+[ApiVersion("2.0")]
+[Route("api/v{v:apiVersion}/teste")]
+[ApiController]
+public class TesteVersionV1Controller : ControllerBase
+{
+    [HttpGet]
+    public IActionResult Get()
+    {
+        return Content("<html><body><h2>TesteVersionV1Controller - GET Versão 1.0 </h2></body></html>", "text/html");
+    }
+
+    [HttpGet, MapToApiVersion("2.0")]
+    public IActionResult GetVersao2()
+    {
+        return Content("<html><body><h2>TesteVersionV1Controller - GET Versão 2.0 </h2></body></html>", "text/html");
+    }
+}
+```
+
+Para acessar os métodos Get de versão diferente é da mesma da segunda forma:
+`https://localhost:7018/api/v1/teste`   
+`https://localhost:7018/api/v2/teste`   
+
+Mas esta forma não é muito recomendada, pois em um projeto grande pode virar uma bagunça de actions, todavia a opção existe e está explicada.
+
+
+### Quarta forma de uso:
+
+Minha opção favorita, informar a versão pelo **header**!  
+Dessa forma a URL fica limpa e é sempre a mesma.  
+
+Para isso precisamos adicionar uma linha de código a mais no nosso Program.cs no serviço AddApiVersioning e informar o nome do campo que irá receber a informação da versão no header.    
+O código a ser adicionado é esse:    
+`options.ApiVersionReader = new HeaderApiVersionReader("api-version");`    
+Essa string api-version é o nome do campo que receberá o valor da versão.
+
+Nosso código ficará assim:
+```c#
+builder.Services.AddApiVersioning(options =>
+{
+    // Se a versão não for especificada ele carrega a versão padrão especificada
+    options.AssumeDefaultVersionWhenUnspecified = true;
+
+    // Especifica qual é a versão padrão
+    options.DefaultApiVersion = new ApiVersion(1, 0);
+
+    // Diz no header a versão (da para ver pelo Postman)
+    options.ReportApiVersions = true;
+
+    // Lê a versão da API requisitada pelo reader através do campo nomeado de api-version
+    options.ApiVersionReader = new HeaderApiVersionReader("api-version");
+});
+```
+
+Na controladora a Rota ficará simples, seguindo nosso exemplo será apenas api/teste, não terá campo para botar versão nela pois a versão estará sendo recebida pelo header.  
+Se a versão não for especificada a versão que vai responder vai ser a versão setada como padrão/default.   
+
+Exemplo no Postman:   
+![Exemplo versionamento via header pelo postman](./imgs/VersionamentoExemploPostman.png)
+No postman clicamos em headers, escrevemos o nome do nosso campo e colocamos o valor, versões como 1.0 e 2.0 podem ser digitadas apenas como 1 ou 2 sem o `.0`, e assim ele vai retornar a versão desejada da api, e se não digitar ele irá retornar a default que no caso do nosso exemplo seria a 1.0.
+
+## Corrigindo o Swagger
+
+Quando implementamos o versionamento o Swagger começa dar erro pois o mesmo está lendo duas controladoras com a mesma rota e se perde.   
+
+Para corrigir o problema precisamos instalar o pacote:  
+`Microsoft.AspNetCore.Mvc.Versioning.ApiExplorer`   
+
+E adicionar o serviço desse pacote ao Program.cs:  
+```c#
+builder.Services.AddVersionedApiExplorer(options =>
+{
+    options.GroupNameFormat = "'v'VVV";
+});
+```
+Isso adicionará um campo referente a versão, se for via URL vai aparecer o campo V, se for via header vai aparecer o campo api-version.   
+Obs: as actions sem versões ele aparece api-version mesmo sem ter o api-version setado pois ele por padrão reconhece as APIs sem definição como 1.0 e como o header não está definido e nem uma versão na rota, ele entra como se fosse por query string.   
+
+
+Fonte: Curso Web API ASP .NET Core Essencial (.NET 6) - Macoratti - Udemy
 
 [Voltar ao Índice](#índice)
 
