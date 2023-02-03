@@ -3100,6 +3100,8 @@ Antes de começar explicar o CORS e oque ele é, vamos entender um pouco sobre a
 
 A política de mesma origem especifica que um **navegador Web** (ou seja, é uma política somente de browsers) só permitirá a comunicação entre duas URLs se elas pertencerem à mesma origem.
 
+Ela serve para impedir que páginas da Web carregadas em um domínio façam solicitações AJAX ou HTTP que modifiquem dados para outros domínios.
+
 Duas URLs têm a mesma origem se tiverem **esquemas** (Http ou Https), **hosts** (nome de domínio) e **portas** idênticas.
 
 Origem = Esquema URI + nome do host + numero da porta.
@@ -3128,7 +3130,11 @@ Ou seja, o CORS é uma maneira de contornar essa limitação de segurança por m
 
 O CORS é um padrão W3C sendo uma especificação de uma **tecnologia de navegadores web** que define meios para um servidor permitir que seus recursos sejam acessados por uma **página web** de um domínio diferente.
 
-**LEMBRANDO QUE ISSO É UMA POLÍTICA DE NAVEGADORES**, se a API for acessada por um software seja de PC, Celular ou outro servidor, que **não seja um browser**, ela vai funcionar normalmente.
+Seu funcionamento esta baseado no fato de que os navegadores da web são criados para **enviar requests HTTP OPTIONS** antes de qualquer solicitação entre sites, e o servidor enviará de volta uma mensagem com os cabeçalhos Access-Control-* designando sua política CORS, e o navegador irá prosseguir ou abortar a solicitação com base no que é dito que pode fazer. (Veja que é o navegador que nega o serviço não a API)
+
+**Você pode definir políticas para habilitar e desabilitar o CORS dependendo do cenário onde sua aplicação vai atuar e isso deve ser feito com critério para não expor sua aplicação a uma situação onde haja vulnerabilidade à ataques.**
+
+**LEMBRANDO QUE ISSO É UMA POLÍTICA DE NAVEGADORES**, se a API for acessada por um software nativo seja de PC, Celular (alguns apps de celular são browsers disfarçados) ou outro servidor, que **não seja um browser**, ela vai funcionar normalmente.
 
 ## Usando o CORS na API
 
@@ -3277,7 +3283,7 @@ Estamos adicionando via query string a informação de que queremos acessar a ve
 
 ### Segunda forma de uso:
 
-Outra opção é usar o versionamento na URL da seguinte forma:  
+Outra forma é usar o versionamento na URL da seguinte forma:  
 ```c#
 [ApiVersion("1.0")]
 [Route("api/v{v:apiVersion}/teste")]
@@ -3290,7 +3296,7 @@ Dessa forma para acessar a versão colocamos a rota conforme a versão da API:
 `https://localhost:7018/api/v1/teste`   
 obs: antes da chave tem um v{}, esse v não é necessário, se remover ele do atributo bastaria botar somente a chave {v:apiVersion}, mas eu usei assim por fazer mais sentido para indicar que aquele 1 é a versão e ai ao invés de ficar /1/ fica /v1/.
 
-Porém nesse cenário o **não informe** da versão resulta em uma pagina não encontrada. Diferente da primeira opção que se não informar ele entra na versão padrão.
+Porém nesse cenário o **não informe** da versão resulta em uma pagina não encontrada. Diferente da primeira forma que se não informar ele entra na versão padrão.
 
 
 ### Terceira forma de uso:
@@ -3325,12 +3331,12 @@ Para acessar os métodos Get de versão diferente é da mesma da segunda forma:
 `https://localhost:7018/api/v1/teste`   
 `https://localhost:7018/api/v2/teste`   
 
-Mas esta forma não é muito recomendada, pois em um projeto grande pode virar uma bagunça de actions, todavia a opção existe e está explicada.
+Mas esta forma não é muito recomendada, pois em um projeto grande pode virar uma bagunça de actions, todavia essa opção existe e está explicada.
 
 
 ### Quarta forma de uso:
 
-Minha opção favorita, informar a versão pelo **header**!  
+Minha forma favorita, informar a versão pelo **header**!  
 Dessa forma a URL fica limpa e é sempre a mesma.  
 
 Para isso precisamos adicionar uma linha de código a mais no nosso Program.cs no serviço AddApiVersioning e informar o nome do campo que irá receber a informação da versão no header.    
