@@ -14,6 +14,10 @@
   - [Dicas Importantes](#dicas-importantes)
   - [Comandos dotnet para criar e executar api](#comandos-dotnet-para-criar-e-executar-api)
   - [Oque é o Swagger](#oque-é-o-swagger)
+    - [Documentando o Swagger](#documentando-o-swagger)
+      - [Adicionando comentários XML no Swagger](#adicionando-comentários-xml-no-swagger)
+      - [Gets como **application/json**](#gets-como-applicationjson)
+      - [Tipos de Retorno, Analisadores e Convenções](#tipos-de-retorno-analisadores-e-convenções)
   - [Classes Controller](#classes-controller)
     - [O básico para uma classe controller é:](#o-básico-para-uma-classe-controller-é)
   - [Caminho URL API](#caminho-url-api)
@@ -201,6 +205,170 @@ Comando para rodar e quando alterar o código ja recompilar em tempo de execuç�
 ## Oque é o Swagger
 
 Swagger é um frontend para testar apis em ambiente de desenvolvimento, não é exatamente necessário mas é um recurso que facilita os testes.
+
+[Voltar ao Índice](#índice)
+
+### Documentando o Swagger
+
+O Swagger já faz varias coisas automaticamente, mas não tudo, e nas sessões abaixo veremos como melhorar essa documentação:
+
+#### Adicionando comentários XML no Swagger
+
+Basicamente adicionar na interface do Swagger o comentário de documentação das actions, exemplo:
+
+```c#
+/// <summary>
+/// Regista uma nova categoria
+/// </summary>
+/// <remarks>
+/// Exemplo de request:
+///     POST: Categorias
+///     
+///     {
+///         "categoriaId": 1,
+///         "nome": "categoria1",
+///         "imagemUrl": "http://teste.net/1.jpg"
+///     }     
+/// </remarks>
+/// <param name="categoriaDto">Objeto Categoria</param>
+/// <returns>O objeto categoria criado</returns>
+/// <remarks>Retorna o objeto categoria que foi criado</remarks>
+[HttpPost]
+public async Task<ActionResult> PostCategoria(CategoriaDTO categoriaDto)
+{
+  // Código da Action.....
+}
+```
+
+Para que esse summary, remarks, returns, apareça lá no Swagger é preciso fazer algumas configurações no projeto:
+
+1. (Visual Studio) Clicamos com o botão direito do mouse no nome do projeto, e vamos em propriedades.
+2. Na janela que vai abrir clicamos em Build, dai na sessão Output marcamos a opção: **Generate a file containing API documentation**.
+   Essa opção é necessária pois ela vai gerar um arquivo XML com os dados de documentação que o Swagger usará na interface.
+3. E agora na classe Program.cs precisamos colocar o seguinte código dentro do serviço AddSwaggerGen():
+
+```c#
+builder.Services.AddSwaggerGen(c =>
+{
+  // possíveis outros códigos....
+
+  // Código para apresentar a documentação da API no Swagger
+    var xmlFile = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
+    var xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFile);
+    c.IncludeXmlComments(xmlPath);
+}
+``` 
+Esse código gera um XML com os dados da documentação para o swagger, basicamente ele pega aquele XML que a gente mandou o visual studio fazer e cria um outro próprio do swagger só com oque ele precisa.
+
+Só com isso ja funciona, mas temos uns adicionais:
+No arquivo CSPROJ, no escopo Property Group, devemos por isso aqui:
+```
+<GenerateDocumentationFile>True</GenerateDocumentationFile>
+<NoWarn>$(NoWarn);1591</NoWarn>
+```
+O primeiro, muito provavelmente já vai ter sido adicionado automaticamente pelo visual studio ao marcar aquela opção de Generate File... Mas se não tiver é bom colocar para reforçar a geração, *e também para gerar mesmo que seja usado outra IDE*.  
+O segundo, é porque com a opção acima ativa, a falta de documentação (summary) em outros métodos vai gerar uma infinidade de warnings 1591, e isso desativa eles.
+
+O Resultado final no Swagger deve ser algo como isso:
+
+![Exemplo documentação Swagger](./imgs/SwaggerDocumentacaoExemplo.png)
+Note que agora há ao lado da rota das actions uma breve descrição, e no POST há um exemplo do input.
+
+[Voltar ao Índice](#índice)
+
+#### Gets como **application/json**
+
+No Swagger em cada action tem uma caixa para escolher o tipo de mídia, nos POST e PUTs por exemplo ela vem definida como application/json já, mas nos GETs não, e se você quiser deixar automaticamente sempre como json para exigir de uma forma mais bonita, você pode colocar o seguinte atributo no cabeçalho das controladoras:
+
+```c#
+[Produces("application/json")]
+```
+Esse atributo indica o tipo de saída que é produzido pelas actions da API.   
+
+**Seu oposto é mais útil no dia-a-dia**, é o `[Consumes("application/json")]`, ele serve para impedir que a API receba qualquer coisa que não seja no formato especificado, como o JSON por exemplo. Quando receber ela irá retornar um erro: 415 - Unsupported Media Type.   
+
+[Voltar ao Índice](#índice)
+
+#### Tipos de Retorno, Analisadores e Convenções
+
+- O SwashBuckle/Swagger não consegue determinar todo o tipo de resposta possível de um método HTTP, nele geralmente fica aparecendo que a possível resposta é um 200 Ok.    
+- Para poder definir explicitamente os tipos de retornos adequados de uma Action podemos usar o atributo `[ProducesResponseType]`.   
+- `[ProducesResponseType]` indica os tipos conhecidos e os códigos de status HTTP a serem retornados pela action.
+
+Temos 3 formas de implementar isso:
+- A primeira exige que voce analise cada método action, cada possível retorno, oque pode ser bem chato em uma API grande.
+- A segunda permite definir os retornos mais comuns nas actions seguindo uma convenção mas nem tudo fica bom, se o retorno for acompanhado de um objeto ele não marca.
+- A terceira é um pacote que **analisa**
+
+**Veremos como implementar a primeira forma:**
+
+```c#
+[HttpGet("{id}", Name = "ObterProduto")]
+[ProducesResponseType(typeof(ProdutoDTO), StatusCodes.Status200OK)]
+[ProducesResponseType(StatusCodes.Status404NotFound)]
+public ActionResult<ProdutoDto> Get(int id)
+{
+  var produto _uow.ProdutoRepository.GetById(p => p.ProdutoId == id);
+
+  if (produto is null)
+    return NotFound();
+
+  var ProdutoDto = _mapper.Map<ProdutoDTO>(produto);
+  return produtoDto;
+}
+```
+Neste método action retornamos um NotFound() ou um objeto produtoDto quando sucesso, portanto em seu cabeçalho definimos 2 atributos ProducesResponseType com as referencias para esses possíveis retornos.     
+O ProducesResponseType pode indicar apenas o `StatusCodes.Status200OK` por exemplo, ou incluir o tipo usando `typeof(Objeto)` quando o retorno inclui um objeto.
+
+**Agora a segunda forma:**
+
+Nessa forma usamos o atributo `[ApiConventionMethod]`, ele analisa e aplica o padrão de convenção, que para um método Put são:
+- 204 - No Content (Porém nós estamos retornando o objeto e deveria ser um 200ok com o objeto).
+- 404 - Not Found
+- 400 - Bad Request
+
+E mais um Default de erro.
+
+Aplicamos assim:
+```c#
+[HttpPut("{id:int}")]
+[ApiConventionMethod(typeof(DefaultApiConventions),
+    nameof(DefaultApiConventions.Put))]
+public async Task<ActionResult> PutProduto(int id, ProdutoDTO produtoDto)
+{
+  // código
+}
+```
+
+Também é possível aplicar isso a **nível de Controlador** da seguinte forma:
+```c#
+[ApiController]
+[Route("api/[controller]")]
+[ApiConventionType(typeof(DefaultApiConventions))]
+public class CategoriasController : ControllerBase
+{}
+```
+Assim todas as actions receberão as respostas padrões da convenção sem precisar fazer uma a uma.
+
+Terceira forma:
+
+Nesta forma utilizamos analisadores, eles vão ver as controladoras que possuem o atributo ApiController e identificam ações que não documentam totalmente as respostas.         
+Ou seja, é basicamente a primeira forma mas com um **assistente**.
+
+Nas versões anteriores ao aspnet core 3.0, era necessário instalar esse pacote, mas a partir da 3.0 e posteriores ja é incluso.    
+`Microsoft.AspnetCore.Mvc.Api.Analyzers`   
+Nessas versões bastava instalar o pacote e ir buscar os alertas.
+
+Para habilitar o analisador nas versões mais recentes, basta incluir a propriedade `IncludeOpenAPIAnalyzers` no arquivo de projeto "CSPROJ" desta forma:
+```c#
+<PropertyGroup>
+  <IncludeOpenAPIAnalyzers>true</IncludeOpenAPIAnalyzers>
+</PropertyGroup>
+```
+
+Feito isso basta ir buscar os sublinhados de alerta indicando documentação incompleta e ver as sugestões de implementação.
+![Exemplo Analisador ResponseType](./imgs/ExemploAnalisadorDeResponseType.png)
+
 
 [Voltar ao Índice](#índice)
 
