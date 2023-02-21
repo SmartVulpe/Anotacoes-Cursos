@@ -22,6 +22,7 @@
   - [Encapsulamento](#encapsulamento)
   - [Modificadores de acesso (public / private / protected)](#modificadores-de-acesso-public--private--protected)
   - [Construtor](#construtor)
+    - [Construtor Estático](#construtor-estático)
   - [This](#this)
   - [Variáveis e Métodos ESTÁTICOS](#variáveis-e-métodos-estáticos)
   - [Herança](#herança)
@@ -394,6 +395,22 @@ Dentro do arquivo Pessoa.cs
 ***Assim como os métodos da pra ter mais de um construtor usando parâmetros diferentes.***
 
 **Dica:** se digitar **ctor** (abreviação para construtor) e apertar tab duas vezes ele vai criar automaticamente um modelo de construtor para você.
+
+[Voltar ao Índice](#índice)
+
+### Construtor Estático
+
+Construtores Estáticos são usados para inicializar dados estáticos, ele é chamado automaticamente antes que a primeira instancia seja criada.
+
+Exemplo de um construtor estático:
+```c#
+static CategoriasUnitTestController()
+{
+    dbContextOption = new DbContextOptionsBuilder<CatalogoAPIContext>()
+        .UseSqlServer(connectionString)
+        .Options;
+}
+```
 
 [Voltar ao Índice](#índice)
 
