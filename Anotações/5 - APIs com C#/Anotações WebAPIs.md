@@ -129,6 +129,15 @@
     - [Terceira forma de uso:](#terceira-forma-de-uso)
     - [Quarta forma de uso:](#quarta-forma-de-uso)
   - [Corrigindo o Swagger](#corrigindo-o-swagger)
+- [Testes](#testes)
+  - [Testes de Software (Teórico)](#testes-de-software-teórico)
+  - [Principais tipos de testes](#principais-tipos-de-testes)
+    - [Casos de Teste](#casos-de-teste)
+  - [Testes Unitários](#testes-unitários)
+    - [xUnit](#xunit)
+      - [FluentAssertions](#fluentassertions)
+      - [Esboço de plano de testes](#esboço-de-plano-de-testes)
+      - [Implementando os Testes Unitários com xUnit](#implementando-os-testes-unitários-com-xunit)
 - [Leituras interessantes](#leituras-interessantes)
 
 
@@ -3558,6 +3567,333 @@ Obs: as actions sem versões ele aparece api-version mesmo sem ter o api-version
 Fonte: Curso Web API ASP .NET Core Essencial (.NET 6) - Macoratti - Udemy
 
 [Voltar ao Índice](#índice)
+
+---
+
+# Testes
+
+## Testes de Software (Teórico)
+
+Os testes geralmente são a ultima etapa na produção de um software, tem como objetivo encontrar erros, prevenir erros, fornecer diagnósticos e testar a qualidade.
+
+É importante definir um **plano de testes**, ele tem como objetivo garantir a confiabilidade e segurança de um software, identificando possíveis erros e falhas durante sua confecção, ou mesmo depois.
+
+## Principais tipos de testes
+
+1. **Teste Estrutural** (caixa Branca)     
+   Utiliza o aspecto interno do programa/sistema, o código fonte, para avaliar seus componentes.    
+   São testados os caminhos lógicos através do software, fornecendo casos de teste que põem a prova conjuntos específicos de condições e/ou garante que todos os caminhos independentes dentro de um módulo tenham sido exercitados pelo menos uma vez.    
+      - Executa todas as decisões lógicas para valores falsos ou verdadeiros.
+      - Executa todos os laços em suas fronteiras.
+      - Exercita as estruturas de dados internas.
+
+2. **Teste funcional** (caixa preta)      
+   São usados para demonstrar que as funções dos softwares são operacionais, que a entrada é adequadamente aceita e a saída é corretamente produzida e que a integridade das informações externas é mantida.     
+
+   É uma atividade complementar aos testes de caixa branca, com a finalidade de descobrir tipos/classes de erros.      
+ 
+   Procura descobrir erro em:      
+    - Funções incorretas ou ausentes.
+    - Erros de interface.
+    - Erros nas estruturas de dados.
+    - Acesso a banco de dados externos.
+    - Erros de desempenho.
+
+3. Teste de Unidade     
+   Deve ser escrito pelo mesmo programador que desenvolveu o código a ser testado. Testam-se unidades menores de um software, de modo isolado, para ver se todas funcionam adequadamente; Serve como documentação do sistema; Sendo essencial para análise de desempenho do sistema;
+
+4. Teste de Integração    
+   Depois dos testes de unidade, realiza-se uma verificação se as unidades funcionam juntas, integradas. Pode ocorrer delas apresentarem incompatibilidades ao funcionarem em conjunto, mesmo após terem sido aprovadas no teste de unidade;
+
+5. Teste de Sistema      
+   Teste feito para comparar o sistema com seus objetivos originais;      
+   Enfatiza a analise do comportamento da estrutura hierárquica de chamadas de módulos;            
+   É uma fase mais complexa de testes, devido a quantidade de informações envolvidas.     
+
+6. Teste de Regressão      
+   Consiste em realizar testes a cada versão de um software, onde são modificadas as funcionalidades. É um teste necessário para assegurar que modificações no programa não causaram novos erros.
+
+7. Teste de Aceitação
+   A validação e aceitação é vem sucedida quando o software funciona de uma maneira razoavelmente esperada pelo cliente, as expectativas dos clientes são documentadas e verifica-se o uso da documentação do usuário.
+
+8. Teste de Carga      
+   Teste feito para avaliar os limites de uso do software, o quanto ele suporta em volume de informações, tráfego, etc, sem que o programa apresente erros.
+
+[Voltar ao Índice](#índice)
+
+### Casos de Teste
+
+Caso de teste é um Conjunto de condições usadas para testas de software.
+
+O caso de teste deve especificar os valores de entrada e os resultados esperados do processamento.
+
+Documentação:
+
+| **Seção** | **Descrição** |
+| --- | --- |
+| **Resumo** | Contém uma descrição do caso de teste, descrevendo a finalidade ou o objetivo do teste e o escopo. |
+| **Pré-condições** | Para cada condição de execução, enumera uma lista dos estímulos específicos a serem aplicados durante o teste. |
+| **Ação** | Para a execução do teste, são as ações que o usuário deve fazer para que o sistema possa cumprir com o que será testado. |
+| **Resultados esperados** | É o estado resultante ou as condições observáveis esperadas como resultado da execução do teste. |
+| **Pós-condições** | Para cada condição de execução, descreve o estado ao qual o sistema deverá retornar para permitir a execução de testes subsequentes. |
+
+[Voltar ao Índice](#índice)
+
+## Testes Unitários
+
+Testes unitários devem garantir que todas as unidades (menor parte de um código possível da sua aplicação) funcionem corretamente e em total isolamento.
+
+Os testes unitários devem testar somente o código dentro do controle do desenvolvedor.    
+Eles não devem testar preocupações de infraestrutura como: bancos de dados, sistemas de arquivos e recursos de rede.
+
+Existem praticas recomendadas para se escrever testes.   
+Por exemplo, Test Driven Development (TDD) é um teste de unidade escrito antes que o código seja verificado. O TDD é como criar um esboço para um livro antes de escrevê-lo e destina-se a ajudar os desenvolvedores a escrever um código mais simples, mais legível e eficiente.
+
+Existem algumas ferramentas para realizar os testes unitários, dentre elas destacamos o xUnit e o Nunit. Vou usar aqui o xUnit.
+
+[Voltar ao Índice](#índice)
+
+### xUnit
+
+Para usar o xUnit adicionamos um projeto **xUnit Test Project** na solution do nosso projeto.
+
+Em todo teste unitário usando essa abordagem, temos os seguintes conceitos:
+
+```c#
+[Fact]
+public void Metodo()
+{
+  // Arrange
+  ...código
+
+  // Act
+  ...código
+
+  // Assert
+  Assert...
+}
+```
+
+- **Fact** - Atributo aplicado ao método de teste para indicar que ele deve ser executado pelo **Test Runner**.
+- **Arrange** - Preparação onde são configuradas os recursos necessários ao teste: criação de objetos, etc.
+- **Act** - Executa a **ação de testar**, ou seja, executa o teste preparado.
+- **Assert** - Faz a **verificação e validação** se a ação do teste foi **correta**. **Comparamos** o que era **esperado** com o **resultado final** do teste.
+
+[Voltar ao Índice](#índice)
+
+#### FluentAssertions
+
+Fluent Assertions é uma serie de métodos de extensão que ajuda a especificar testes muito mais naturalmente, de fácil leitura e no estilo **BDD** ou **TDD**.
+
+Esse recurso não é necessário, mas ajuda a enriquecer os testes de forma simplificada.   
+
+Nuget: FluentAssertions
+
+[Link da Documentação do Fluent Assertions](https://fluentassertions.com/introduction)
+
+Exemplo de recursos:
+
+"Should().Be......Subject"
+
+Verifica se o resultado é de um tipo esperado:      
+```c#
+var okResult = data.Should().BeOfType<CreatedAtRouteResult>().Subject;   
+```    
+
+Verifica se pode atribuir o resultado ao tipo de um objeto que queremos: 
+```c#    
+var cat = data.Value.Should().BeAssignableTo<CategoriaDTO>().Subject;
+```
+
+#### Esboço de plano de testes
+
+Um esboço **básico**, especificamos que desejamos testar em cada action da web api.    
+Exemplos:
+
+- Get
+  - OkResult
+  - BadRequest
+  - MatchResult
+
+- Get(int id)
+  - OkResult
+  - NotFound
+  - BadRequest
+  - MatchResult
+
+- Post(object)
+  - CreatedResult
+  - BadRequest
+  - MatchResult
+
+- Put(id, object)
+  - OkResult
+  - BadRequest
+
+- Delete(object)
+  - OkResult
+  - NotFound
+  - BadRequest
+
+[Voltar ao Índice](#índice)
+
+#### Implementando os Testes Unitários com xUnit
+
+1. Adicionamos um projeto **xUnit Test Project** na solution do nosso projeto.
+2. Adicionamos a **referencia** do projeto principal ao projeto de testes:
+   1. Clica com o botão direito no projeto de testes
+   2. Add
+   3. Project Reference...
+   ![Exemplo Add Reference](./imgs/UnitTest-AddReference.png)
+   4. Na janela que abriu, marcamos a caixa do projeto que queremos adicionar como referencia, e por fim clicamos ok.
+   ![Exemplo 2 Add Reference](./imgs/UnitTest-AddReference2.png)
+3. Como neste projeto vamos usar o FluentAssertions, então adicionamos o pacote fluent assertions pelo Nuget Manager no projeto de Testes. Apenas no projeto de testes.
+
+Agora vamos preparar o ambiente, o ideal seria utilizando **mock** ou até o EF Core InMemory, mas para uma explicação mais simplificada iremos usar o próprio banco que ja temos, isso também dá ao teste um cenário mais realista.    
+**OBS: Com EFCore InMemory ou Mock, acontece um erro, de recurso que ainda está sendo usado e não pode usar ao mesmo tempo, ao testar alguns comandos como o put e o delete, que fazem um get para verificar e depois efetuam o add ou o delete, por algum motivo mesmo com AsNoTracking() que resolve esse problema em um cenário real, no mock/InMemory esse recurso não funciona, pelo menos não ao usar o EFCore, talvez com "EF não core" ou Dapper funcione.**   
+
+Vamos então criar uma classe chamada DBUnitTestsMockInitializer que servirá para fornecer alguns dados de teste de base para quando utilizarmos um banco limpo ou um mock, ou seja, ela será responsável por carregar no banco alguns dados iniciais para que os testes funcionem.
+
+```c#
+internal class DBUnitTestsMockInitializer
+{
+    // Usaria se fosse usar um mock
+    public DBUnitTestsMockInitializer()
+    {}
+    
+    // Popula o banco com dados
+    public void Seed(CatalogoAPIContext context)
+    {
+        context.Categorias.Add
+        (new Categoria { CategoriaId = 777, Nome = "Bebidas777", ImagemUrl = "bebidas777.jpg" });
+
+        context.Categorias.Add
+        (new Categoria { CategoriaId = 2, Nome = "Sucos", ImagemUrl = "sucos1.jpg" });
+
+        context.Categorias.Add
+        (new Categoria { CategoriaId = 3, Nome = "Doces", ImagemUrl = "doces1.jpg" });
+
+        context.Categorias.Add
+        (new Categoria { CategoriaId = 4, Nome = "Salgados", ImagemUrl = "Salgados1.jpg" });
+
+        context.Categorias.Add
+        (new Categoria { CategoriaId = 5, Nome = "Tortas", ImagemUrl = "tortas1.jpg" });
+
+        context.Categorias.Add
+        (new Categoria { CategoriaId = 6, Nome = "Bolos", ImagemUrl = "bolos1.jpg" });
+
+        context.Categorias.Add
+        (new Categoria { CategoriaId = 7, Nome = "Lanches", ImagemUrl = "lanches1.jpg" });
+
+        context.SaveChanges();
+    }
+}
+```
+
+Agora criamos nossa classe CategoriasUnitTestController que será responsável por testar as nossas actions da controladora Categorias.    
+
+Primeiro criamos o essencial para que os testes possam funcionar:
+```c#
+public class CategoriasUnitTestController
+{
+
+    private IMapper mapper;
+    private IUnitOfWork repository;
+
+    public static DbContextOptions<CatalogoAPIContext> dbContextOption { get; }
+
+    // Se quiser uma connection string diferente para realizar os testes
+    // mas acho que o ideal seria colocar uma diferente no appsettings.development.json
+    public static string connectionString =
+        "Server=localhost\\sqlexpress; Initial Catalog=CatalogoApiDb; Integrated Security=True; Encrypt=True; TrustServerCertificate=True";
+
+
+    // Construtores Estáticos são usados para inicializar dados estáticos
+    // Ele é chamado automaticamente antes que a primeira instancia seja criada.
+    static CategoriasUnitTestController()
+    {
+        dbContextOption = new DbContextOptionsBuilder<CatalogoAPIContext>()
+            .UseSqlServer(connectionString)
+            .Options;
+    }
+
+    public CategoriasUnitTestController()
+    {
+        var config = new MapperConfiguration(cfg =>
+        {
+            cfg.AddProfile(new MappingProfile());
+        });
+        mapper = config.CreateMapper();
+
+        var context = new CatalogoAPIContext(dbContextOption);
+
+        /* Caso estivesse usando um banco de dados novo e vazio habilitaria
+          * isso e ele iria usar a classe criada anteriormente para
+          * carregar o DB com o básico para os testes. */
+        //DBUnitTestsMockInitializer db = new DBUnitTestsMockInitializer();
+        //db.Seed(context);
+
+        repository = new UnitOfWork(context);
+    }
+    
+    // Testes Unitários
+}
+```
+
+Depois criamos os Testes.   
+Aqui você pode ver o projeto que eu usei para fazer isso com todos os testes: [CategoriasUnitTestController.cs](https://github.com/daniellfranco/CatalogoAPI/blob/main/CatalogoAPI/CatalogoAPIxUnitTests/CategoriasUnitTestController.cs)       
+
+Exemplo:
+```c#
+/********************** TESTE GET ****************************/
+[Fact]
+// Boa prática o teste ter o nome do que está testando
+// e seu resultado esperado
+public async Task GetCategorias_Return_OkResult()
+{
+    // Arrange
+    var controller = new CategoriasController(repository, new NullLogger<CategoriasController>(), mapper);
+
+    // Esse HttpContext é para parar de dar erro no código "Response.Headers.Add"
+    controller.ControllerContext = new ControllerContext()
+    {
+        HttpContext = new DefaultHttpContext(),
+    };
+
+    CategoriasParameters parameters = new CategoriasParameters()
+    {
+        PageNumber = 1,
+        PageSize = 3
+    };
+
+    // Act
+    var data = await controller.GetCategorias(parameters);
+
+    // Assert
+    var okResult = Assert.IsType<OkObjectResult>(data.Result);
+    Assert.IsType<List<CategoriaDTO>>(okResult.Value);
+}
+```
+
+Explicando:
+- Fact é necessário em todo método que será usado como teste.   
+- O nome do método deve explicar bem a sua função.
+- O Arrange vai conter o necessário para carregar a controladora, se você não quiser repetir código desnecessariamente o ideal é fazer os arranjos que possam ser reaproveitados no constructor do teste, toda vez que o teste for executado ele cria uma instancia nova da controladora, se isso for o objetivo ai você não coloca como uma só chamada no construtor.
+- O NullLogger é um sistema atualmente nativo do net6+ que permite desativar o logger, já que ele não é necessário nos testes unitários.
+- No Act é onde acontece o chamado da action, ele vai executar a action e colocar seu resultado na variável data.
+- No Assert é onde testamos se o resultado contido no data confere com o esperado.
+- IsType confere o tipo, como o nome sugere.
+
+Após criado os testes unitários vamos testa-los.    
+Para isso vamos abrir o Teste Explorer em : Test > Test Explorer.    
+Agora escolhemos o teste a ser testado e executamos:    
+![Exemplo Executando Testes Unitários](./imgs/ExecutandoTestesUnitarios.png)
+
+Links:      
+- Infos sobre repetição de código [Shared Context between Tests](https://xunit.net/docs/shared-context)      
+- [Documentação XUnit](https://xunit.net/docs/getting-started/netcore/visual-studio)        
+- [Rodando Testes em paralelo xUnit](https://xunit.net/docs/running-tests-in-parallel)       
+- [Unit test controller logic in ASP.NET Core](https://learn.microsoft.com/en-us/aspnet/core/mvc/controllers/testing?view=aspnetcore-7.0)       
 
 ---
 
