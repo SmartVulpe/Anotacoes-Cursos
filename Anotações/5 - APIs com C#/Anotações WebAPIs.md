@@ -138,6 +138,8 @@
       - [FluentAssertions](#fluentassertions)
       - [Esboço de plano de testes](#esboço-de-plano-de-testes)
       - [Implementando os Testes Unitários com xUnit](#implementando-os-testes-unitários-com-xunit)
+- [Oque é ODATA](#oque-é-odata)
+  - [Opções de Consulta](#opções-de-consulta)
 - [Leituras interessantes](#leituras-interessantes)
 
 
@@ -3894,6 +3896,59 @@ Links:
 - [Documentação XUnit](https://xunit.net/docs/getting-started/netcore/visual-studio)        
 - [Rodando Testes em paralelo xUnit](https://xunit.net/docs/running-tests-in-parallel)       
 - [Unit test controller logic in ASP.NET Core](https://learn.microsoft.com/en-us/aspnet/core/mvc/controllers/testing?view=aspnetcore-7.0)       
+
+---
+
+# Oque é ODATA
+
+```
+Resumo rápido:
+É um recurso que adiciona de uma forma automatizada e padronizada recursos de consulta via QueryString (tags na URL que indicam funções), por exemplo: orderby, filtros, search, count, etc...     
+Sendo assim não tem a necessidade de criar todos os filtros de pesquisa manualmente, mas certamente não possui a mesma performance de algo criado especificamente para a nossa API...
+```
+
+O OData (Open Data Protocol) é um padrão OASIS aprovado pela ISO/IEC que define um conjunto de práticas recomendadas para criar e consumir Web APIs.    
+A implementação dos padrões OData torna mais fácil consumir uma API pelos seus clientes e permite a criação de consultas flexíveis e legíveis por meio das convenções da URL do OData.     
+Usando as convenções da URL OData, você pode expor uma API muito mais limpa e genérica e permitir que o cliente da API especifique suas necessidades por meio de requisições.    
+
+As convenções de URL do OData são um conjunto de comandos que você pode passar para a API por meio da cadeia de consulta de chamada HTTP.
+
+Uma URL OData é normalmente composta por três partes:
+
+1. **A URL raiz do serviço** - É o endereço raiz da API.   
+2. **O caminho do recurso** - Identifica o recurso que você deseja obter.
+3. **As opções de consulta** - É como você define para a API o formato no qual vc precisa que os dados sejam entregues.
+
+![Exemplo URL OData](./imgs/OData_URL.png)
+
+## Opções de Consulta
+
+As opções de consulta (Query Options) são usadas para definir como a nossa API vai entregar o dados e pode conter dados de pesquisa, ordenações, filtros, contagens, projeções, etc.
+
+**Principais opções de consulta:**
+- **$select** - Permite definir um subconjunto de propriedades para retornar a partir do recurso (Resource);
+- **$expand** - Permite incluir dados de um recurso relacionado nos resultados da consulta;
+- **$orderby** - Permite definir a ordem do conjunto de dados retornado;
+- **$top** - Permite selecionar os principais resultados X da consulta;
+- **$skip** - Permite ignorar os resultados X da consulta;
+- **$count** - Permite obter uma contagem dos itens que resultariam dessa consulta;
+- **$search** - Permite uma pesquisa de texto libre sobre esse recurso específico;
+- **$format** - Permite definir o formato dos dados retornados em alguns tipos de consulta;
+- **$filter** - Permite que você defina um filtro para o seu conjunto de dados.
+
+Para implementar tem que instalar o pacote **Microsoft.AspNetCore.OData**.     
+Registrar o serviço, configurar as opções de consultas permitidas.     
+Por fim adicionar `[EnableQuery]` ao cabeçalho da Action da controladora.     
+
+Links com o processo de implementação:      
+[Up & Running w/ OData in ASP.NET 6](https://devblogs.microsoft.com/odata/up-running-w-odata-in-asp-net-6/)     
+[OData with .NET 6](https://dev.to/berviantoleo/odata-with-net-6-5e1p)
+
+Link documentações do OData:
+[OData Documentation](https://www.odata.org/documentation/)
+
+
+[Voltar ao Índice](#índice)
 
 ---
 
