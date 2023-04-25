@@ -140,6 +140,10 @@
       - [Implementando os Testes Unitários com xUnit](#implementando-os-testes-unitários-com-xunit)
 - [Oque é ODATA](#oque-é-odata)
   - [Opções de Consulta](#opções-de-consulta)
+- [Oque é GraphQL](#oque-é-graphql)
+  - [GraphQL - Conceitos](#graphql---conceitos)
+  - [GraphQL - Integrando com ASP.NET Core Web API](#graphql---integrando-com-aspnet-core-web-api)
+  - [Implementação](#implementação-4)
 - [Leituras interessantes](#leituras-interessantes)
 
 
@@ -3901,11 +3905,10 @@ Links:
 
 # Oque é ODATA
 
-```
-Resumo rápido:
-É um recurso que adiciona de uma forma automatizada e padronizada recursos de consulta via QueryString (tags na URL que indicam funções), por exemplo: orderby, filtros, search, count, etc...     
-Sendo assim não tem a necessidade de criar todos os filtros de pesquisa manualmente, mas certamente não possui a mesma performance de algo criado especificamente para a nossa API...
-```
+> Resumo rápido:
+> É um recurso que adiciona de uma forma automatizada e padronizada recursos de consulta via QueryString (tags na URL que indicam funções), por exemplo: orderby, filtros, search, count, etc...     
+> Sendo assim não tem a necessidade de criar todos os filtros de pesquisa manualmente, mas certamente não possui a mesma performance de algo criado especificamente para a nossa API...
+
 
 O OData (Open Data Protocol) é um padrão OASIS aprovado pela ISO/IEC que define um conjunto de práticas recomendadas para criar e consumir Web APIs.    
 A implementação dos padrões OData torna mais fácil consumir uma API pelos seus clientes e permite a criação de consultas flexíveis e legíveis por meio das convenções da URL do OData.     
@@ -3951,6 +3954,62 @@ Link documentações do OData:
 [Voltar ao Índice](#índice)
 
 ---
+
+# Oque é GraphQL
+
+
+> Resumo rápido:
+> É bem similar ao OData acima, com a diferença que o OData faz a requisição e a filtragem dos requests via QueryString (tags na url) e o GraphQL faz via um json no corpo do request.    
+> Supostamente via JSON é mais "maleável" e legível, mas o GraphQL também é bem mais complexo de se configurar.   
+> Post StackOverflow sobre OData vs GraphQL: [OData vs GraphQL](https://stackoverflow.com/questions/50687332/odata-vs-graphql)
+
+
+
+Foi criado pelo Facebook.
+
+"GraphQL é uma linguagem de consulta para sua API e um runtime do lado do servidor para executar consultas usando um sistema de tipos que você define para seus dados.   
+O GraphQL não stá vinculado a nenhum banco de dados ou mecanismo de armazenamento específico e, em vez disso, é respaldado pelo código e pelos dados existentes." [graphql.org](graphql.org)
+
+O GraphQL facilita o processo de entregar ao cliente apenas o que foi requisitado pelo mesmo e na ordem em que foi solicitado.
+
+Através de um json que especifica oque foi pedido e é enviado no body do request, o GraphQL processa e retorna oque foi pedido, mesmo que as informações a serem retornadas precisem utilizar múltiplas controladoras/endpoints.    
+Assim o GraphQL limita o numero de endpoints e requests necessários para receber as informações desejadas pelo cliente.
+
+Exemplo Rest vs GraphQL:
+![Rest vs GraphQL](./imgs/GraphQL_x_Rest_Request.png)
+
+## GraphQL - Conceitos
+
+- **Schema** - Descreve a funcionalidade disponível para os clientes que se conetam a ele.
+- **Tipos (Types)** - Tudo em GraphQL é um tipo, e, um tipo pode ser entendido como uma entidade em seu banco de dados (relacional ou não relacional). Os tipos formam um schema, e, o GraphQL possui 2 tipos padrão: **RootQuery** e **RootMutations**.
+- **Query** e **Mutations** - O **type Query** serve para definir o contrato de consulta de dados e o **type Mutation** serve para definir o contrato de manipulação de dados.
+- **Resolver** - Resolvers são funções responsáveis por resolver um pedido e devolver o dado solicitado. As funções recebem três argumentos: **root, argumentos e contexto**.
+
+## GraphQL - Integrando com ASP.NET Core Web API
+
+O GraphQL pode coexistir com o REST tornando-se assim uma extensão de uma API REST existente.
+
+Podemos ter nossa WEB API expondo os seus endpoints e ter também o endpoint GraphQL coexistindo em harmonia.
+
+## Implementação
+
+- Incluímos o pacote nuget GraphQL.
+- Criamos um MiddleWare, exemp.: "TesteGraphQLMiddleware"
+- Criamos as classes:
+  - **CategoriaQuery** - Define as consultas
+  - **CategoriaType** - Modelação de domínio
+
+Links com a implementações:   
+[ASP .NET Core - Usando GraphQL - I - Macoratti](https://www.macoratti.net/19/08/aspnc_grql1.htm)     
+[How to implement GraphQL in ASP.Net Core Web API (.NET 6) using HotChocolate](https://blog.christian-schou.dk/how-to-implement-graphql-in-asp-net-core/)        
+[GraphQL – Construindo uma API GraphQL em .NET](https://imasters.com.br/dotnet/graphql-construindo-uma-api-graphql-em-net)     
+[[Dica rápida] .NET + GraphQL com HotChocolate](https://medium.com/xp-inc/dica-rápida-net-graphql-834caa394bd5)    
+
+
+[Voltar ao Índice](#índice)
+
+---
+
 
 # Leituras interessantes
 
