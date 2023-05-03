@@ -569,6 +569,16 @@ Segundo se a classe tiver uma propriedade Id ele vai automaticamente reconhecer 
 Ai para adicionar essa tabela no banco de dados use o comando:  
 `dotnet-ef database update`  
 
+> **Nota:**
+>
+> Para criar um arquivo do migrations para "Popular" uma tabela
+> basta dar novamente o comando:    
+> `dotnet-ef migrations add PopulaTabela`   
+> *logo após ter criado a primeira* ou enquanto não fizer nenhuma alteração
+> que afete as models, como por exemplo alguma alteração no range de valor,
+> dessa forma será criado um arquivo de migração vazio e basta colocar comandos
+> de adição SQL, exemplo: [PopulaCategorias.cs](https://github.com/daniellfranco/CatalogoAPI/blob/main/CatalogoAPI/CatalogoAPI/Migrations/20221201180907_PopulaCategorias.cs)
+
 [Voltar ao Índice](#índice)
 
 ---
