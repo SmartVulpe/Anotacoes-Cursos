@@ -8,7 +8,7 @@ Mas hoje ele serve para guardar as anotações de todos os cursos relacionados a
 
 ## Index
 
-- Anotações Cursos Bootcamp DotNet Dio
+##### Anotações Cursos Bootcamp DotNet Dio
   1. [Introdução ao Git e GitHub](Anota%C3%A7%C3%B5es/1%20-%20Introdu%C3%A7%C3%A3o%20ao%20Git%20e%20GitHub/)      
      -  [Anotações Git](Anota%C3%A7%C3%B5es/1%20-%20Introdu%C3%A7%C3%A3o%20ao%20Git%20e%20GitHub/Anota%C3%A7%C3%B5es%20Git.md)      
      -  [Comandos Basicos CLI](Anota%C3%A7%C3%B5es/1%20-%20Introdu%C3%A7%C3%A3o%20ao%20Git%20e%20GitHub/Comandos%20Basicos%20CLI.md)     
@@ -26,10 +26,11 @@ Mas hoje ele serve para guardar as anotações de todos os cursos relacionados a
   6. [FrontEnd com MVC](Anota%C3%A7%C3%B5es/6%20-%20FrontEnd%20com%20MVC/)  
       -  [Anotações MVC](Anota%C3%A7%C3%B5es/6%20-%20FrontEnd%20com%20MVC/Anota%C3%A7%C3%B5es%20MVC.md)      
   7. [Clean Architecture](Anota%C3%A7%C3%B5es/7%20-%20Clean%20Architecture/)    
-      -  [Anotações Clean Architecture](Anota%C3%A7%C3%B5es/7%20-%20Clean%20Architecture/Anotações%20Clean%20Architecture.md)       
-- Anotações Curso Angular     
-  8. [Angular](Anota%C3%A7%C3%B5es/8%20-%20Angular/)      
-      -  [Anotações Angular](Anota%C3%A7%C3%B5es/8%20-%20Angular/Anotações%20Angular.md)     
+      -  [Anotações Clean Architecture](Anota%C3%A7%C3%B5es/7%20-%20Clean%20Architecture/Anotações%20Clean%20Architecture.md)
+    
+##### Anotações Curso Angular    
+8. [Angular](Anota%C3%A7%C3%B5es/8%20-%20Angular/)      
+    -  [Anotações Angular](Anota%C3%A7%C3%B5es/8%20-%20Angular/Anotações%20Angular.md)     
 
 
 
