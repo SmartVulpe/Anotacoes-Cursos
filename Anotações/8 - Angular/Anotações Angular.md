@@ -41,7 +41,9 @@ Em resumo, o Angular é uma ferramenta abrangente para o desenvolvimento front-e
 
 - `ng new nome-do-projeto` - Cria um projeto angular.
 
-- `ng g --help` - Lista de comandos para *gerar* "coisas" como classes, componentes, enum, applications, etc...    
+- `ng g --help` - Lista de comandos para *gerar* "coisas" como classes, componentes, enum, applications, etc...   
+
+- `ng g component components/new-component` - Cria um novo componente chamado *new-component* na pasta *components* que ele vai criar dentro da pasta src/app/ mesmo que voce use esse comando na raiz do projeto, o ideal é usar na raiz do projeto.     
 
 
 
