@@ -3,6 +3,7 @@
 - [Indice](#indice)
 - [Oque é o Angular?](#oque-é-o-angular)
 - [Oque são Componentes](#oque-são-componentes)
+- [Oque são Templates](#oque-é-um-template)
 
 
 
@@ -51,7 +52,7 @@ Em resumo, o Angular é uma ferramenta abrangente para o desenvolvimento front-e
 
 ---
 
-# Oque são Componentes
+# Oque são Componentes?
 
 Um componente é uma unidade de código responsável por uma única tarefa ou funcionalidade. Ele é composto por três partes principais:      
 
@@ -81,6 +82,25 @@ Alguns exemplos de componentes Angular são:
 
 Os componentes são uma ferramenta fundamental para o desenvolvimento de aplicações Angular. Eles permitem que você desenvolva aplicações mais complexas e escaláveis, mantendo o código organizado e fácil de manter.    
 
+
+
+[Voltar ao Indice](#indice)    
+
+---
+
+# Oque é um Template?
+
+Um template é um arquivo HTML que define a interface visual de um componente. Ele é composto por uma combinação de elementos HTML, diretivas e expressões.     
+
+Os templates são usados para definir a aparência visual dos componentes Angular. Eles permitem que você crie interfaces visuais complexas e interativas de forma rápida e fácil.      
+
+Aqui estão alguns dos benefícios de usar templates no Angular:     
+
+- **Reutilização:** Os templates podem ser reutilizados em diferentes componentes. Isso ajuda a reduzir a duplicação de código e a melhorar a produtividade.    
+
+- **Testabilidade:** Os templates podem ser testados de forma independente, o que ajuda a garantir a qualidade do código.     
+
+- **Organização:** Os templates ajudam a organizar o código Angular, tornando-o mais fácil de entender e manter.     
 
 
 [Voltar ao Indice](#indice)    
