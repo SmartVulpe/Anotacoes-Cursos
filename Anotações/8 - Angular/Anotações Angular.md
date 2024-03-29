@@ -106,3 +106,64 @@ Aqui estão alguns dos benefícios de usar templates no Angular:
 [Voltar ao Indice](#indice)    
 
 ---
+
+# Oque é Control Flow?
+
+No Angular, o controle de fluxo é a capacidade de controlar a ordem em que o código é executado.    
+
+Ele é usado para executar código condicionalmente, iterar sobre coleções e repetir código.    
+
+O controle de fluxo é uma ferramenta essencial para o desenvolvimento de aplicações Angular. Ele permite que você crie aplicativos mais complexos e interativos.    
+
+
+
+[Voltar ao Indice](#indice)    
+
+---
+
+# Oque é Deferrable View?
+
+Deferrable Views, também conhecidos como @defer blocks, são uma nova funcionalidade introduzida no Angular 17 que permite adiar o carregamento de determinadas partes de uma aplicação.     
+
+Isso pode ser usado para melhorar o desempenho das aplicações, especialmente aquelas com grandes quantidades de conteúdo.     
+
+
+
+[Voltar ao Indice](#indice)    
+
+---
+
+
+# Oque são Signals?
+
+Signals são uma nova funcionalidade introduzida no Angular 17 que permite que os componentes se comuniquem entre si de forma assíncrona. Isso pode ser usado para melhorar a performance e a escalabilidade das aplicações.
+
+**Exemplos**
+
+Aqui estão alguns exemplos de como usar Signals para melhorar o desempenho e a escalabilidade das aplicações:
+
+- Comunicação entre componentes: Você pode usar Signals para permitir que componentes se comuniquem entre si de forma assíncrona. Isso pode ajudar a melhorar o desempenho das aplicações, pois os componentes não precisam esperar que a resposta seja recebida antes de continuar.
+
+- Notificações: Você pode usar Signals para enviar notificações para outros componentes. Isso pode ser útil para notificar os componentes de eventos que ocorrem em outros lugares da aplicação.
+
+- Atualizações de dados: Você pode usar Signals para atualizar dados em vários componentes de forma assíncrona. Isso pode ajudar a melhorar a escalabilidade das aplicações, pois os componentes não precisam esperar que os dados sejam atualizados antes de renderizar.
+
+
+**Considerações**
+
+Ao usar Signals, é importante considerar os seguintes fatores:
+
+- Eficiência: Os Signals podem melhorar o desempenho e a escalabilidade das aplicações, mas eles também podem adicionar complexidade.
+
+- Manutenção: Os Signals podem tornar as aplicações mais difíceis de manter. É importante documentar cuidadosamente como os Signals são usados na aplicação.
+
+
+Os Signals são uma nova funcionalidade poderosa que pode ser usada para melhorar o desempenho e a escalabilidade das aplicações Angular.
+
+
+
+[Voltar ao Indice](#indice)    
+
+---
+
+
